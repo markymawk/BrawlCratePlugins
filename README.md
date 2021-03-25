@@ -10,3 +10,8 @@ Plug-ins:
 
 Loaders:
 - Stock Icon Exporter
+
+To install:
+In BrawlCrate, navigate to Tools > Settings > Updater tab, and click the Manage Subscriptions button.
+Click add, then paste the link to this Github repo: https://github.com/markymawk/BrawlCratePlugins
+Then, these plug-ins will download and update automatically!
