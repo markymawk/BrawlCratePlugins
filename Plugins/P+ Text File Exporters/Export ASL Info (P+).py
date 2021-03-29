@@ -11,12 +11,7 @@ from System.IO import *
 from BrawlLib.Internal.Windows.Forms import ProgressWindow
 from os import path
 
-outputFileName = "_ASL Data.txt"
-aslFilesOpenedCount = 0
-aslMissing = []
-missingParamFiles = []
-
-flagsToButtons = {
+FLAGS_TO_BUTTONS = {
 	1 : "Left",
 	2 : "Right",
 	4 : "Down",
@@ -31,13 +26,21 @@ flagsToButtons = {
 	4096 : "Start"  # 0x1000
 }
 
-flagsList = [4096, 2048, 1024, 512, 256, 64, 32, 16, 8, 4, 2, 1]
+FLAGS_LIST = [4096, 2048, 1024, 512, 256, 64, 32, 16, 8, 4, 2, 1]
+
+outputFileName = "_ASL Data.txt"
+
+aslFilesOpenedCount = 0
+aslMissing = []
+missingParamFiles = []
+
+
 
 # Print header for each file
-def writeHeader(textfile, aslFilename):
+def writeHeader(textfile, parentNode):
 	childCount = len(parentNode.Children)
 	
-	writeStr = "################\n" + aslFilename + " - "
+	writeStr = "################\n" + parentNode.Name + ".asl - "
 	
 	if childCount == 1:
 		writeStr += "1 alt stage\n\n"
@@ -50,7 +53,7 @@ def writeHeader(textfile, aslFilename):
 def checkParam(asl, param):
 	paramFilename = str(param) + ".param"
 	
-	if path.exists (paramFolder + "\\" + paramFilename):
+	if path.exists(PARAM_DIR_PATH + "\\" + paramFilename):
 		return paramFilename
 	else:
 		aslMissing.append(asl)
@@ -66,10 +69,13 @@ def getButtons(node):
 	thisButtons = []
 	returnStr = ""
 	
-	for flag in flagsList:
+	for flag in FLAGS_LIST:
 		if thisFlags >= flag:
-			thisButtons.append(flagsToButtons[flag])
+			thisButtons.append(FLAGS_TO_BUTTONS[flag])
 			thisFlags -= flag
+		# Quit out after getting to 0
+		if thisFlags == 0:
+			break
 	
 	for button in thisButtons:
 		returnStr += button + "+"
@@ -92,7 +98,7 @@ elif str(workingDir)[-9:] == "\\pf\\stage":
 if workingDir:
 	
 	# Derive param folder and stage pac folder
-	paramFolder = str(workingDir).replace('stageslot','stageinfo')
+	PARAM_DIR_PATH = str(workingDir).replace('stageslot','stageinfo')
 
 	# Get list of ASL files in tracklist directory
 	ASL_FILES = Directory.CreateDirectory(workingDir).GetFiles()
@@ -107,7 +113,7 @@ if workingDir:
 	message += "\nwill be exported to " + str(outputFileName) + " in the same folder."
 	message += "\n\nPress OK to continue. (The process may take 20 seconds or longer.)"
 
-	if BrawlAPI.ShowOKCancelPrompt(message, "Export ASL Data"):
+	if BrawlAPI.ShowOKCancelPrompt(message, "Export ASL File Data"):
 	
 		progressBar = ProgressWindow()
 		progressBar.Begin(0,ASL_FILE_COUNT,0)
@@ -123,19 +129,20 @@ if workingDir:
 				
 				# Open asl file
 				BrawlAPI.OpenFile(file.FullName)
-				parentNode = BrawlAPI.NodeList[0]
+				parentNode = BrawlAPI.RootNode
 				
 				# Write header (asl file name, number of entries)
-				writeHeader(textfile, file.Name)
+				writeHeader(textfile, BrawlAPI.RootNode)
 				
-				for node in parentNode.Children:
-					currentAsl += getButtons(node) + ": " + \
-					checkParam(parentNode.Name, node.Name) + "\n"
-					
+				# Print button combination for each child node
+				for child in parentNode.Children:
+					currentAsl += getButtons(child) + ": "
+					currentAsl += checkParam(parentNode.Name, child.Name) + "\n"
+				
+				# Close current ASL file after parsing, and output to text
 				BrawlAPI.ForceCloseFile()
 				
-				currentAsl += "\n\n"
-				textfile.write(currentAsl)
+				textfile.write(currentAsl + "\n\n")
 				
 		# Close text file after all files are parsed
 		textfile.close()

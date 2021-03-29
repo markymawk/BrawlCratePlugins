@@ -16,6 +16,7 @@ BRAWL_STAGE_PACS = ["STGBATTLEFIELD", "STGCHARAROLL", "STGCONFIGTEST", "STGCRAYO
 BRAWL_MODULES = ["st_battle.rel", "st_battles.rel", "st_config.rel", "st_crayon.rel", "st_croll.rel", "st_dolpic.rel", "st_donkey.rel", "st_dxbigblue.rel", "st_dxcorneria.rel", "st_dxgarden.rel", "st_dxgreens.rel", "st_dxonett.rel", "st_dxpstadium.rel", "st_dxrcruise.rel", "st_dxshrine.rel", "st_dxyorster.rel", "st_dxzebes.rel", "st_earth.rel", "st_emblem.rel", "st_famicom.rel", "st_final.rel", "st_fzero.rel", "st_greenhill.rel", "st_gw.rel", "st_halberd.rel", "st_heal.rel", "st_homerun.rel", "st_ice.rel", "st_jungle.rel", "st_kart.rel", "st_madein.rel", "st_mansion.rel", "st_mariopast.rel", "st_metalgear.rel", "st_newpork.rel", "st_norfair.rel", "st_oldin.rel", "st_orpheon.rel", "st_otrain.rel", "st_palutena.rel", "st_pictchat.rel", "st_pirates.rel", "st_plankton.rel", "st_stadium.rel", "st_stageedit.rel", "st_starfox.rel", "st_tbreak.rel", "st_tengan.rel", "st_village.rel"]
 
 OUTPUT_FILE_NAME = "_Stage Param Data.txt"
+
 paramFilesOpenedCount = 0
 missingPacParams = []
 missingModuleParams = []
@@ -101,7 +102,7 @@ def getStagePacName(parentNode):
 # Helper method to check if stage pac filepath exists
 # Returns true if exists, else returns false and adds .param filename to missingPacParams[]
 def checkStagePacFilepath(paramName, pacFilename):
-	if pacFilename in BRAWL_STAGE_PACS or path.exists(stagePacFolder + "\\" + pacFilename):
+	if pacFilename in BRAWL_STAGE_PACS or path.exists(STAGE_MELEE_DIR_PATH + "\\" + pacFilename):
 		return True
 	else:
 		missingPacParams.append(paramName)
@@ -118,7 +119,7 @@ def getModuleName(parentNode):
 	elif module == "":
 		return "[NO MODULE ASSIGNED]"
 	# If module file is missing, append error string to module filename
-	elif not parentNode.Module in BRAWL_MODULES and not checkModuleFilepath(parentNode.Name, parentNode.Module):
+	elif not checkModuleFilepath(parentNode.Name, module):
 		return module + " [MODULE FILE MISSING]"
 	else:
 		return module
@@ -126,7 +127,7 @@ def getModuleName(parentNode):
 # Helper method to check if module filepath exists
 # Returns true if exists, else returns false and adds .param filename to missingModuleParams[]
 def checkModuleFilepath (paramName, moduleFilename):
-	if moduleFilename in BRAWL_MODULES or path.exists(moduleFolder + "\\" + moduleFilename):
+	if moduleFilename in BRAWL_MODULES or path.exists(MODULE_DIR_PATH + "\\" + moduleFilename):
 		return True
 	else:
 		missingModuleParams.append(paramName)
@@ -153,7 +154,7 @@ def getTracklistName(parentNode):
 # Returns true if filepath exists, else false
 # If false, also adds param filename to missingTracklistParams[]
 def checkTracklistFilepath (paramName, tracklistFilename):
-	if path.exists(tracklistFolder + "\\" + tracklistFilename) :
+	if path.exists(TRACKLIST_DIR_PATH + "\\" + tracklistFilename) :
 		return True
 	else:
 		missingTracklistParams.append(paramName)
@@ -170,23 +171,23 @@ def getColorOverlay (parentNode):
 	
 # Returns string containing all flags set in param file
 def getStageFlags(parentNode):
-	flagsList = []
+	thisStageFlags = []
 	strFlags = ""
 	
 	if parentNode.IsFlat:
-		flagsList.append("Flat")
+		thisStageFlags.append("Flat")
 	if parentNode.IsFixedCamera:
-		flagsList.append("FixedCamera")
+		thisStageFlags.append("FixedCamera")
 	if parentNode.IsSlowStart:
-		flagsList.append("SlowStart")
+		thisStageFlags.append("SlowStart")
 	if parentNode.IsDualLoad:
-		flagsList.append("DualLoad")
+		thisStageFlags.append("DualLoad")
 	if parentNode.IsDualShuffle:
-		flagsList.append("DualShuffle")
+		thisStageFlags.append("DualShuffle")
 	if parentNode.IsOldSubstage:
-		flagsList.append("OldSubstage")
+		thisStageFlags.append("OldSubstage")
 	
-	for flag in flagsList:
+	for flag in thisStageFlags:
 		strFlags += flag + ", "
 	
 	# Truncate final comma
@@ -215,9 +216,9 @@ elif str(workingDir)[-9:] == "\\pf\\stage":
 if workingDir:
 	
 	# Derive module folder and stage pac folder
-	stagePacFolder = str(workingDir).replace('stageinfo','melee')
-	moduleFolder = str(workingDir).replace('stage\\stageinfo', 'module')
-	tracklistFolder = str(workingDir).replace('stage\\stageinfo', 'sound\\tracklist')
+	STAGE_MELEE_DIR_PATH = str(workingDir).replace('stageinfo','melee')
+	MODULE_DIR_PATH = str(workingDir).replace('stage\\stageinfo', 'module')
+	TRACKLIST_DIR_PATH = str(workingDir).replace('stage\\stageinfo', 'sound\\tracklist')
 
 	# Get list of param files in stageinfo directory
 	PARAM_FILES = Directory.CreateDirectory(workingDir).GetFiles()
@@ -232,7 +233,7 @@ if workingDir:
 	message += "\nwill be exported to " + str(OUTPUT_FILE_NAME) + " in the same folder."
 	message += "\n\nPress OK to continue. (The process may take 20 seconds or longer.)"
 
-	if BrawlAPI.ShowOKCancelPrompt(message, "Export Stage Param Data"):
+	if BrawlAPI.ShowOKCancelPrompt(message, "Export Param File Data"):
 		
 		progressBar = ProgressWindow()
 		progressBar.Begin(0,PARAM_FILE_COUNT,0)
@@ -275,6 +276,7 @@ if workingDir:
 				
 				# Close current param file after parsing, and output to text
 				BrawlAPI.ForceCloseFile()
+				
 				TEXT_FILE.write(currentParam)
 				
 		# Close output text file after all param files are parsed
@@ -284,28 +286,28 @@ if workingDir:
 		# RESULTS
 		
 		# Determine the existence of any errors found while parsing
-		missingPacFound = len(missingPacParams)
-		missingModuleFound = len(missingModuleParams)
-		missingTracklistFound = len(missingTracklistParams)
+		isMissingPacFound = len(missingPacParams)
+		isMissingModuleFound = len(missingModuleParams)
+		isMissingTracklistFound = len(missingTracklistParams)
 
 		# Success, no errors
-		if not missingPacFound and not missingModuleFound and not missingTracklistFound and paramFilesOpenedCount > 0:
+		if not isMissingPacFound and not isMissingModuleFound and not isMissingTracklistFound and paramFilesOpenedCount > 0:
 			BrawlAPI.ShowMessage("Contents of " + str(paramFilesOpenedCount) + " param files exported with no errors to:\n" + str(FULL_TEXT_FILE_PATH), "Success!")
 
 		# Success, but one or more files missing
-		if missingPacFound or missingModuleFound or missingTracklistFound:
+		if isMissingPacFound or isMissingModuleFound or isMissingTracklistFound:
 			message = "Stage param contents exported successfully, but errors found.\n\n"
-			if missingPacFound:
+			if isMissingPacFound:
 				message += "Stage .pac file not found:\n"
 				for p in missingPacParams:
 					message += p + ".param\n"
 				message += "\n"
-			if missingModuleFound:
+			if isMissingModuleFound:
 				message += "Module file not found:\n"
 				for p in missingModuleParams:
 					message += p + ".param\n"
 				message += "\n"
-			if missingTracklistFound:
+			if isMissingTracklistFound:
 				message += "Tracklist file not found:\n"
 				for p in missingTracklistParams:
 					message += p + ".param\n"

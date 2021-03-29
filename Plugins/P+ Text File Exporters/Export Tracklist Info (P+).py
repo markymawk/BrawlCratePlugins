@@ -30,6 +30,8 @@ BRAWL_SONG_ID_LIST = [ "X02", "X03", "X04", "X05", "X06", "X07", "X08", "X09", "
  "Y28", "Y29", "Y30", "Z01", "Z02", "Z03", "Z04", "Z05", "Z06", "Z07", "Z08", "Z09", "Z10", "Z11", "Z12", "Z13", "Z14", "Z15", "Z16",
  "Z17", "Z18", "Z19", "Z20", "Z21", "Z22", "Z23", "Z24", "Z25", "Z26", "Z27", "Z28", "Z32", "Z33", "Z34", "Z35", "Z37", "Z38", "Z39",
  "Z41", "Z46", "Z47", "Z50", "Z51", "Z52", "Z53", "Z54", "Z55", "Z56" "Z57", "Z58"]
+
+OUTPUT_TEXT_FILENAME = "_Tracklist Data.txt"
  
 tracklistCount = 0
 missingPathTracklists = []
@@ -48,12 +50,10 @@ def writeTracklistHeader(textfile, parentNode):
 		writeStr += str(trackCount) + " tracks\n\n"
 
 	textfile.write(writeStr)
-	
+
 # Convert to hex with lowercase 0x, and cut off trailing L
 def getBrawlSongHex(songID):
 	return "0x" + str(hex(songID)).upper()[2:-1]
-	
-OUTPUT_TEXT_FILENAME = "_Tracklist Data.txt"
 
 ############################################
 ########### Start of main script ###########
@@ -77,14 +77,13 @@ if tracklistDir:
 	message += "\nwill be exported to " + str(OUTPUT_TEXT_FILENAME) + " in the same folder."
 	message += "\n\nPress OK to continue. (The process may take 1-2 minutes.)"
 	
-	if BrawlAPI.ShowOKCancelPrompt(message, "Export Tracklist Data"):
+	if BrawlAPI.ShowOKCancelPrompt(message, "Export Tracklist File Data"):
 		
 		# Open text file and clear it, or create if it doesn't already exist
 		FULL_TEXT_FILE_PATH = str(tracklistDir) + "\\" + OUTPUT_TEXT_FILENAME
 		textfile = open(FULL_TEXT_FILE_PATH,"w+")
 	
 		DO_ERROR_CHECKING = True
-		
 		
 		###
 		### Debug or advanced users: un-comment this dialog box to disable error checking.
@@ -102,25 +101,25 @@ if tracklistDir:
 			if file.Name.lower().EndsWith(".tlst"):
 				tracklistCount += 1
 				currentTracklist = ""
-				songIDs = []
+				songIDsInTracklist = []
 				
 				progressBar.Update(tracklistCount)
+				
 				# Open TLST file
 				BrawlAPI.OpenFile(file.FullName)
-				parentNode = BrawlAPI.NodeList[0]
+				parentNode = BrawlAPI.RootNode
 				
 				# Write header (tracklist filename and number of tracks)
 				writeTracklistHeader(textfile, parentNode)
 
 				# Iterate through entry nodes
 				for track in parentNode.Children:
-				
 					# Check for any duplicate song IDs
 					if DO_ERROR_CHECKING:
-						if (str(parentNode.Name) + ".tlst") not in duplicateIDsTracklists and track.SongID in songIDs:
+						if (str(parentNode.Name) + ".tlst") not in duplicateIDsTracklists and track.SongID in songIDsInTracklist:
 							duplicateIDsTracklists.append(str(parentNode.Name) + ".tlst")
 						else:
-							songIDs.append(track.SongID)
+							songIDsInTracklist.append(track.SongID)
 						
 					# If file path is empty, track should be from ISO
 					# Append Brawl track to tracklist string, including BRSTM filename and hex ID
@@ -131,13 +130,12 @@ if tracklistDir:
 						# Add to tracklist-write string
 						currentTracklist += "\t" + str(track.Name) + "\n\t" + brstmFilePath + " (" + brawlSongHex + ")"
 					
-					# If file path exists, the track is a custom .brstm
+					# If file path isn't empty, the track is a custom .brstm
 					# Append custom filepath to tracklist string, including volume
 					else:
 						brstmFilePath = str(track.SongFileName) + ".brstm"
-						brstmVolume = str(track.Volume)
 						
-						# If brstm file is missing, log it in the lists and mark it accordingly in text file
+						# If brstm file is missing, add it to the "missing" list and mark it accordingly in text file
 						if DO_ERROR_CHECKING \
 						and track.SongFileName not in BRAWL_SONG_ID_LIST \
 						and not path.exists(track.rstmPath):
@@ -146,7 +144,7 @@ if tracklistDir:
 							brstmFilePath += " [BRSTM FILE MISSING]"
 						
 						# Add to tracklist-write string
-						currentTracklist += "\t" + str(track.Name) + "\n\t" + brstmFilePath + "\n\tVolume: " + brstmVolume
+						currentTracklist += "\t" + str(track.Name) + "\n\t" + brstmFilePath + "\n\tVolume: " + str(track.Volume)
 						
 						# If songSwitch is enabled, check for pinch mode brstm and print info
 						if track.SongSwitch:
@@ -163,7 +161,7 @@ if tracklistDir:
 					# Append song delay to string, if exists
 					if track.SongDelay != 0:
 						currentTracklist += "\n\tSong delay: " + str(track.SongDelay)
-					
+				
 					currentTracklist += "\n\n"
 					
 				# After parsing all tracks in the current TLST, close the file and output the tracklist info to text
@@ -173,6 +171,7 @@ if tracklistDir:
 		# After all TLSTs are parsed, close text file
 		textfile.close()
 		progressBar.Finish()
+		
 		#
 		# RESULTS
 		#
@@ -206,7 +205,6 @@ if tracklistDir:
 			# No tracklists found
 			elif tracklistCount == 0:
 				BrawlAPI.ShowError("No tlst files found in\n" + str(tracklistDir), "No tracklists found")
-				
 			
 		else:
 			BrawlAPI.ShowMessage("Contents of " + str(tracklistCount) + " tlst files exported to:\n" + str(FULL_TEXT_FILE_PATH), "Success! (No error checking)")
