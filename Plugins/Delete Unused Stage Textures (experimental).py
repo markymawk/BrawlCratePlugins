@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "0.9"
+__version__ = "0.9.0.1"
 # EXPERIMENTAL - Updated 4/4/21, might break things still.
 # Always test in-game!! always save backups!!
 from BrawlCrate.API import *
@@ -81,7 +81,7 @@ def parseMDL0(mdl0):
 		
 		# Iterate through materials in mdl0. If object count == 0, delete the material
 		for m in mats:
-			if not len(m._objects) and m.Name == "StageDodai":
+			if not len(m._objects):
 				deletedMatsNamesList.append(m.Name)
 				m.Remove()
 	
