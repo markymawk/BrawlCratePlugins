@@ -1,12 +1,11 @@
 __author__ = "mawwwk"
-__version__ = "0.9.0.1"
+__version__ = "0.9.0.2"
 # EXPERIMENTAL - Updated 4/4/21, might break things still.
 # Always test in-game!! always save backups!!
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
 from BrawlCrate.UI import MainForm
 from BrawlLib.Internal import *
-#from BrawlLib.Imaging import *
 from System.IO import *
 
 texturesInMaterialsNamesList = []
@@ -51,7 +50,7 @@ def parseModelData(brres):
 	if modelsGroup:
 		for mdl0 in modelsGroup.Children:
 			texturesGroup = getModelTexturesGroup(mdl0)
-			# If the mdl0 has uses Texture references or Materials, dive in
+			# If the mdl0 has Texture references or Materials, dive in
 			if getModelTexturesGroup(mdl0) or getModelMaterialsGroup(mdl0):
 				parseMDL0(mdl0)
 	
@@ -143,7 +142,7 @@ def getModelTexturesGroup(mdl0):
 			return group
 	return 0
 
-# Log tex0 nodes inside a TextureData brres, and delete any unused textures
+# Given a TextureData brres, log any tex0 nodes found, and delete any unused textures
 def parseTextureData(brresNode):
 	global tex0List
 	TEX0_GROUP = getTextureDataTex0Group(brresNode)
@@ -183,7 +182,7 @@ if BrawlAPI.ShowOKCancelPrompt(msg, "Optimize Stage Textures"):
 			tex0.Remove()
 
 	matsDeletedCount = len(deletedMatsNamesList)
-	tex0DeletedCount = len (deletedTex0NamesList)
+	tex0DeletedCount = len(deletedTex0NamesList)
 	# Print list of deleted tex0 names
 	if (not matsDeletedCount) and (not tex0DeletedCount):
 		BrawlAPI.ShowMessage("No unused textures or materials found", "Optimize Stage Textures")
