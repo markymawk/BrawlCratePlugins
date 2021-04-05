@@ -7,9 +7,11 @@ Plug-ins:
 - Export ASL Info (P+)
 - Export Param Info (P+)
 - Export Tracklist Info (P+)
+- Delete Unused Stage Textures (EXPERIMENTAL)
 
 Loaders:
 - Stock Icon Exporter
+- Param File Navigator
 
 To install:  
 In BrawlCrate, navigate to Tools > Settings > Updater tab, and click the Manage Subscriptions button.  
