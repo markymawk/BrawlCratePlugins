@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "0.9"
+__version__ = "1.0"
 
 from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import GenericWrapper
@@ -8,10 +8,6 @@ from BrawlLib.SSBB.ResourceNodes import *
 from BrawlLib.SSBB.ResourceNodes.ProjectPlus import STEXNode
 from System.Windows.Forms import ToolStripMenuItem
 import os
-
-#Debug
-def message(msgString):
-	BrawlAPI.ShowMessage(str(msgString), "AAA")
 
 # Single PAC enable check: if StageName is not empty && no children exist
 def EnableCheckPAC(sender, event_args):
@@ -47,13 +43,13 @@ def open_substage_pac(sender, event_args):
 	if os.path.exists(PAC_FILE_PATH):
 		BrawlAPI.OpenFile(PAC_FILE_PATH)
 	else:
-	# As a backup, try to find the file with no underscore (Smashville, etc.)
+	# As a backup, try (stage)(substage) with no underscore (i.e. Smashville substages)
 		PAC_FILE_PATH = STAGE_MELEE_DIR_PATH + "STG" + BrawlAPI.RootNode.StageName + BrawlAPI.SelectedNode.Name + ".pac"
 		
 		if os.path.exists(PAC_FILE_PATH):
 			BrawlAPI.OpenFile(PAC_FILE_PATH)
 		else:
-	# As another backup, try just the substage name (DualLoad ie Castle Siege)
+	# As another backup, try just the substage name (DualLoad i.e. Castle Siege)
 			PAC_FILE_PATH = STAGE_MELEE_DIR_PATH + "STG" + BrawlAPI.SelectedNode.Name + ".pac"
 			
 			if os.path.exists(PAC_FILE_PATH):
