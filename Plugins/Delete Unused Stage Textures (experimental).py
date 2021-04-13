@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "0.9.1"
+__version__ = "0.9.1.1"
 # EXPERIMENTAL - Updated 4/13/21, might break things still.
 # Always test in-game!! always save backups!!
 # WILL break Hanenbow-based stages
@@ -122,7 +122,7 @@ def checkRegenerated(mdl0):
 	if normalsGroup and not isRegeneratedFound:
 		for node in normalsGroup.Children:
 			if node.Name == "Regenerated" and len(node._objects) == 0:
-				regeneratedModelsNamesList.append(mdl0.Name)
+				regeneratedModelsNamesList.append(mdl0.Parent.Parent.Name + "/" + mdl0.Name)
 				break
 
 # Given a pat0 animation, iterate through child entries and log textures used
