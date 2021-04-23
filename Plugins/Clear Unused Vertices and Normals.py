@@ -1,6 +1,6 @@
 __author__ = "mawwwk"
-__version__ = "0.9.2"
-# EXPERIMENTAL - Updated 4/15/21, might break things still.
+__version__ = "0.9.3"
+# EXPERIMENTAL - Updated 4/23/21, might break things still.
 # Always test in-game!! always save backups!!
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
@@ -10,12 +10,11 @@ from System.IO import *
 
 SCRIPT_NAME = "Clear Unused Vertices and Normals"
 deletedNodeCount = 0
-# Unique lists that cover the whole pac file, and are populated during run
-affectedModelsNamesList = []
-usedRegeneratedModelsNamesList = []
+affectedModelsNamesList = []			# Names of all mdl0 nodes that contain nodes deleted during the script
+usedRegeneratedModelsNamesList = []		# Names of all mdl0 nodes that contain vertex/normal nodes named "Regenerated" that are used by objects
 
 # Debug message
-def message(msg):
+def dmessage(msg):
 	BrawlAPI.ShowMessage(msg, "DEBUG")
 
 ##
@@ -30,80 +29,64 @@ def reverseResourceList(nodeList):
 	nodeListReverse.reverse()
 	return nodeListReverse
 
-# point parser to ModelData
+# Given any node, return the first child node whose name contains the given nameStr, or return 0 if not found
+def getChildFromName(node, nameStr):
+	if node.HasChildren:
+		for child in node.Children:
+			if str(nameStr) in child.Name:
+				return child
+	return 0
+
+# point parser to ModelData brres
 def parseBrres(node):
 	if "Model Data" in node.Name:
 		parseModelData(node)
 
 # Given a ModelData brres, iterate through appropriate child group nodes
 def parseModelData(brres):
-	# Iterate through models
+	# Iterate through models inside brres
 	modelsGroup = getChildFromName(brres, "3DModels")
-	
 	if modelsGroup:
 		for mdl0 in modelsGroup.Children:
-			verticesGroup = getChildFromName(mdl0,"Vertices")
-			normalsGroup = getChildFromName(mdl0,"Normals")
-			# If the mdl0 has Vertices or Normals, dive in
-			if verticesGroup or normalsGroup:
-				parseMDL0(mdl0, verticesGroup, normalsGroup)
+			parseMDL0(mdl0)
 
 # Given a mdl0 node, delete any unused vertices or normals, and detect any used "Regenerated" nodes
-def parseMDL0(mdl0, verticesGroup, normalsGroup):
+def parseMDL0(mdl0):
 	global deletedNodeCount
+	unusedFound = False 			# Set to true if any unused nodes found
+	usedRegeneratedFound = False 	# Set to true if any nodes named "Regenerated" are actually used
 	
-	unusedFound = False # If true by the end of this func, add to affected models list
-	usedRegeneratedFound = False # Set to true if any "Regenerated" nodes are actually used?
+	for group in [getChildFromName(mdl0, "Vertices"), getChildFromName(mdl0, "Normals")]:
+		if group:
+		# Iterate through VertexNodes in mdl0. If object count == 0, delete the node
+			nodesList = reverseResourceList(group.Children)
+			for node in nodesList:
+				if len(node._objects) == 0:
+					node.Remove()
+					deletedNodeCount += 1
+					unusedFound = True
+				elif node.Name == "Regenerated":
+					usedRegeneratedFound = True
 	
-	# Iterate from bottom-up
-	verticesGroup = reverseResourceList(verticesGroup.Children)
-	normalsGroup = reverseResourceList(normalsGroup.Children)
-	
-	# Iterate through VertexNodes in mdl0. If object count == 0, delete the node
-	for node in verticesGroup:
-		if not len(node._objects):
-			node.Remove()
-			unusedFound = True
-			deletedNodeCount += 1
-		elif node.Name == "Regenerated":
-			usedRegeneratedFound = True
-	
-	for node in normalsGroup:
-		if not len(node._objects):
-			node.Remove()
-			unusedFound = True
-			deletedNodeCount += 1
-		# Check "Regenerated" nodes that are used
-		elif node.Name == "Regenerated":
-			usedRegeneratedFound = True
-			
+	# If any unused vertices or normals found, append brres name and mdl0 name to "affected" list
 	if unusedFound:
-		modelDataName = mdl0.Parent.Parent.Name
-		affectedModelsNamesList.append(modelDataName + "/" + mdl0.Name)
+		affectedModelsNamesList.append(mdl0.Parent.Parent.Name + "/" + mdl0.Name)
 	
+	# If any "Regenerated" nodes are used, append brres name and mdl0 name to "usedRegenerated" list
 	if usedRegeneratedFound:
-		modelDataName = mdl0.Parent.Parent.Name
-		usedRegeneratedModelsNamesList.append(modelDataName + "/" + mdl0.Name)
+		usedRegeneratedModelsNamesList.append(mdl0.Parent.Parent.Name + "/" + mdl0.Name)
 
 ## End parser methods
 ## 
 ## Begin getter methods
 
-# Function to return to 2 ARC of current file
+# Return 2 ARC of currently opened file
 def getParentArc():
 	for i in BrawlAPI.RootNode.Children:
 		if i.Name == "2" and isinstance(i, ARCNode):
 			return i
 	
 	BrawlAPI.ShowError("2 ARC not found", "Error")
-	return 0
-
-# Given any node, return its child node whose name contains the given nameStr
-def getChildFromName(node, nameStr):
-	if node.Children:
-		for child in node.Children:
-			if str(nameStr) in child.Name:
-				return child
 	return 0
 
 ## End getter methods
@@ -113,23 +96,22 @@ def getChildFromName(node, nameStr):
 # Confirmation prompt
 message = "Detect and remove any unused Vertex or Normal nodes inside models.\n\n"
 message += "DISCLAIMER: Always check the final results in-game.\n"
+
 if BrawlAPI.ShowOKCancelPrompt(message, SCRIPT_NAME):
-	# Get parent 2 ARC
 	global deletedNodeCount
-	PARENT_ARC = getParentArc()
 	
 	# Iterate through brres nodes
-	for node in PARENT_ARC.Children:
+	for node in getParentArc().Children:
 		if isinstance(node, BRRESNode):
 			parseBrres(node)
 	
 	# Show results
 	
-	# If none found
+	# If no nodes deleted
 	if deletedNodeCount == 0:
 		BrawlAPI.ShowMessage("No unused normals or vertex nodes found", SCRIPT_NAME)
 	
-	# If one or more unused node found and deleted
+	# If one or more unused nodes found and deleted
 	else:
 		message = str(deletedNodeCount) + " unused nodes found and deleted.\n\n"
 		for i in affectedModelsNamesList:
@@ -143,5 +125,5 @@ if BrawlAPI.ShowOKCancelPrompt(message, SCRIPT_NAME):
 		for i in usedRegeneratedModelsNamesList:
 			message += i + "\n"
 		
-		BrawlAPI.ShowMessage(message, SCRIPT_NAME)
+		BrawlAPI.ShowError(message, SCRIPT_NAME)
 	
