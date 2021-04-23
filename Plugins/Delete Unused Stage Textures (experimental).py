@@ -1,6 +1,6 @@
 __author__ = "mawwwk"
-__version__ = "0.9.1.1"
-# EXPERIMENTAL - Updated 4/13/21, might break things still.
+__version__ = "0.9.3"
+# EXPERIMENTAL - Updated 4/22/21, might break things still.
 # Always test in-game!! always save backups!!
 # WILL break Hanenbow-based stages
 from BrawlCrate.API import *
@@ -75,6 +75,7 @@ def parseModelData(brres):
 # Given a mdl0 node, delete any unused materials, then log any texture references
 def parseMDL0(mdl0):
 	matsGroup = getChildFromName(mdl0, "Materials")
+	mdl0TexturesGroup = getChildFromName(mdl0,"Textures")
 	
 	# Start with deleting materials assigned to no objects
 	if matsGroup:
@@ -91,9 +92,10 @@ def parseMDL0(mdl0):
 				cullAllMDL0NamesList.append(mdl0.Parent.Parent.Name + "/" + mdl0.Name)
 	
 	# In each model, get the "Textures" folder and populate the script's list of used textures
-	mdl0TexturesGroup = getChildFromName(mdl0,"Textures")
 	if mdl0TexturesGroup:
 		textures = reverseResourceList(mdl0TexturesGroup.Children)
+		
+		# Iterate through texture references in mdl0. If material references == 0, delete the texture
 		for t in textures:
 			if t.References:
 				texturesInMaterialsNamesList.append(t.Name)
@@ -101,29 +103,31 @@ def parseMDL0(mdl0):
 			else:
 				t.Remove()
 	
-	checkRegenerated(mdl0)
+	checkUnusedNormalsVertices(mdl0)
 
-# Scan for "Regenerated" vertices or normals not used by any object.
+# Scan for unused vertices or normals not used by any object.
 # If found in the given mdl0, append to regeneratedModelsNamesList[]
-def checkRegenerated(mdl0):
+def checkUnusedNormalsVertices(mdl0):
 	verticesGroup = getChildFromName(mdl0,"Vertices")
 	normalsGroup = getChildFromName(mdl0,"Normals")
-	isRegeneratedFound = False
+	isUnusedFound = False
 	
 	# First, check vertices group
 	if verticesGroup:
 		for node in verticesGroup.Children:
-			if node.Name == "Regenerated" and len(node._objects) == 0:
-				regeneratedModelsNamesList.append(mdl0.Parent.Parent.Name + "/" + mdl0.Name)
-				isRegeneratedFound = True
+			if len(node._objects) == 0:
+				isUnusedFound = True
 				break
 	
-	# If a Regenerated hasn't been found yet, check Normals
-	if normalsGroup and not isRegeneratedFound:
+	# If no unused nodes have been found yet, check Normals
+	if normalsGroup and not isUnusedFound:
 		for node in normalsGroup.Children:
-			if node.Name == "Regenerated" and len(node._objects) == 0:
-				regeneratedModelsNamesList.append(mdl0.Parent.Parent.Name + "/" + mdl0.Name)
+			if len(node._objects) == 0:
+				isUnusedFound = True
 				break
+	
+	if isUnusedFound:
+		regeneratedModelsNamesList.append(mdl0.Parent.Parent.Name + "/" + mdl0.Name)
 
 # Given a pat0 animation, iterate through child entries and log textures used
 def parsePAT0(pat0):
@@ -154,7 +158,7 @@ def getParentArc():
 			return i
 	
 	BrawlAPI.ShowError("2 ARC not found", "Error")
-	return 0
+	return 0	# If not found, return 0
 
 # Given any node, return its child node whose name contains the given nameStr
 def getChildFromName(node, nameStr):
@@ -162,14 +166,14 @@ def getChildFromName(node, nameStr):
 		for child in node.Children:
 			if str(nameStr) in child.Name:
 				return child
-	return 0
+	return 0	# If not found, return 0
 
 ## End getter methods
 ##
 ## Start of main script
 
 # Confirmation prompt
-msg = "Optimize textures for a stage .pac by auto-detecting unused materials and files.\n\n"
+msg = "Optimize file size for a stage .pac by auto-detecting and removing unused materials and textures.\n\n"
 msg += "DISCLAIMER: Always check the final results in-game.\n"
 msg += "Only recommended for use with Battlefield, FD, or Palutena-based stages. This WILL break Hanenbow-based stages!"
 if BrawlAPI.ShowOKCancelPrompt(msg, "Optimize Stage Textures"):
@@ -193,23 +197,39 @@ if BrawlAPI.ShowOKCancelPrompt(msg, "Optimize Stage Textures"):
 	matsDeletedCount = len(deletedMatsNamesList)
 	tex0DeletedCount = len(deletedTex0NamesList)
 	CULL_ALL_COUNT = len(cullAllMatsNamesList)
-	REGENERATED_MDL0_COUNT = len(regeneratedModelsNamesList)
+	REGENERATED_MDL0_COUNT = len(regeneratedModelsNamesList)	# Amount of mdl0's with unused normals/vertices
 	
 	# Print list of deleted tex0 names
 	if not matsDeletedCount and not tex0DeletedCount and not CULL_ALL_COUNT and not REGENERATED_MDL0_COUNT:
-		BrawlAPI.ShowMessage("No unused textures or materials detected", "Optimize Stage Textures")
+		BrawlAPI.ShowMessage("No unused textures or materials detected", "Delete Unused Stage Textures")
 	else:
 		message = ""
 		if matsDeletedCount:
 			message += str(matsDeletedCount) + " materials deleted: \n\n"
-			for mat in deletedMatsNamesList:
-				message += mat + "\n"
+			
+			# Truncate mats list at 10 max, if more than 10
+			if matsDeletedCount > 10: 
+				for i in range(0,10,1):
+					message += deletedMatsNamesList[i] + "\n"
+				message += "...and " + str(matsDeletedCount - 10) + " others"
+				
+			else: # 10 or fewer mats deleted
+				for mat in deletedMatsNamesList:
+					message += mat + "\n"
 			message += "\n\n"
+		
 		if tex0DeletedCount:
 			message += str(tex0DeletedCount) + " textures deleted: \n\n"
-			for tex0 in deletedTex0NamesList:
-				message += tex0 + "\n"
-			message += "\n\n"
+			
+			if tex0DeletedCount > 10: # Truncate tex0 list at 10 max, if more than 10
+				for i in range(0,10,1):
+					message += deletedTex0NamesList[i] + "\n"
+				message += "...and " + str(tex0DeletedCount - 10) + " others"
+			
+			else: # 10 or fewer tex0's deleted
+				for tex0 in deletedTex0NamesList:
+					message += tex0 + "\n"
+				message += "\n\n"
 		if message != "":
 			BrawlAPI.ShowMessage(message, "Deleted Unused Textures")
 	
@@ -221,8 +241,8 @@ if BrawlAPI.ShowOKCancelPrompt(msg, "Optimize Stage Textures"):
 			BrawlAPI.ShowMessage(message, "Potential unused materials found")
 	
 		if REGENERATED_MDL0_COUNT > 0:
-			message = "Unused Regenerated nodes found:\n\n"
+			message = "Unused vertex/normal nodes found:\n\n"
 			
 			for i in regeneratedModelsNamesList:
 				message += i + "\n"
-			BrawlAPI.ShowMessage(message, "Regenerated nodes found")
+			BrawlAPI.ShowMessage(message, "Unused nodes found")
