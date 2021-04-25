@@ -16,7 +16,8 @@ Loaders:
 - Locate TEX0 Usage
 - Clear Unused Animation Entries (CHR, VIS bones / SRT, CLR, PAT materials)
 
-* Certain plug-ins require Python 2.7, currently, due to compatability issues with Python 3.9.x.
+
+\* Certain plug-ins require Python 2.7, currently, due to compatability issues with Python 3.9.x.
 
 To install:  
 In BrawlCrate, navigate to Tools > Settings > Updater tab, and click the Manage Subscriptions button.  
