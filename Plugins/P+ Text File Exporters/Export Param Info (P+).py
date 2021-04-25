@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.4"
+__version__ = "1.4.1"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
@@ -214,6 +214,10 @@ elif str(workingDir)[-9:] == "\\pf\\stage":
 	workingDir += "\\stageinfo"
 
 if workingDir:
+	if BrawlAPI.RootNode:
+		CURRENT_OPEN_FILE = str(BrawlAPI.RootNode.FilePath)
+	else:
+		CURRENT_OPEN_FILE = 0
 	
 	# Derive module folder and stage pac folder
 	STAGE_MELEE_DIR_PATH = str(workingDir).replace('stageinfo','melee')
@@ -255,13 +259,13 @@ if workingDir:
 				writeHeader(TEXT_FILE, parentNode)
 				
 				# Write stage pac filename(s)
-				currentParam += "\t" + getStagePacName(parentNode) + "\n\t"
+				currentParam += "\t" + getStagePacName(parentNode) + "\n"
 				# Write module
-				currentParam += getModuleName(parentNode) + "\n\t"
+				currentParam += "\t" + getModuleName(parentNode) + "\n"
 				# Write tracklist
-				currentParam += str(getTracklistName(parentNode)) + "\n\t"
+				currentParam += "\t" + str(getTracklistName(parentNode)) + "\n"
 				# Write SFX and GFX
-				currentParam += "SFX / GFX: " + str(formatHex(parentNode.SoundBank)) + " / " + str(formatHex(parentNode.EffectBank)) + "\n"
+				currentParam += "\t" + "SFX / GFX: " + str(formatHex(parentNode.SoundBank)) + " / " + str(formatHex(parentNode.EffectBank)) + "\n"
 				
 				# Write overlay, if not #00000000
 				overlay = getColorOverlay(parentNode)
@@ -282,7 +286,10 @@ if workingDir:
 		# Close output text file after all param files are parsed
 		TEXT_FILE.close()
 		progressBar.Finish()
-
+		
+		# Reopen previously-opened file
+		if CURRENT_OPEN_FILE:
+			BrawlAPI.OpenFile(CURRENT_OPEN_FILE)
 		# RESULTS
 		
 		# Determine the existence of any errors found while parsing

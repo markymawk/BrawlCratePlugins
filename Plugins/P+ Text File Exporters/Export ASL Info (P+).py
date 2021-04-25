@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.4"
+__version__ = "1.4.1"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
@@ -96,6 +96,10 @@ elif str(workingDir)[-9:] == "\\pf\\stage":
 	workingDir += "\\stageslot"
 
 if workingDir:
+	if BrawlAPI.RootNode:
+		CURRENT_OPEN_FILE = str(BrawlAPI.RootNode.FilePath)
+	else:
+		CURRENT_OPEN_FILE = 0
 	
 	# Derive param folder and stage pac folder
 	PARAM_DIR_PATH = str(workingDir).replace('stageslot','stageinfo')
@@ -147,6 +151,10 @@ if workingDir:
 		# Close text file after all files are parsed
 		textfile.close()
 		progressBar.Finish()
+		
+		# Reopen previously-opened file
+		if CURRENT_OPEN_FILE:
+			BrawlAPI.OpenFile(CURRENT_OPEN_FILE)
 		
 		#
 		# RESULTS

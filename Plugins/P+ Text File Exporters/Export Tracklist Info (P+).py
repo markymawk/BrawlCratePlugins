@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.4"
+__version__ = "1.4.1"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
@@ -68,6 +68,10 @@ elif str(tracklistDir)[-9:] == "\\pf\\sound":
 	tracklistDir += "\\tracklist"
 
 if tracklistDir:	
+	if BrawlAPI.RootNode:
+		CURRENT_OPEN_FILE = str(BrawlAPI.RootNode.FilePath)
+	else:
+		CURRENT_OPEN_FILE = 0
 	# Get list of TLST files in tracklist directory
 	TRACKLIST_FILES = Directory.CreateDirectory(tracklistDir).GetFiles()
 	TLST_FILE_COUNT = len(TRACKLIST_FILES)
@@ -172,6 +176,9 @@ if tracklistDir:
 		textfile.close()
 		progressBar.Finish()
 		
+		# Reopen previously-opened file
+		if CURRENT_OPEN_FILE:
+			BrawlAPI.OpenFile(CURRENT_OPEN_FILE)
 		#
 		# RESULTS
 		#
