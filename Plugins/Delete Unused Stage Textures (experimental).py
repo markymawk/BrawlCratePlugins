@@ -1,6 +1,6 @@
 __author__ = "mawwwk"
-__version__ = "0.9.3"
-# EXPERIMENTAL - Updated 4/22/21, might break things still.
+__version__ = "0.9.3.1"
+# EXPERIMENTAL - Updated 4/25/21, might break things still.
 # Always test in-game!! always save backups!!
 # WILL break Hanenbow-based stages
 from BrawlCrate.API import *
@@ -9,7 +9,7 @@ from BrawlCrate.UI import MainForm
 from BrawlLib.Internal import *
 from System.IO import *
 
-# Unique lists that cover the whole pac file, and are populated during run
+# Global lists, populated during run
 texturesInMaterialsNamesList = []	# Names of textures used by mats
 texturesInPat0NamesList = []		# Names of textures used in PAT0s
 tex0List = []						# Tex0 nodes inside any brres
@@ -20,7 +20,7 @@ cullAllMDL0NamesList = []			# Names of any models containing Cull_All mats
 regeneratedModelsNamesList = []		# Names of any MDL0 containing "Regenerated" vertices or normals
 
 # Debug message
-def message(msg):
+def dmessage(msg):
 	BrawlAPI.ShowMessage(msg, "DEBUG")
 
 ##
@@ -44,9 +44,11 @@ def parseBrres(node):
 
 # Given a ModelData brres, iterate through mdl0 and pat0 to populate used textures lists, then check for any tex0 nodes in the ModelData
 def parseModelData(brres):
-	# Iterate through models
 	modelsGroup = getChildFromName(brres, "3DModels")
+	pat0Group = getChildFromName(brres, "AnmTexPat")
+	modelDataTexturesGroup = getChildFromName(brres, "Textures(NW4R)")
 	
+	# Iterate through models
 	if modelsGroup:
 		for mdl0 in modelsGroup.Children:
 			texturesGroup = getChildFromName(mdl0, "Textures")
@@ -58,14 +60,12 @@ def parseModelData(brres):
 				parseMDL0(mdl0)
 	
 	# Iterate through pat0s
-	pat0Group = getChildFromName(brres, "AnmTexPat")
 	if pat0Group:
 		for pat0 in pat0Group.Children:
 			parsePAT0(pat0)
 	
 	# Check for tex0s in ModelData
 	# DON'T delete these -- in cases like Smashville, the references are loaded from the module or elsewhere outside the brres
-	modelDataTexturesGroup = getChildFromName(brres, "Textures(NW4R)")
 	if modelDataTexturesGroup:
 		for tex0 in modelDataTexturesGroup.Children:
 			# To simulate locality, delete the textures from "textures used" after logging them
@@ -79,12 +79,10 @@ def parseMDL0(mdl0):
 	
 	# Start with deleting materials assigned to no objects
 	if matsGroup:
-		# Iterate from bottom-up
-		mats = reverseResourceList(matsGroup.Children)
-		
-		# Iterate through materials in mdl0. If object count == 0, delete the material
-		for m in mats:
-			if not len(m._objects):
+		# Iterate through materials in mdl0, from bottom-up.
+		# If object count == 0, delete the material
+		for m in reverseResourceList(matsGroup.Children):
+			if len(m._objects) == 0:
 				deletedMatsNamesList.append(m.Name)
 				m.Remove()
 			elif "Cull_All" in str(m._cull):
@@ -93,10 +91,10 @@ def parseMDL0(mdl0):
 	
 	# In each model, get the "Textures" folder and populate the script's list of used textures
 	if mdl0TexturesGroup:
-		textures = reverseResourceList(mdl0TexturesGroup.Children)
-		
-		# Iterate through texture references in mdl0. If material references == 0, delete the texture
-		for t in textures:
+
+		# Iterate through texture references in mdl0, from bottom-up.
+		# If material references == 0, delete the texture
+		for t in reverseResourceList(mdl0TexturesGroup.Children):
 			if t.References:
 				texturesInMaterialsNamesList.append(t.Name)
 			# If Texture node isn't used by any materials, delete it instead
@@ -131,7 +129,6 @@ def checkUnusedNormalsVertices(mdl0):
 
 # Given a pat0 animation, iterate through child entries and log textures used
 def parsePAT0(pat0):
-	# Get material from base pat0 node
 	for material in pat0.Children:
 		# For texture reference in material
 		for texRef in material.Children:
@@ -142,9 +139,7 @@ def parsePAT0(pat0):
 # Given a TextureData brres, log any tex0 nodes found, and delete any unused textures
 def parseTextureData(brresNode):
 	global tex0List
-	TEX0_GROUP = getChildFromName(brresNode, "Textures(NW4R)")
-	
-	for tex0 in TEX0_GROUP.Children:
+	for tex0 in getChildFromName(brresNode, "Textures(NW4R)").Children:
 		tex0List.append(tex0)	
 
 ## End parser methods
@@ -156,9 +151,9 @@ def getParentArc():
 	for i in BrawlAPI.RootNode.Children:
 		if i.Name == "2" and isinstance(i, ARCNode):
 			return i
-	
+	# If not found, show an error and return 0
 	BrawlAPI.ShowError("2 ARC not found", "Error")
-	return 0	# If not found, return 0
+	return 0	
 
 # Given any node, return its child node whose name contains the given nameStr
 def getChildFromName(node, nameStr):
@@ -180,15 +175,16 @@ if BrawlAPI.ShowOKCancelPrompt(msg, "Optimize Stage Textures"):
 	# Get parent 2 ARC
 	PARENT_ARC = getParentArc()
 	
+	if PARENT_ARC:
 	# Populate lists of used textures, and delete any unused materials
-	for node in PARENT_ARC.Children:
-		if isinstance(node, BRRESNode):
-			parseBrres(node)
+		for node in PARENT_ARC.Children:
+			if isinstance(node, BRRESNode):
+				parseBrres(node)
 	
 	# THE PURGE: if a texture in TextureData is not used by any model or pat0, axe it
 	tex0List = reverseResourceList(tex0List)
 	for tex0 in tex0List:
-		if (not tex0.Name in texturesInMaterialsNamesList) and (not tex0.Name in texturesInPat0NamesList):
+		if not tex0.Name in (texturesInMaterialsNamesList + texturesInPat0NamesList):
 			deletedTex0NamesList.append(tex0.Name)
 			tex0.Remove()
 
@@ -230,16 +226,19 @@ if BrawlAPI.ShowOKCancelPrompt(msg, "Optimize Stage Textures"):
 				for tex0 in deletedTex0NamesList:
 					message += tex0 + "\n"
 				message += "\n\n"
+		
 		if message != "":
 			BrawlAPI.ShowMessage(message, "Deleted Unused Textures")
-	
+		
+		# List any Cull_all mats
 		if CULL_ALL_COUNT > 0:
 			message = "Cull_All materials found:\n\n"
 			
 			for i in range(0, CULL_ALL_COUNT, 1):
 				message += "Model: " + str(cullAllMDL0NamesList[i]) + "\nMaterial: " + str(cullAllMatsNamesList[i]) + "\n\n"
 			BrawlAPI.ShowMessage(message, "Potential unused materials found")
-	
+		
+		# List any unused vertex/normals nodes
 		if REGENERATED_MDL0_COUNT > 0:
 			message = "Unused vertex/normal nodes found:\n\n"
 			
