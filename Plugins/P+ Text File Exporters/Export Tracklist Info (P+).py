@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.4.1"
+__version__ = "1.4.2"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
@@ -8,7 +8,6 @@ from BrawlCrate.UI import MainForm
 from BrawlLib.Internal import *
 from System.IO import *
 from BrawlLib.Internal.Windows.Forms import ProgressWindow
-from os import path
 
 BRAWL_SONG_ID_LIST = [ "X02", "X03", "X04", "X05", "X06", "X07", "X08", "X09", "X10", "X11", "X12", "X13", "X14", "X15", "X16", "X17",
  "X18", "X19", "X20", "X21", "X22", "X23", "X24", "X25", "X26", "X27", "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "A09",
@@ -98,10 +97,9 @@ if tracklistDir:
 		###
 		progressBar = ProgressWindow()
 		progressBar.Begin(0,TLST_FILE_COUNT,0)
+		
 		# Iterate through all TLST files in folder
 		for file in TRACKLIST_FILES:
-			
-			# Verify file is a TLST file
 			if file.Name.lower().EndsWith(".tlst"):
 				tracklistCount += 1
 				currentTracklist = ""
@@ -142,7 +140,7 @@ if tracklistDir:
 						# If brstm file is missing, add it to the "missing" list and mark it accordingly in text file
 						if DO_ERROR_CHECKING \
 						and track.SongFileName not in BRAWL_SONG_ID_LIST \
-						and not path.exists(track.rstmPath):
+						and not File.Exists(track.rstmPath):
 							missingPathTracklists.append(str(parentNode.Name) + ".tlst")
 							missingTracks.append(str(track.SongFileName) + ".brstm")
 							brstmFilePath += " [BRSTM FILE MISSING]"
@@ -154,7 +152,7 @@ if tracklistDir:
 						if track.SongSwitch:
 							currentTracklist += "\n\t[PINCH MODE TRACK: " + str(track.SongSwitch) + " frames]\n\t" + str(track.SongFileName) + "_b.brstm"
 							
-							if DO_ERROR_CHECKING and not path.exists(str(track.rstmPath)[0:-6] + "_b.brstm"):
+							if DO_ERROR_CHECKING and not File.Exists(str(track.rstmPath)[0:-6] + "_b.brstm"):
 								missingPathTracklists.append(str(parentNode.Name) + ".tlst")
 								missingTracks.append(str(track.SongFileName) + "_b.brstm")
 								currentTracklist += " [BRSTM FILE MISSING]"

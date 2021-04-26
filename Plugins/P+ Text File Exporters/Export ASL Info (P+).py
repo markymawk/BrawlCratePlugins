@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.4.1"
+__version__ = "1.4.2"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
@@ -9,7 +9,6 @@ from BrawlLib.Internal import *
 from BrawlLib.Imaging import *
 from System.IO import *
 from BrawlLib.Internal.Windows.Forms import ProgressWindow
-from os import path
 
 FLAGS_TO_BUTTONS = {
 	1 : "Left",
@@ -53,7 +52,7 @@ def writeHeader(textfile, parentNode):
 def checkParam(asl, param):
 	paramFilename = str(param) + ".param"
 	
-	if path.exists(PARAM_DIR_PATH + "\\" + paramFilename):
+	if File.Exists(PARAM_DIR_PATH + "\\" + paramFilename):
 		return paramFilename
 	else:
 		aslMissing.append(asl)

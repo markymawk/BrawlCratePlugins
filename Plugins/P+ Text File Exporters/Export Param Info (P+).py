@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.4.1"
+__version__ = "1.4.2"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
@@ -9,7 +9,6 @@ from BrawlLib.Internal import *
 from BrawlLib.Imaging import *
 from System.IO import *
 from BrawlLib.Internal.Windows.Forms import ProgressWindow
-from os import path
 
 BRAWL_STAGE_PACS = ["STGBATTLEFIELD", "STGCHARAROLL", "STGCONFIGTEST", "STGCRAYON", "STGDOLPIC", "STGDONKEY", "STGDXBIGBLUE", "STGDXCORNERIA", "STGDXGARDEN", "STGDXGREENS", "STGDXONETT", "STGDXONETT", "STGDXPSTADIUM", "STGDXRCRUISE", "STGDXSHRINE", "STGDXYORSTER", "STGDXZEBES", "STGEARTH", "STGEDIT_0", "STGEDIT_1", "STGEDIT_2", "STGEMBLEM", "STGEMBLEM_00", "STGEMBLEM_01", "STGEMBLEM_02", "STGFAMICOM", "STGFINAL", "STGFZERO", "STGGREENHILL", "STGGW", "STGGW", "STGHALBERD", "STGHEAL", "STGHOMERUN", "STGHOMERUN", "STGICE", "STGJUNGLE", "STGKART", "STGMADEIN", "STGMANSION", "STGMARIOPAST_00", "STGMARIOPAST_01", "STGMETALGEAR_00", "STGMETALGEAR_01", "STGMETALGEAR_02", "STGNEWPORK", "STGNORFAIR", "STGOLDIN", "STGONLINETRAINING", "STGORPHEON", "STGPALUTENA", "STGPICTCHAT", "STGPIRATES", "STGPLANKTON", "STGRESULT", "STGSTADIUM", "STGSTARFOX_ASTEROID", "STGSTARFOX_BATTLESHIP", "STGSTARFOX_CORNERIA", "STGSTARFOX_GDIFF", "STGSTARFOX_SPACE", "STGTARGETLV1", "STGTARGETLV2", "STGTARGETLV3", "STGTARGETLV4", "STGTARGETLV5", "STGTENGAN_1", "STGTENGAN_2", "STGTENGAN_3", "STGVILLAGE_00", "STGVILLAGE_01", "STGVILLAGE_02", "STGVILLAGE_03", "STGVILLAGE_04"]
 
@@ -102,7 +101,7 @@ def getStagePacName(parentNode):
 # Helper method to check if stage pac filepath exists
 # Returns true if exists, else returns false and adds .param filename to missingPacParams[]
 def checkStagePacFilepath(paramName, pacFilename):
-	if pacFilename in BRAWL_STAGE_PACS or path.exists(STAGE_MELEE_DIR_PATH + "\\" + pacFilename):
+	if pacFilename in BRAWL_STAGE_PACS or File.Exists(STAGE_MELEE_DIR_PATH + "\\" + pacFilename):
 		return True
 	else:
 		missingPacParams.append(paramName)
@@ -127,7 +126,7 @@ def getModuleName(parentNode):
 # Helper method to check if module filepath exists
 # Returns true if exists, else returns false and adds .param filename to missingModuleParams[]
 def checkModuleFilepath (paramName, moduleFilename):
-	if moduleFilename in BRAWL_MODULES or path.exists(MODULE_DIR_PATH + "\\" + moduleFilename):
+	if moduleFilename in BRAWL_MODULES or File.Exists(MODULE_DIR_PATH + "\\" + moduleFilename):
 		return True
 	else:
 		missingModuleParams.append(paramName)
@@ -154,7 +153,7 @@ def getTracklistName(parentNode):
 # Returns true if filepath exists, else false
 # If false, also adds param filename to missingTracklistParams[]
 def checkTracklistFilepath (paramName, tracklistFilename):
-	if path.exists(TRACKLIST_DIR_PATH + "\\" + tracklistFilename) :
+	if File.Exists(TRACKLIST_DIR_PATH + "\\" + tracklistFilename):
 		return True
 	else:
 		missingTracklistParams.append(paramName)
