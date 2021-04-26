@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0"
+__version__ = "1.0.1"
 
 from BrawlCrate.API import *
 from BrawlCrate.API.BrawlAPI import AppPath
@@ -8,7 +8,7 @@ from BrawlCrate.NodeWrappers import BRESWrapper
 from BrawlCrate.NodeWrappers import FolderWrapper
 from BrawlLib.SSBB.ResourceNodes import *
 from System.Windows.Forms import ToolStripMenuItem
-import os
+from System.IO import File
 
 # Store temp files in the BrawlCrate program folder.
 # These are deleted at the end of the script.
@@ -21,12 +21,10 @@ STOCKFACE_PAT0_NAME = "InfStockface_TopN__0"
 # Any bres groups that aren't palettes or textures
 nonTextureFolderNames = ["3DModels(NW4R)", "AnmChr(NW4R)", "AnmVis(NW4R)", "AnmClr(NW4R)", "AnmTexPat(NW4R)", "AnmTexSrt(NW4R)"]
 
+SCRIPT_NAME = "Stock Icon Exporter"
+
 # Text shown before running the plug-in
 INIT_PROMPT_TEXT = "Export stock icon data from this file to STGRESULT.pac, StockFaceTex.brres, and sc_selcharacter.pac.\n\nPress OK to continue."
-
-#Debug
-#def message(msgString):
-#	BrawlAPI.ShowMessage(str(msgString), "AAA")
 
 # Check to ensure the context menu item is only active if it's info.pac
 def EnableCheckARC(sender, event_args):
@@ -37,6 +35,7 @@ def EnableCheckBRES(sender, event_args):
 	bres = BrawlAPI.SelectedNode
 	sender.Enabled = (bres is not None and "[30]" in bres.Name and "info_en" in bres.Parent.Name)
 
+# Locate stockface pat0 in info.pac, and export to a temp pat0 file
 def exportStockfacePat0():
 	# Determine pat0 folder within selected brres
 	for childFolder in BrawlAPI.SelectedNode.Children:
@@ -79,7 +78,7 @@ def purgeAllExceptStocks():
 	plt0ToDelete = []
 	
 	for tex0 in tex0Group.Children:
-		if tex0.Name[:7] != "InfStc." :
+		if tex0.Name[:7] != "InfStc.":
 			tex0ToDelete.append(tex0)
 	
 	for plt0 in plt0Group.Children:
@@ -135,7 +134,7 @@ def importBrresIntoSelCharacterPac():
 
 # Base function to export stocks from info.pac to other appropriate locations
 def export_stocks_from_info_arc(sender, event_args):
-	if BrawlAPI.ShowOKCancelPrompt(INIT_PROMPT_TEXT, "Stock Icon Exporter"):
+	if BrawlAPI.ShowOKCancelPrompt(INIT_PROMPT_TEXT, SCRIPT_NAME):
 	
 		# Locate MiscData30 inside info.pac
 		for child in BrawlAPI.SelectedNode.Children:
@@ -146,14 +145,14 @@ def export_stocks_from_info_arc(sender, event_args):
 
 # Same function as above, but ran from the MiscData 30 brres
 def export_stocks_from_miscdata30(sender, event_args):
-	if BrawlAPI.ShowOKCancelPrompt(INIT_PROMPT_TEXT, "Stock Icon Exporter"):
+	if BrawlAPI.ShowOKCancelPrompt(INIT_PROMPT_TEXT, SCRIPT_NAME):
 		BrawlAPI.SelectedNode.ExportUncompressed(TEMP_BRRES_PATH)
 		main()
 
 def main():
 	INFO_PAC_PATH = BrawlAPI.SelectedNode.FilePath
 	
-	# Derive build pf path from the open info.pac file. Might be more flexible to prompt user instead? could be more confusing that way...
+	# Derive build pf path from the open info.pac file
 	PF_FOLDER = str(INFO_PAC_PATH).split("\info2\info.pac")[0]
 	STOCKFACETEX_BRRES_PATH = PF_FOLDER + "\menu\common\StockFaceTex.brres"
 	RESULTS_PAC_PATH = PF_FOLDER + "\stage\melee\STGRESULT.pac"
@@ -193,24 +192,14 @@ def main():
 	BrawlAPI.OpenFile(INFO_PAC_PATH)
 	
 	# Delete temp files
-	os.remove(TEMP_BRRES_PATH)
-	os.remove(TEMP_STOCKS_PAT0_PATH)
+	File.Delete(TEMP_BRRES_PATH)
+	File.Delete(TEMP_STOCKS_PAT0_PATH)
 	
 	# Script complete!
-	outputMessage = "Stock tex0, plt0, and pat0 successfully exported from info.pac to: \n\n" + \
-	STOCKFACETEX_BRRES_PATH + "\n\n" + \
-	RESULTS_PAC_PATH + "\n\n" + \
-	SELCHARACTER_PAC_PATH
-	BrawlAPI.ShowMessage(outputMessage, "Success!")
+	msg = "Stock tex0, plt0, and pat0 successfully exported from info.pac to: \n\n" + \
+	STOCKFACETEX_BRRES_PATH + "\n\n" + RESULTS_PAC_PATH + "\n\n" + SELCHARACTER_PAC_PATH
+	BrawlAPI.ShowMessage(msg, "Success!")
 	
-# Add right-click contextual menu options (comments from sooper)
-#
-# Arguments are (in order) as follows:
-# Wrapper: Denotes which wrapper the context menu items will be added to
-# Submenu: If not blank, adds to a submenu with this name
-# Description: Creates a mouseover description for the item
-# Conditional: When the wrapper's context menu is opened, this function is called. Allows enabling/disabling of plugin members based on specific conditions
-# Items: One or more toolstripmenuitems that will be added
+# Add right-click contextual menu options
 BrawlAPI.AddContextMenuItem(ARCWrapper, "", "Export data to STGRESULT, StockFaceTex, and selcharacter files", EnableCheckARC, ToolStripMenuItem("Export stock icons", None, export_stocks_from_info_arc))
-
 BrawlAPI.AddContextMenuItem(BRESWrapper, "", "Export data to STGRESULT, StockFaceTex, and selcharacter files", EnableCheckBRES, ToolStripMenuItem("Export stock icons", None, export_stocks_from_miscdata30))
