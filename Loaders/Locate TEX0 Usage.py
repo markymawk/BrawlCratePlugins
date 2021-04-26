@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "0.9"
+__version__ = "1.0"
 
 from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
@@ -10,10 +10,6 @@ SCRIPT_NAME = "Locate TEX0 Usage"
 SELECTED_TEX0_NAME = ""
 usedMDL0Names = []
 usedPAT0Names = []
-
-# Debug message
-def dmessage(msg):
-	BrawlAPI.ShowMessage(msg, "DEBUG")
 
 # Function to return to 2 ARC of current file
 def getParentArc():
@@ -44,9 +40,10 @@ def getChildNames(group):
 	return list
 
 def parseModelData(brres):
-	# Iterate through models
 	modelsGroup = getChildFromName(brres, "3DModels")
 	pat0Group = getChildFromName(brres, "AnmTexPat")
+	
+	# Iterate through models
 	if modelsGroup:
 		for mdl0 in modelsGroup.Children:
 			# Ignore static models
@@ -59,7 +56,7 @@ def parseModelData(brres):
 			parsePAT0(pat0)
 
 def parseMDL0(mdl0):
-	mdl0TexturesGroup = getChildFromName(mdl0,"Textures")
+	mdl0TexturesGroup = getChildFromName(mdl0, "Textures")
 	
 	# If texture exists in the mdl0 Textures group, append to usedMDL0Names[]
 	if mdl0TexturesGroup and SELECTED_TEX0_NAME in getChildNames(mdl0TexturesGroup):
@@ -117,14 +114,5 @@ def locate_tex0_usage(sender, event_args):
 			BrawlAPI.ShowMessage(message, SCRIPT_NAME)
 		else:
 			BrawlAPI.ShowError("No TEX0 usage found",SCRIPT_NAME)
-
-# Add right-click contextual menu options (comments from sooper)
-#
-# Arguments are (in order) as follows:
-# Wrapper: Denotes which wrapper the context menu items will be added to
-# Submenu: If not blank, adds to a submenu with this name
-# Description: Creates a mouseover description for the item
-# Conditional: When the wrapper's context menu is opened, this function is called. Allows enabling/disabling of plugin members based on specific conditions
-# Items: One or more toolstripmenuitems that will be added
 
 BrawlAPI.AddContextMenuItem(TEX0Wrapper, "", "Detect uses in models or pat0 animations", EnableCheckTEX0, ToolStripMenuItem("Locate", None, locate_tex0_usage))
