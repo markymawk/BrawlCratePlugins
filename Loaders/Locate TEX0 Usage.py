@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0"
+__version__ = "1.1"
 
 from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
@@ -8,8 +8,14 @@ from System.Windows.Forms import ToolStripMenuItem
 
 SCRIPT_NAME = "Locate TEX0 Usage"
 SELECTED_TEX0_NAME = ""
-usedMDL0Names = []
+
+modelUses = []
 usedPAT0Names = []
+
+# Check that tex0 is under a "2 ARC" to determine that the pac is a stage, not a character
+# Wrapper: TEX0Wrapper
+def EnableCheckTEX0(sender, event_args):
+	sender.Enabled = (BrawlAPI.SelectedNode is not None and isinstance(BrawlAPI.RootNode, ARCNode) and BrawlAPI.SelectedNode.Parent.Parent.Parent.Name == "2")
 
 # Function to return to 2 ARC of current file
 def getParentArc():
@@ -21,10 +27,12 @@ def getParentArc():
 	return 0	# If not found, return 0
 
 # Given any node, return its child node whose name contains the given nameStr
-def getChildFromName(node, nameStr):
+def getChildFromName(node, nameStr, EXACT_NEEDED=False):
 	if node.Children:
 		for child in node.Children:
-			if str(nameStr) in child.Name:
+			if EXACT_NEEDED and child.Name == str(nameStr):
+				return child
+			elif str(nameStr) in child.Name:
 				return child
 	return 0	# If not found, return 0
 
@@ -58,9 +66,40 @@ def parseModelData(brres):
 def parseMDL0(mdl0):
 	mdl0TexturesGroup = getChildFromName(mdl0, "Textures")
 	
-	# If texture exists in the mdl0 Textures group, append to usedMDL0Names[]
+	# If texture exists in the mdl0 Textures group, append an entry to modelUses[]
 	if mdl0TexturesGroup and SELECTED_TEX0_NAME in getChildNames(mdl0TexturesGroup):
-		usedMDL0Names.append("MDL0 " + mdl0.Parent.Parent.Name + "/" + mdl0.Name)
+		materialsNamesList = getUsedMaterialsNames(mdl0TexturesGroup)
+		
+		entry = ["MDL0: " + mdl0.Parent.Parent.Name + "/" + mdl0.Name, 	# entry[0] MDL0 name
+		materialsNamesList,								# entry[1] List of names of materials used in the mdl0
+		getUsedObjectsList(mdl0, materialsNamesList)]		# entry[2] List of objects that use the texture
+		
+		modelUses.append(entry)
+	
+# Given a mdl0 "Textures" group, return a formatted string containing list of used materials that reference SELECTED_TEX0_NAME
+def getUsedMaterialsNames(mdl0TexturesGroup):
+	mdl0TextureNode = getChildFromName(mdl0TexturesGroup, SELECTED_TEX0_NAME, True)
+	
+	materialsNamesList = []
+	for i in mdl0TextureNode.References:
+		materialsNamesList.append(str(i))
+	
+	return materialsNamesList
+
+# Given a mdl0 node and list of material names, return a list of objects used by those mats
+def getUsedObjectsList(mdl0, materialsList):
+	materialsGroup = getChildFromName(mdl0, "Materials")
+	objectsList = []
+	
+	for i in materialsList:
+		# Get material from name
+		mat = getChildFromName(materialsGroup,i)
+		# If material exists and is used by objects, append the object(s) to objectsList[]
+		if mat and len(mat._objects):
+			for o in mat._objects:
+				objectsList.append(o.Name)
+				
+	return objectsList
 
 def parsePAT0(pat0):
 	# Get material from base pat0 node
@@ -69,23 +108,17 @@ def parsePAT0(pat0):
 		for texRef in material.Children:
 			# If texture exists in the pat0, append to usedPAT0Names[]
 			if SELECTED_TEX0_NAME in getChildNames(texRef):
-				usedPAT0Names.append("PAT0 " + pat0.Parent.Parent.Name + "/" + pat0.Name)
+				usedPAT0Names.append("PAT0: " + pat0.Parent.Parent.Name + "/" + pat0.Name)
 
-# Check that tex0 is under a "2 ARC" to determine that the pac is a stage, not a character
-def EnableCheckTEX0(sender, event_args):
-	sender.Enabled = (BrawlAPI.SelectedNode is not None and BrawlAPI.SelectedNode.Parent.Parent.Parent.Name == "2")
-
-# Function to open single stage PAC file
+# Function to scan the stage PAC file
 def locate_tex0_usage(sender, event_args):
 	global SELECTED_TEX0_NAME
 	SELECTED_TEX0_NAME = BrawlAPI.SelectedNode.Name
 	PARENT_BRRES = BrawlAPI.SelectedNode.Parent.Parent
 	error = False
 	
-	# Clear lists at the beginning of each run - for some reason they persist otherwise
-	#usedMDL0Names.clear()	# Only works in newer Python lol
-	#usedPAT0Names.clear()	#
-	del usedMDL0Names[:]
+	# Clear lists at the beginning of each run
+	del modelUses[:]
 	del usedPAT0Names[:]
 	
 	# If selected tex0 is in a TextureData, scan all brres in the pac
@@ -101,18 +134,24 @@ def locate_tex0_usage(sender, event_args):
 		BrawlAPI.ShowError("Error: can't detect parent BRRES format", SCRIPT_NAME)
 		error = True
 	
-	IS_MDL0_FOUND = len(usedMDL0Names)
+	IS_MDL0_FOUND = len(modelUses)
 	IS_PAT0_FOUND = len(usedPAT0Names)
 	
 	if not error:
 		message = ""
 		if IS_MDL0_FOUND or IS_PAT0_FOUND:
 			message += SELECTED_TEX0_NAME + " found in:\n\n"
-			for i in (usedMDL0Names + usedPAT0Names):
+			for entry in modelUses:
+				message += entry[0] + "\n"# MDL0 name
+				for matName in entry[1]:
+					message += "Material: " + matName + "\n"
+				for objName in entry[2]:
+					message += "Object: " + objName + "\n"
+				message += "\n\n"
+			for i in usedPAT0Names:
 				message += i + "\n"
-			
 			BrawlAPI.ShowMessage(message, SCRIPT_NAME)
 		else:
-			BrawlAPI.ShowError("No TEX0 usage found",SCRIPT_NAME)
+			BrawlAPI.ShowError("No TEX0 usage found", SCRIPT_NAME)
 
 BrawlAPI.AddContextMenuItem(TEX0Wrapper, "", "Detect uses in models or pat0 animations", EnableCheckTEX0, ToolStripMenuItem("Locate", None, locate_tex0_usage))
