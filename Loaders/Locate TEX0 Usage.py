@@ -1,5 +1,5 @@
-__author__ = "mawwwk"
-__version__ = "1.0"
+__author__ = "mawwwk and soopercool101"
+__version__ = "1.1"
 
 from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
@@ -73,7 +73,7 @@ def parsePAT0(pat0):
 
 # Check that tex0 is under a "2 ARC" to determine that the pac is a stage, not a character
 def EnableCheckTEX0(sender, event_args):
-	sender.Enabled = (BrawlAPI.SelectedNode is not None and BrawlAPI.SelectedNode.Parent.Parent.Parent.Name == "2")
+	sender.Enabled = (BrawlAPI.SelectedNode is not None and BrawlAPI.SelectedNode.Parent is not None and BrawlAPI.SelectedNode.Parent.Parent is not None and isinstance(BrawlAPI.SelectedNode.Parent.Parent.Parent, ARCNode) and BrawlAPI.SelectedNode.Parent.Parent.Parent.Name == "2")
 
 # Function to open single stage PAC file
 def locate_tex0_usage(sender, event_args):
