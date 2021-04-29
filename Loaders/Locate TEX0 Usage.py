@@ -1,5 +1,5 @@
-__author__ = "mawwwk"
-__version__ = "1.1"
+__author__ = "mawwwk and soopercool101"
+__version__ = "1.2"
 
 from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
@@ -15,7 +15,7 @@ usedPAT0Names = []
 # Check that tex0 is under a "2 ARC" to determine that the pac is a stage, not a character
 # Wrapper: TEX0Wrapper
 def EnableCheckTEX0(sender, event_args):
-	sender.Enabled = (BrawlAPI.SelectedNode is not None and isinstance(BrawlAPI.RootNode, ARCNode) and BrawlAPI.SelectedNode.Parent.Parent.Parent.Name == "2")
+	sender.Enabled = (BrawlAPI.SelectedNode is not None and BrawlAPI.SelectedNode.Parent is not None and BrawlAPI.SelectedNode.Parent.Parent is not None and BrawlAPI.SelectedNode.Parent.Parent.Parent is not None and BrawlAPI.SelectedNode.Parent.Parent.Parent.Name == "2")
 
 # Function to return to 2 ARC of current file
 def getParentArc():
