@@ -1,7 +1,10 @@
 # BrawlCratePlugins
-Plug-ins for BrawlCrate using BrawlAPI. Includes scripts for optimizing stage pacs, exporting mass info to text files, and some other helpful automated bits.
+Plug-ins for BrawlCrate using BrawlAPI. Includes scripts for optimizing stage .pac files, exporting mass info to text files, and some other helpful automated processes.
 
-Feedback always welcome @ mawwwk#1068
+To install:  
+In BrawlCrate, navigate to Tools > Settings > Updater tab, and click the Manage Subscriptions button.  
+Click add, then paste the link to this Github repo: https://github.com/markymawk/BrawlCratePlugins  
+Then, these plug-ins will download and update automatically!  
 
 Plug-ins:
 - Export ASL Info (P+)
@@ -16,7 +19,4 @@ Loaders:
 - Locate TEX0 Usage
 - Clear Unused Animation Entries (CHR, VIS bones / SRT, CLR, PAT materials)
 
-To install:  
-In BrawlCrate, navigate to Tools > Settings > Updater tab, and click the Manage Subscriptions button.  
-Click add, then paste the link to this Github repo: https://github.com/markymawk/BrawlCratePlugins  
-Then, these plug-ins will download and update automatically!  
+Feedback always welcome @ mawwwk#1068
