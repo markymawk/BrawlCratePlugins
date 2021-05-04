@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0.2"
+__version__ = "1.0.3"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB import FileFilters
@@ -20,10 +20,14 @@ def addLeadingZeros(value):
 	return str(value)
 
 def getStartingPortraitID():
-	initialID = BrawlAPI.UserIntegerInput("Enter starting portrait ID", "e.g. \"1\" for InfFace0001")
+	PROMPT_STR = "e.g. \"1\" for InfFace" + addLeadingZeros("1") + ":"
+	initialID = BrawlAPI.UserIntegerInput("Enter starting portrait ID", PROMPT_STR)
 	
-	if len(str(initialID)) > INFFACE_DIGIT_COUNT or initialID < 1:
+	if not initialID:
+		return 0
+	elif len(str(initialID)) > INFFACE_DIGIT_COUNT or initialID < 1:
 		BrawlAPI.ShowError("Invalid value entered", "Error")
+		return 0
 	else:
 		return initialID
 
@@ -46,29 +50,30 @@ if images:
 
 	# Take user input to determine starting InfFace file name
 	INITIAL_BP_ID = getStartingPortraitID()
-
+	
 	# Reference https://soopercool101.github.io/BrawlCrate/class_brawl_crate_1_1_external_interfacing_1_1_color_smash.html#aa4fadb82e34ae150d1e94ab101399a62
 	# Iterate through each image opened and export a brres containing the texture in CI8
-	exportedImageCount = 0
-	for image in images:
-		outputPath = OUTPUT_DIR + "\\InfFace" + addLeadingZeros(INITIAL_BP_ID + exportedImageCount) + ".brres"
-		
-		BrawlAPI.New[BRRESNode]()
-		
-		dlg = TextureConverterDialog()
-		dlg.ImageSource = image
-		dlg.Automatic = True
-		dlg.StartingFormat = WiiPixelFormat.CI8
-		
-		if (dlg.ShowDialog(MainForm.Instance, BrawlAPI.RootNode) == dlg.DialogResult.OK):
-			BrawlAPI.SaveFileAs(outputPath)
-			exportedImageCount += 1
+	if INITIAL_BP_ID:
+		exportedImageCount = 0
+		for image in images:
+			outputPath = OUTPUT_DIR + "\\InfFace" + addLeadingZeros(INITIAL_BP_ID + exportedImageCount) + ".brres"
+			
+			BrawlAPI.New[BRRESNode]()
+			
+			dlg = TextureConverterDialog()
+			dlg.ImageSource = image
+			dlg.Automatic = True
+			dlg.StartingFormat = WiiPixelFormat.CI8
+			
+			if (dlg.ShowDialog(MainForm.Instance, BrawlAPI.RootNode) == dlg.DialogResult.OK):
+				BrawlAPI.SaveFileAs(outputPath)
+				exportedImageCount += 1
 
-	# After exporting, open previously opened file, if it exists
-	if CURRENT_OPEN_FILE:
-		BrawlAPI.OpenFile(CURRENT_OPEN_FILE)
-	# Otherwise, leave the last-exported BP open
-	else:
-		BrawlAPI.OpenFile(outputPath)
+		# After exporting, open previously opened file, if it exists
+		if CURRENT_OPEN_FILE:
+			BrawlAPI.OpenFile(CURRENT_OPEN_FILE)
+		# Otherwise, leave the last-exported BP open
+		else:
+			BrawlAPI.OpenFile(outputPath)
 
-	BrawlAPI.ShowMessage(str(exportedImageCount) + " BRRES files successfully exported to\n" + OUTPUT_DIR, "Success!")
+		BrawlAPI.ShowMessage(str(exportedImageCount) + " BRRES files successfully exported to\n" + OUTPUT_DIR, "Success!")
