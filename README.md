@@ -12,6 +12,7 @@ Plug-ins:
 - Export Tracklist Info (P+)
 - Delete Unused Stage Textures (EXPERIMENTAL)
 - Clear Unused Vertices and Normals
+- Convert PNGs to Battle Portraits
 
 Loaders:
 - Stock Icon Exporter
