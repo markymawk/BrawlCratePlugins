@@ -192,6 +192,17 @@ def getStageFlags(parentNode):
 	# Truncate final comma
 	return strFlags[:-2]
 
+# Returns string containing SFX and GFX bank IDs, if they exist. Else returns 0
+def getSfxGfxString(parentNode):
+	sfxID = parentNode.SoundBank
+	gfxID = parentNode.EffectBank
+	
+	if sfxID == 65535 and gfxID == 50: # 0xFFFF and 0x32
+		return 0
+	else:
+		return "SFX / GFX: " + str(formatHex(sfxID)) + " / " + str(formatHex(gfxID))
+
+
 # Given dec value, returns hex value
 # Formatted with lowercase 0x prefix, four uppercase hex digits, and trailing L removed
 def formatHex(value):
@@ -252,7 +263,7 @@ if workingDir:
 			
 				# Open param file
 				BrawlAPI.OpenFile(file.FullName)
-				parentNode = BrawlAPI.NodeList[0]
+				parentNode = BrawlAPI.RootNode
 				
 				# Write param header (file name)
 				writeHeader(TEXT_FILE, parentNode)
@@ -263,8 +274,12 @@ if workingDir:
 				currentParam += "\t" + getModuleName(parentNode) + "\n"
 				# Write tracklist
 				currentParam += "\t" + str(getTracklistName(parentNode)) + "\n"
-				# Write SFX and GFX
-				currentParam += "\t" + "SFX / GFX: " + str(formatHex(parentNode.SoundBank)) + " / " + str(formatHex(parentNode.EffectBank)) + "\n"
+				
+				
+				# Write SFX and GFX, if not 0xFFFF 0x32
+				sfxGfxString = getSfxGfxString(parentNode)
+				if sfxGfxString:
+					currentParam += "\t" + sfxGfxString + "\n"
 				
 				# Write overlay, if not #00000000
 				overlay = getColorOverlay(parentNode)
@@ -275,7 +290,7 @@ if workingDir:
 				if parentNode.Flags:
 					currentParam += "\tFlags: " + getStageFlags(parentNode) + "\n"
 				
-				currentParam += "\n\n"
+				currentParam += "\n"
 				
 				# Close current param file after parsing, and output to text
 				BrawlAPI.ForceCloseFile()
