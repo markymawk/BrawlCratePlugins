@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0"
+__version__ = "1.0.1"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB import FileFilters
@@ -22,7 +22,7 @@ def addLeadingZeros(value):
 def getStartingPortraitID():
 	initialID = BrawlAPI.UserIntegerInput("Enter starting portrait ID", "e.g. \"1\" for InfFace0001")
 	
-	if len(str(initialID)) > INFFACE_DIGIT_COUNT:
+	if len(str(initialID)) > INFFACE_DIGIT_COUNT or initialID < 1:
 		BrawlAPI.ShowError("Invalid value entered", "Error")
 	else:
 		return initialID
@@ -49,8 +49,10 @@ INITIAL_BP_ID = getStartingPortraitID()
 # Iterate through each image opened and export a brres containing the texture in CI8
 exportedImageCount = 0
 for image in images:
-	BrawlAPI.New[BRRESNode]()
 	outputPath = OUTPUT_DIR + "\\InfFace" + addLeadingZeros(INITIAL_BP_ID + exportedImageCount) + ".brres"
+	
+	BrawlAPI.New[BRRESNode]()
+	
 	dlg = TextureConverterDialog()
 	dlg.ImageSource = image
 	dlg.Automatic = True
@@ -58,10 +60,9 @@ for image in images:
 	
 	if (dlg.ShowDialog(MainForm.Instance, BrawlAPI.RootNode) == dlg.DialogResult.OK):
 		BrawlAPI.SaveFileAs(outputPath)
-	
-	exportedImageCount += 1
+		exportedImageCount += 1
 
-# Open previously opened file, if it exists
+# After exporting, open previously opened file, if it exists
 if CURRENT_OPEN_FILE:
 	BrawlAPI.OpenFile(CURRENT_OPEN_FILE)
 # Otherwise, leave the last-exported BP open
