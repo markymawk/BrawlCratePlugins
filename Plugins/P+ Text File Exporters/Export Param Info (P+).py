@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.4.2"
+__version__ = "1.5"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
@@ -16,7 +16,6 @@ BRAWL_MODULES = ["st_battle.rel", "st_battles.rel", "st_config.rel", "st_crayon.
 
 OUTPUT_FILE_NAME = "_Stage Param Data.txt"
 
-paramFilesOpenedCount = 0
 missingPacParams = []
 missingModuleParams = []
 missingTracklistParams = []
@@ -223,32 +222,37 @@ if str(workingDir)[-3:] == "\\pf":
 elif str(workingDir)[-9:] == "\\pf\\stage":
 	workingDir += "\\stageinfo"
 
-if workingDir:
+if workingDir and "stageinfo" not in workingDir:
+	BrawlAPI.ShowError("Invalid directory", "Error")
+elif workingDir:
 	if BrawlAPI.RootNode:
 		CURRENT_OPEN_FILE = str(BrawlAPI.RootNode.FilePath)
 	else:
 		CURRENT_OPEN_FILE = 0
-	
-	# Derive module folder and stage pac folder
-	STAGE_MELEE_DIR_PATH = str(workingDir).replace('stageinfo','melee')
-	MODULE_DIR_PATH = str(workingDir).replace('stage\\stageinfo', 'module')
-	TRACKLIST_DIR_PATH = str(workingDir).replace('stage\\stageinfo', 'sound\\tracklist')
-
+		
 	# Get list of param files in stageinfo directory
 	PARAM_FILES = Directory.CreateDirectory(workingDir).GetFiles()
 	PARAM_FILE_COUNT = len(PARAM_FILES)
-
-	# Open text file and clear it, or create if it doesn't already exist
-	FULL_TEXT_FILE_PATH = str(workingDir) + "\\" + OUTPUT_FILE_NAME
-	TEXT_FILE = open(FULL_TEXT_FILE_PATH,"w+")
-
+	
 	# Confirm dialog box
 	message = "Contents of all .param files in the folder\n\n" + str(workingDir)
 	message += "\nwill be exported to " + str(OUTPUT_FILE_NAME) + " in the same folder."
 	message += "\n\nPress OK to continue. (The process may take 20 seconds or longer.)"
 
 	if BrawlAPI.ShowOKCancelPrompt(message, "Export Param File Data"):
+	
+		# Open text file and clear it, or create if it doesn't already exist
+		FULL_TEXT_FILE_PATH = str(workingDir) + "\\" + OUTPUT_FILE_NAME
+		TEXT_FILE = open(FULL_TEXT_FILE_PATH,"w+")
 		
+		# Derive module folder and stage pac folder
+		STAGE_MELEE_DIR_PATH = str(workingDir).replace('stageinfo','melee')
+		MODULE_DIR_PATH = str(workingDir).replace('stage\\stageinfo', 'module')
+		TRACKLIST_DIR_PATH = str(workingDir).replace('stage\\stageinfo', 'sound\\tracklist')
+		
+		paramFilesOpenedCount = 0	# Number of opened files
+		
+		# Progress bar start
 		progressBar = ProgressWindow()
 		progressBar.Begin(0,PARAM_FILE_COUNT,0)
 		
@@ -275,35 +279,34 @@ if workingDir:
 				# Write tracklist
 				currentParam += "\t" + str(getTracklistName(parentNode)) + "\n"
 				
-				
-				# Write SFX and GFX, if not 0xFFFF 0x32
+				# If SFX/GFX is not FFFF/32, write SFX/GFX
 				sfxGfxString = getSfxGfxString(parentNode)
 				if sfxGfxString:
 					currentParam += "\t" + sfxGfxString + "\n"
 				
-				# Write overlay, if not #00000000
+				# If overlay is not #00000000, write overlay
 				overlay = getColorOverlay(parentNode)
 				if overlay:
 					currentParam += "\tCharacter overlay enabled: " + overlay + "\n"
 					
-				# Write stage flags, if exist
+				# If stage flags exist, write stage flags
 				if parentNode.Flags:
 					currentParam += "\tFlags: " + getStageFlags(parentNode) + "\n"
 				
 				currentParam += "\n"
 				
-				# Close current param file after parsing, and output to text
+				# When finished parsing current param, close the param file and output info to text
 				BrawlAPI.ForceCloseFile()
-				
 				TEXT_FILE.write(currentParam)
 				
-		# Close output text file after all param files are parsed
+		# After all params are parsed, close text file
 		TEXT_FILE.close()
 		progressBar.Finish()
 		
 		# Reopen previously-opened file
 		if CURRENT_OPEN_FILE:
 			BrawlAPI.OpenFile(CURRENT_OPEN_FILE)
+		
 		# RESULTS
 		
 		# Determine the existence of any errors found while parsing
@@ -318,16 +321,19 @@ if workingDir:
 		# Success, but one or more files missing
 		if isMissingPacFound or isMissingModuleFound or isMissingTracklistFound:
 			message = "Stage param contents exported successfully, but errors found.\n\n"
+			
 			if isMissingPacFound:
 				message += "Stage .pac file not found:\n"
 				for p in missingPacParams:
 					message += p + ".param\n"
 				message += "\n"
+				
 			if isMissingModuleFound:
 				message += "Module file not found:\n"
 				for p in missingModuleParams:
 					message += p + ".param\n"
 				message += "\n"
+				
 			if isMissingTracklistFound:
 				message += "Tracklist file not found:\n"
 				for p in missingTracklistParams:
@@ -336,6 +342,6 @@ if workingDir:
 				
 			BrawlAPI.ShowError(message, "Missing files")
 		
-		# No params found
+		# If no params found
 		elif paramFilesOpenedCount == 0:
 			BrawlAPI.ShowError("No .param files found in\n" + str(workingDir), "No param files found")

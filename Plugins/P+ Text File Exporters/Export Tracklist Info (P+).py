@@ -113,8 +113,10 @@ if str(tracklistDir)[-3:] == "\\pf":
 	tracklistDir += "\\sound\\tracklist"
 elif str(tracklistDir)[-9:] == "\\pf\\sound":
 	tracklistDir += "\\tracklist"
-
-if tracklistDir:
+	
+if tracklistDir and "tracklist" not in tracklistDir and "netplaylist" not in tracklistDir:
+	BrawlAPI.ShowError("Invalid directory", "Error")
+elif tracklistDir:
 	if BrawlAPI.RootNode:
 		CURRENT_OPEN_FILE = str(BrawlAPI.RootNode.FilePath)
 	else:
@@ -152,7 +154,7 @@ if tracklistDir:
 		# Iterate through all TLST files in folder
 		for file in TRACKLIST_FILES:
 			if file.Name.lower().EndsWith(".tlst"):
-				currentTracklist = ""	# Clear current tracklist output str
+				currentTracklist = ""	# Clear current tracklist output string
 				songIDsInTracklist = []	# Clear current tracklist song IDs
 				
 				# Update progress bar
