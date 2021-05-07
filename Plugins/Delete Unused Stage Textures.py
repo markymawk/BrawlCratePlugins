@@ -1,8 +1,8 @@
 __author__ = "mawwwk"
-__version__ = "0.9.3.1"
-# EXPERIMENTAL - Updated 4/25/21, might break things still.
-# Always test in-game!! always save backups!!
-# WILL break Hanenbow-based stages
+__version__ = "1.0"
+# Relatively safe to use, but WILL break Hanenbow based stages.
+# Always test in game!!
+# Does anyone read the python comments lol
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
 from BrawlCrate.UI import MainForm
@@ -19,12 +19,11 @@ cullAllMatsNamesList = []			# Names of any mats set to Cull_All
 cullAllMDL0NamesList = []			# Names of any models containing Cull_All mats
 regeneratedModelsNamesList = []		# Names of any MDL0 containing "Regenerated" vertices or normals
 
+## Begin helper methods
+
 # Debug message
 def dmessage(msg):
 	BrawlAPI.ShowMessage(msg, "DEBUG")
-
-##
-## Begin node-parser methods
 
 # Basic impl of list.reverse() to accommodate ResourceNode lists
 def reverseResourceList(nodeList):
@@ -76,10 +75,13 @@ def parseModelData(brres):
 def parseMDL0(mdl0):
 	matsGroup = getChildFromName(mdl0, "Materials")
 	mdl0TexturesGroup = getChildFromName(mdl0,"Textures")
+	verticesGroup = getChildFromName(mdl0,"Vertices")
+	normalsGroup = getChildFromName(mdl0,"Normals")
+	isUnusedFound = False # True if any unused verts/norms found
 	
 	# Start with deleting materials assigned to no objects
 	if matsGroup:
-		# Iterate through materials in mdl0, from bottom-up.
+		# Iterate through materials in mdl0
 		# If object count == 0, delete the material
 		for m in reverseResourceList(matsGroup.Children):
 			if len(m._objects) == 0:
@@ -91,7 +93,6 @@ def parseMDL0(mdl0):
 	
 	# In each model, get the "Textures" folder and populate the script's list of used textures
 	if mdl0TexturesGroup:
-
 		# Iterate through texture references in mdl0, from bottom-up.
 		# If material references == 0, delete the texture
 		for t in reverseResourceList(mdl0TexturesGroup.Children):
@@ -100,17 +101,9 @@ def parseMDL0(mdl0):
 			# If Texture node isn't used by any materials, delete it instead
 			else:
 				t.Remove()
-	
-	checkUnusedNormalsVertices(mdl0)
 
-# Scan for unused vertices or normals not used by any object.
-# If found in the given mdl0, append to regeneratedModelsNamesList[]
-def checkUnusedNormalsVertices(mdl0):
-	verticesGroup = getChildFromName(mdl0,"Vertices")
-	normalsGroup = getChildFromName(mdl0,"Normals")
-	isUnusedFound = False
-	
-	# First, check vertices group
+	# Scan for unused vertices or normals not used by any object.
+	# If found in the given mdl0, append to regeneratedModelsNamesList[]
 	if verticesGroup:
 		for node in verticesGroup.Children:
 			if len(node._objects) == 0:
@@ -142,10 +135,6 @@ def parseTextureData(brresNode):
 	for tex0 in getChildFromName(brresNode, "Textures(NW4R)").Children:
 		tex0List.append(tex0)	
 
-## End parser methods
-## 
-## Begin getter methods
-
 # Function to return to 2 ARC of current file
 def getParentArc():
 	for i in BrawlAPI.RootNode.Children:
@@ -163,13 +152,12 @@ def getChildFromName(node, nameStr):
 				return child
 	return 0	# If not found, return 0
 
-## End getter methods
-##
+## End helper methods
 ## Start of main script
 
 # Confirmation prompt
-msg = "Optimize file size for a stage .pac by auto-detecting and removing unused materials and textures.\n\n"
-msg += "DISCLAIMER: Always check the final results in-game.\n"
+msg = "Optimize file size for a stage .pac by auto-detecting and removing unused materials and textures. \n\nTEX0s inside ModelData BRRES are ignored, and must be checked manually.\n\n"
+msg += "DISCLAIMER: Always check the final results in-game, and save backups!\n\n"
 msg += "Only recommended for use with Battlefield, FD, or Palutena-based stages. This WILL break Hanenbow-based stages!"
 if BrawlAPI.ShowOKCancelPrompt(msg, "Optimize Stage Textures"):
 	# Get parent 2 ARC
@@ -181,7 +169,7 @@ if BrawlAPI.ShowOKCancelPrompt(msg, "Optimize Stage Textures"):
 			if isinstance(node, BRRESNode):
 				parseBrres(node)
 	
-	# THE PURGE: if a texture in TextureData is not used by any model or pat0, axe it
+	# If a texture in TextureData is not used by any model or pat0, delete it
 	tex0List = reverseResourceList(tex0List)
 	for tex0 in tex0List:
 		if not tex0.Name in (texturesInMaterialsNamesList + texturesInPat0NamesList):
