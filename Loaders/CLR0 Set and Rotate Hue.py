@@ -29,6 +29,7 @@ def EnableCheckCLR0(sender, event_args):
 
 ## End enable check functions
 ## Start helper functions
+
 # Prompt user for hue value at the start of script. Use a string input to allow for 0
 def getHueValue(promptText, minValue, maxValue, exitValue=-1):
 	userInput = BrawlAPI.UserStringInput(promptText)

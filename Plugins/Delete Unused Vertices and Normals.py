@@ -13,12 +13,7 @@ deletedNodeCount = 0
 affectedModelsNamesList = []			# Names of all mdl0 nodes that contain nodes deleted during the script
 usedRegeneratedModelsNamesList = []		# Names of all mdl0 nodes that contain vertex/normal nodes named "Regenerated" that are used by objects
 
-# Debug message
-def dmessage(msg):
-	BrawlAPI.ShowMessage(msg, "DEBUG")
-
-##
-## Begin node-parser methods
+## Begin helper methods
 
 # Basic impl of list.reverse() to accommodate ResourceNode lists
 def reverseResourceList(nodeList):
@@ -76,10 +71,6 @@ def parseMDL0(mdl0):
 	if usedRegeneratedFound:
 		usedRegeneratedModelsNamesList.append(mdl0.Parent.Parent.Name + "/" + mdl0.Name)
 
-## End parser methods
-## 
-## Begin getter methods
-
 # Return 2 ARC of currently opened file
 def getParentArc():
 	for i in BrawlAPI.RootNode.Children:
@@ -89,8 +80,7 @@ def getParentArc():
 	BrawlAPI.ShowError("2 ARC not found", "Error")
 	return 0
 
-## End getter methods
-##
+## End helper methods
 ## Start of main script
 
 # Confirmation prompt
