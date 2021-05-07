@@ -8,7 +8,7 @@ Then, these plug-ins will download and update automatically!
 
 Plug-ins:
 - Convert PNGs to Battle Portraits
-- Delete Unused Stage Textures (EXPERIMENTAL)
+- Delete Unused Stage Textures
 - Delete Unused Vertices and Normals
 - Export ASL Info (P+)
 - Export Param Info (P+)
