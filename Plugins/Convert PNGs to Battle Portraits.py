@@ -13,6 +13,8 @@ from BrawlLib.Wii.Textures import * #WiiPixelFormat, WiiPaletteFormat
 # INFFACE_DIGIT_COUNT: Can be changed to 3 for non-50CC builds
 INFFACE_DIGIT_COUNT = 4
 
+## Begin helper methods
+
 def addLeadingZeros(value):
 	while len(str(value)) < INFFACE_DIGIT_COUNT:
 		value = "0" + str(value)
@@ -23,16 +25,14 @@ def getStartingPortraitID():
 	PROMPT_STR = "e.g. \"1\" for InfFace" + addLeadingZeros("1") + ":"
 	initialID = BrawlAPI.UserIntegerInput("Enter starting portrait ID", PROMPT_STR)
 	
-	if not initialID:
-		return 0
-	elif len(str(initialID)) > INFFACE_DIGIT_COUNT or initialID < 1:
-		BrawlAPI.ShowError("Invalid value entered", "Error")
-		return 0
-	else:
+	if initialID and initialID > 0 and len(str(initialID)) <= INFFACE_DIGIT_COUNT:
 		return initialID
-
+	else:
+		if initialID:
+			BrawlAPI.ShowError("Invalid value entered", "Error")
+		return 0
+	
 ## End helper methods
-##
 ## Start of main script
 
 # Save currently opened file, if there is one

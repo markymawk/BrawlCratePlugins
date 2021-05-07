@@ -26,11 +26,12 @@ FLAGS_TO_BUTTONS = {
 }
 
 FLAGS_LIST = [4096, 2048, 1024, 512, 256, 64, 32, 16, 8, 4, 2, 1]
+OUTPUT_TEXT_FILENAME = "_ASL Data.txt"
 
-outputFileName = "_ASL Data.txt"
-
-aslMissing = []
+missingASLList = []
 missingParamFiles = []
+
+## Begin helper methods
 
 # Print header for each file
 def writeHeader(textfile, parentNode):
@@ -52,7 +53,7 @@ def checkParam(asl, param):
 	if File.Exists(PARAM_DIR_PATH + "\\" + paramFilename):
 		return paramFilename
 	else:
-		aslMissing.append(asl)
+		missingASLList.append(asl)
 		missingParamFiles.append(param)
 		return paramFilename + " [PARAM FILE NOT FOUND]"
 
@@ -69,7 +70,7 @@ def getButtons(node):
 		if thisFlags >= flag:
 			thisButtons.append(FLAGS_TO_BUTTONS[flag])
 			thisFlags -= flag
-		# Quit out after getting to 0
+		# Exit loop after getting to 0
 		if thisFlags == 0:
 			break
 	
@@ -79,9 +80,8 @@ def getButtons(node):
 	# Truncate final plus sign
 	return returnStr[:-1]
 
-############################################
-########### Start of main script ###########
-############################################
+## End helper methods
+## Start of main script
 
 # Prompt for the tracklist directory
 workingDir = BrawlAPI.OpenFolderDialog("Open pf or stageslot folder")
@@ -108,12 +108,12 @@ elif workingDir:
 
 	# Confirm dialog box
 	message = "Contents of all .asl files in the folder\n\n" + str(workingDir)
-	message += "\nwill be exported to " + str(outputFileName) + " in the same folder."
+	message += "\nwill be exported to " + str(OUTPUT_TEXT_FILENAME) + " in the same folder."
 	message += "\n\nPress OK to continue. (The process may take 20 seconds or longer.)"
 
 	if BrawlAPI.ShowOKCancelPrompt(message, "Export ASL File Data"):
 		# Open text file and clear it, or create if it doesn't already exist
-		fullTextFilePath = str(workingDir) + "\\" + outputFileName
+		fullTextFilePath = str(workingDir) + "\\" + OUTPUT_TEXT_FILENAME
 		textfile = open(fullTextFilePath,"w+")
 		
 		aslFilesOpenedCount = 0	# Number of opened files
@@ -169,10 +169,10 @@ elif workingDir:
 			message = "ASL file contents exported successfully, but errors found.\n\nStage .param file missing:\n"
 			
 			for i in range(0, len(missingParamFiles),1):
-				message += aslMissing[i] + ".asl : " + missingParamFiles[i] + ".param\n"
+				message += missingASLList[i] + ".asl : " + missingParamFiles[i] + ".param\n"
 				
 			BrawlAPI.ShowError(message, "Missing files")
 		
-		# No ASL files found
+		# If no ASL files found
 		elif aslFilesOpenedCount == 0:
 			BrawlAPI.ShowError("No .ASL files found in\n" + str(workingDir), "No ASL files found")

@@ -14,11 +14,14 @@ BRAWL_STAGE_PACS = ["STGBATTLEFIELD", "STGCHARAROLL", "STGCONFIGTEST", "STGCRAYO
 
 BRAWL_MODULES = ["st_battle.rel", "st_battles.rel", "st_config.rel", "st_crayon.rel", "st_croll.rel", "st_dolpic.rel", "st_donkey.rel", "st_dxbigblue.rel", "st_dxcorneria.rel", "st_dxgarden.rel", "st_dxgreens.rel", "st_dxonett.rel", "st_dxpstadium.rel", "st_dxrcruise.rel", "st_dxshrine.rel", "st_dxyorster.rel", "st_dxzebes.rel", "st_earth.rel", "st_emblem.rel", "st_famicom.rel", "st_final.rel", "st_fzero.rel", "st_greenhill.rel", "st_gw.rel", "st_halberd.rel", "st_heal.rel", "st_homerun.rel", "st_ice.rel", "st_jungle.rel", "st_kart.rel", "st_madein.rel", "st_mansion.rel", "st_mariopast.rel", "st_metalgear.rel", "st_newpork.rel", "st_norfair.rel", "st_oldin.rel", "st_orpheon.rel", "st_otrain.rel", "st_palutena.rel", "st_pictchat.rel", "st_pirates.rel", "st_plankton.rel", "st_stadium.rel", "st_stageedit.rel", "st_starfox.rel", "st_tbreak.rel", "st_tengan.rel", "st_village.rel"]
 
-OUTPUT_FILE_NAME = "_Stage Param Data.txt"
+OUTPUT_TEXT_FILENAME = "_Stage Param Data.txt"
 
 missingPacParams = []
 missingModuleParams = []
 missingTracklistParams = []
+
+## End helper methods
+## Start of main script
 
 # Print a formatted header for each param file
 def writeHeader(textfile, parentNode):
@@ -124,7 +127,7 @@ def getModuleName(parentNode):
 
 # Helper method to check if module filepath exists
 # Returns true if exists, else returns false and adds .param filename to missingModuleParams[]
-def checkModuleFilepath (paramName, moduleFilename):
+def checkModuleFilepath(paramName, moduleFilename):
 	if moduleFilename in BRAWL_MODULES or File.Exists(MODULE_DIR_PATH + "\\" + moduleFilename):
 		return True
 	else:
@@ -201,7 +204,6 @@ def getSfxGfxString(parentNode):
 	else:
 		return "SFX / GFX: " + str(formatHex(sfxID)) + " / " + str(formatHex(gfxID))
 
-
 # Given dec value, returns hex value
 # Formatted with lowercase 0x prefix, four uppercase hex digits, and trailing L removed
 def formatHex(value):
@@ -210,9 +212,8 @@ def formatHex(value):
 		string = string[:2] + '0' + string[2:]
 	return string
 
-############################################
-########### Start of main script ###########
-############################################
+## End helper methods
+## Start of main script
 
 # Prompt for the stageinfo directory
 workingDir = BrawlAPI.OpenFolderDialog("Open pf or stageinfo folder")
@@ -236,13 +237,13 @@ elif workingDir:
 	
 	# Confirm dialog box
 	message = "Contents of all .param files in the folder\n\n" + str(workingDir)
-	message += "\nwill be exported to " + str(OUTPUT_FILE_NAME) + " in the same folder."
+	message += "\nwill be exported to " + str(OUTPUT_TEXT_FILENAME) + " in the same folder."
 	message += "\n\nPress OK to continue. (The process may take 20 seconds or longer.)"
 
 	if BrawlAPI.ShowOKCancelPrompt(message, "Export Param File Data"):
 	
 		# Open text file and clear it, or create if it doesn't already exist
-		FULL_TEXT_FILE_PATH = str(workingDir) + "\\" + OUTPUT_FILE_NAME
+		FULL_TEXT_FILE_PATH = str(workingDir) + "\\" + OUTPUT_TEXT_FILENAME
 		TEXT_FILE = open(FULL_TEXT_FILE_PATH,"w+")
 		
 		# Derive module folder and stage pac folder

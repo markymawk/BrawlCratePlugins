@@ -39,6 +39,8 @@ existingFilePaths = []			# Global list, contains any found file paths for faster
 
 DO_ERROR_CHECKING = True		# Set to False to ignore checks for duplicate SongIDs or missing filepaths. Might save time
 
+## Begin helper methods
+
 # Print header for each tracklist containing filename and number of tracks
 def writeTracklistHeader(textfile, parentNode):
 	trackCount = len(parentNode.Children)
@@ -52,7 +54,7 @@ def writeTracklistHeader(textfile, parentNode):
 
 	textfile.write(writeStr)
 
-# Function to get file path of a brstm given a track node
+# Get file path of a brstm given a track node
 def getBrstmFilePath(track):
 	# If file path is empty, track should be from ISO
 	if str(track.SongFileName) == "None":
@@ -84,7 +86,7 @@ def getBrstmFilePath(track):
 			existingFilePaths.append(track.rstmPath)
 			return trackStr
 
-# Function to get pinch mode info if applicable
+# Get pinch mode info if applicable
 def getPinchModeStr(track):
 	trackStr = ""
 	
@@ -102,9 +104,8 @@ def getPinchModeStr(track):
 def getBrawlSongHex(songID):
 	return "0x" + str(hex(songID)).upper()[2:-1]
 
-############################################
-########### Start of main script ###########
-############################################
+## End helper methods
+## Start of main script
 
 # Prompt for the pf or tracklist directory
 tracklistDir = BrawlAPI.OpenFolderDialog("Open pf or tracklist folder")
