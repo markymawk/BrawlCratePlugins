@@ -1,19 +1,17 @@
 __author__ = "mawwwk"
-__version__ = "1.0"
+__version__ = "1.0.1"
 
 from BrawlCrate.API import *
 from BrawlCrate.API.BrawlAPI import AppPath
 from BrawlCrate.NodeWrappers import *
 from BrawlLib.SSBB.ResourceNodes import *
 from System.Windows.Forms import ToolStripMenuItem
-from System.IO import File
 
 # For use with mu_menumain.pac files
 
 # Store temp files in the BrawlCrate program folder.
 # These are deleted at the end of the script.
 TEMP_ARC_PATH = AppPath + "\SELCHAR2_EXPORT_temp.pac"
-
 SCRIPT_NAME = "Export as selcharacter2"
 
 # Check to ensure the context menu item is only active if it's info.pac
