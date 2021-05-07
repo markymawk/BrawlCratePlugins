@@ -7,17 +7,19 @@ Click add, then paste the link to this Github repo: https://github.com/markymawk
 Then, these plug-ins will download and update automatically!  
 
 Plug-ins:
+- Convert PNGs to Battle Portraits
+- Delete Unused Stage Textures
+- Delete Unused Vertices and Normals
 - Export ASL Info (P+)
 - Export Param Info (P+)
 - Export Tracklist Info (P+)
-- Delete Unused Stage Textures (EXPERIMENTAL)
-- Clear Unused Vertices and Normals
-- Convert PNGs to Battle Portraits
 
 Loaders:
-- Stock Icon Exporter
+- CLR0 Set and Rotate Hue
+- Export MenuRule as selcharacter2 (from menumain)
+- info.pac Stock Icon Exporter
 - Param File Navigator
-- Locate TEX0 Usage
+- TEX0 Locate Usage
 - Clear Unused Animation Entries (CHR, VIS bones / SRT, CLR, PAT materials)
 
 Feedback always welcome @ mawwwk#1068
