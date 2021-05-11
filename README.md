@@ -8,11 +8,13 @@ Then, these plug-ins will download and update automatically!
 
 Plug-ins:
 - Convert PNGs to Battle Portraits
+- Delete Unused Animation Data
 - Delete Unused Stage Textures
 - Delete Unused Vertices and Normals
 - Export ASL Info (P+)
 - Export Param Info (P+)
 - Export Tracklist Info (P+)
+- Generate Static Redirects
 
 Loaders:
 - CLR0 Set and Rotate Hue
