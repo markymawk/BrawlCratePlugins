@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "0.9.4"
+__version__ = "1.0"
 
 # Always test in-game!! always save backups!!
 
