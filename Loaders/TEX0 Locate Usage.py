@@ -1,5 +1,5 @@
 __author__ = "mawwwk and soopercool101"
-__version__ = "1.2"
+__version__ = "1.2.1"
 
 from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
@@ -9,22 +9,17 @@ from System.Windows.Forms import ToolStripMenuItem
 SCRIPT_NAME = "Locate TEX0 Usage"
 SELECTED_TEX0_NAME = ""
 
-modelUses = []
-usedPAT0Names = []
+modelUses = []		# List of lists[3] which contain model, material, and object names that use the selected tex0
+usedPAT0Names = []	# List of PAT0 node names that use the selected tex0
 
+## Start enable check functions
 # Check that tex0 is under a "2 ARC" to determine that the pac is a stage, not a character
 # Wrapper: TEX0Wrapper
 def EnableCheckTEX0(sender, event_args):
 	sender.Enabled = (BrawlAPI.SelectedNode is not None and BrawlAPI.SelectedNode.Parent is not None and BrawlAPI.SelectedNode.Parent.Parent is not None and BrawlAPI.SelectedNode.Parent.Parent.Parent is not None and BrawlAPI.SelectedNode.Parent.Parent.Parent.Name == "2")
 
-# Function to return to 2 ARC of current file
-def getParentArc():
-	for i in BrawlAPI.RootNode.Children:
-		if i.Name == "2" and isinstance(i, ARCNode):
-			return i
-	
-	BrawlAPI.ShowError("2 ARC not found", "Error")
-	return 0	# If not found, return 0
+## End enable check functions
+## Start helper functions
 
 # Given any node, return its child node whose name contains the given nameStr
 def getChildFromName(node, nameStr, EXACT_NEEDED=False):
@@ -36,17 +31,14 @@ def getChildFromName(node, nameStr, EXACT_NEEDED=False):
 				return child
 	return 0	# If not found, return 0
 
-def parseBrres(node):
-	if "Model Data" in node.Name:
-		parseModelData(node)
-
-# Return list of strings of node names in a given group
+# Return list containing group.Children node names
 def getChildNames(group):
 	list = []
 	for i in group.Children:
 		list.append(i.Name)
 	return list
 
+# Given a modeldata brres, iterate through MDL0 and PAT0 nodes
 def parseModelData(brres):
 	modelsGroup = getChildFromName(brres, "3DModels")
 	pat0Group = getChildFromName(brres, "AnmTexPat")
@@ -54,27 +46,29 @@ def parseModelData(brres):
 	# Iterate through models
 	if modelsGroup:
 		for mdl0 in modelsGroup.Children:
-			# Ignore static models
-			if mdl0.Name.lower() != "static":
-				parseMDL0(mdl0)
+			parseMDL0(mdl0)
 	
 	# Iterate through pat0s
 	if pat0Group:
 		for pat0 in pat0Group.Children:
 			parsePAT0(pat0)
 
+# Scan MDL0 node for selected tex0 use, and append to modelUses[]
 def parseMDL0(mdl0):
 	mdl0TexturesGroup = getChildFromName(mdl0, "Textures")
 	
 	# If texture exists in the mdl0 Textures group, append an entry to modelUses[]
 	if mdl0TexturesGroup and SELECTED_TEX0_NAME in getChildNames(mdl0TexturesGroup):
+		# Model name, for entry[0]
+		modelName = "MDL0: " + mdl0.Parent.Parent.Name + "/" + mdl0.Name
+		
+		# Materials names, for entry[1]
 		materialsNamesList = getUsedMaterialsNames(mdl0TexturesGroup)
 		
-		entry = ["MDL0: " + mdl0.Parent.Parent.Name + "/" + mdl0.Name, 	# entry[0] MDL0 name
-		materialsNamesList,								# entry[1] List of names of materials used in the mdl0
-		getUsedObjectsList(mdl0, materialsNamesList)]		# entry[2] List of objects that use the texture
+		# Objects names, for entry[2]
+		objectsNamesList = getUsedObjectsList(mdl0, materialsNamesList)
 		
-		modelUses.append(entry)
+		modelUses.append([modelName, materialsNamesList, objectsNamesList])
 	
 # Given a mdl0 "Textures" group, return a formatted string containing list of used materials that reference SELECTED_TEX0_NAME
 def getUsedMaterialsNames(mdl0TexturesGroup):
@@ -92,8 +86,10 @@ def getUsedObjectsList(mdl0, materialsList):
 	objectsList = []
 	
 	for i in materialsList:
+	
 		# Get material from name
 		mat = getChildFromName(materialsGroup,i)
+		
 		# If material exists and is used by objects, append the object(s) to objectsList[]
 		if mat and len(mat._objects):
 			for o in mat._objects:
@@ -110,6 +106,9 @@ def parsePAT0(pat0):
 			if SELECTED_TEX0_NAME in getChildNames(texRef):
 				usedPAT0Names.append("PAT0: " + pat0.Parent.Parent.Name + "/" + pat0.Name)
 
+## End helper functions
+## Start loader functions
+
 # Function to scan the stage PAC file
 def locate_tex0_usage(sender, event_args):
 	global SELECTED_TEX0_NAME
@@ -121,37 +120,58 @@ def locate_tex0_usage(sender, event_args):
 	del modelUses[:]
 	del usedPAT0Names[:]
 	
+	# Determine where to check for the selected tex0
 	# If selected tex0 is in a TextureData, scan all brres in the pac
 	if "Texture Data" in PARENT_BRRES.Name:
-		for node in getParentArc().Children:
-			if isinstance(node, BRRESNode):
-				parseBrres(node)
+		for node in BrawlAPI.NodeListOfType[BRRESNode]():
+			if "Model Data" in node.Name:
+				parseModelData(node)
+	
 	# If selected tex0 is in a ModelData brres, only scan that ModelData
 	elif "Model Data" in PARENT_BRRES.Name:
-		parseBrres(PARENT_BRRES)
+		parseModelData(PARENT_BRRES)
+	
 	# Else, error -- can't detect parent brres
 	else:
 		BrawlAPI.ShowError("Error: can't detect parent BRRES format", SCRIPT_NAME)
 		error = True
+	
+	# Results
 	
 	IS_MDL0_FOUND = len(modelUses)
 	IS_PAT0_FOUND = len(usedPAT0Names)
 	
 	if not error:
 		message = ""
+		# If tex0 is used
 		if IS_MDL0_FOUND or IS_PAT0_FOUND:
 			message += SELECTED_TEX0_NAME + " found in:\n\n"
 			for entry in modelUses:
-				message += entry[0] + "\n"# MDL0 name
+			
+				# MDL0 name
+				message += entry[0] + "\n"
+				
+				# Material name(s)
 				for matName in entry[1]:
 					message += "Material: " + matName + "\n"
+				
+				# Object name(s)
 				for objName in entry[2]:
 					message += "Object: " + objName + "\n"
+				
 				message += "\n\n"
+				
+			# PAT0 name
 			for i in usedPAT0Names:
 				message += i + "\n"
+			
 			BrawlAPI.ShowMessage(message, SCRIPT_NAME)
+		
+		# If tex0 not used
 		else:
 			BrawlAPI.ShowError("No TEX0 usage found", SCRIPT_NAME)
+
+## End loader functions
+## Start context menu add
 
 BrawlAPI.AddContextMenuItem(TEX0Wrapper, "", "Detect uses in models or pat0 animations", EnableCheckTEX0, ToolStripMenuItem("Locate", None, locate_tex0_usage))

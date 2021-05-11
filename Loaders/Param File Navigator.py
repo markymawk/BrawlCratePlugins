@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.1"
+__version__ = "1.1.2"
 
 from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import GenericWrapper
@@ -9,6 +9,7 @@ from BrawlLib.SSBB.ResourceNodes.ProjectPlus import STEXNode
 from System.Windows.Forms import ToolStripMenuItem
 from System.IO import File
 
+## Start enable check functions
 # Single PAC enable check: if StageName is not empty && no children exist
 # Wrapper: STEXWrapper
 def EnableCheckPAC(sender, event_args):
@@ -26,6 +27,9 @@ def EnableCheckSubstagePAC(sender, event_args):
 def EnableCheckTLST(sender, event_args):
 	param = BrawlAPI.RootNode
 	sender.Enabled = (param is not None and param.TrackList is not "")
+
+## End enable check functions
+## Start loader functions
 
 # Function to open single stage PAC file
 def open_stage_pac(sender, event_args):
@@ -66,8 +70,15 @@ def open_stage_tlst(sender, event_args):
 	TLST_FILE_PATH = PF_FOLDER + "\sound\\tracklist\\" + BrawlAPI.RootNode.TrackList + ".tlst"
 	
 	BrawlAPI.OpenFile(TLST_FILE_PATH)
-	
-# Add right-click contextual menu options
+
+## End loader functions
+## Start context menu add
+
+# Open single pac
 BrawlAPI.AddContextMenuItem(STEXWrapper, "", "Open associated stage .pac file", EnableCheckPAC, ToolStripMenuItem("Open stage .pac", None, open_stage_pac))
+
+# Open substage pac
 BrawlAPI.AddContextMenuItem(GenericWrapper, "", "Open substage .pac file", EnableCheckSubstagePAC, ToolStripMenuItem("Open substage .pac", None, open_substage_pac))
+
+# Open TLST
 BrawlAPI.AddContextMenuItem(STEXWrapper, "", "Open associated .tlst file", EnableCheckTLST, ToolStripMenuItem("Open tracklist", None, open_stage_tlst))

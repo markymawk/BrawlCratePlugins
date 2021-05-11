@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0"
+__version__ = "1.0.1"
 # Relatively safe to use, but WILL break Hanenbow based stages.
 # Always test in game!!
 # Does anyone read the python comments lol
@@ -9,6 +9,7 @@ from BrawlCrate.UI import MainForm
 from BrawlLib.Internal import *
 from System.IO import *
 
+SCRIPT_NAME = "Delete Unused Stage Textures"
 # Global lists, populated during run
 texturesInMaterialsNamesList = []	# Names of textures used by mats
 texturesInPat0NamesList = []		# Names of textures used in PAT0s
@@ -17,7 +18,7 @@ deletedMatsNamesList = []			# Names of deleted materials (unused by any objects)
 deletedTex0NamesList = []			# Names of deleted tex0 nodes (unused by any material or pat0)
 cullAllMatsNamesList = []			# Names of any mats set to Cull_All
 cullAllMDL0NamesList = []			# Names of any models containing Cull_All mats
-regeneratedModelsNamesList = []		# Names of any MDL0 containing "Regenerated" vertices or normals
+unusedNodesModelsNamesList = []		# Names of any MDL0 containing "Regenerated" vertices or normals
 
 ## Begin helper methods
 
@@ -103,7 +104,7 @@ def parseMDL0(mdl0):
 				t.Remove()
 
 	# Scan for unused vertices or normals not used by any object.
-	# If found in the given mdl0, append to regeneratedModelsNamesList[]
+	# If found in the given mdl0, append to unusedNodesModelsNamesList[]
 	if verticesGroup:
 		for node in verticesGroup.Children:
 			if len(node._objects) == 0:
@@ -118,7 +119,7 @@ def parseMDL0(mdl0):
 				break
 	
 	if isUnusedFound:
-		regeneratedModelsNamesList.append(mdl0.Parent.Parent.Name + "/" + mdl0.Name)
+		unusedNodesModelsNamesList.append(mdl0.Parent.Parent.Name + "/" + mdl0.Name)
 
 # Given a pat0 animation, iterate through child entries and log textures used
 def parsePAT0(pat0):
@@ -141,7 +142,7 @@ def getParentArc():
 		if i.Name == "2" and isinstance(i, ARCNode):
 			return i
 	# If not found, show an error and return 0
-	BrawlAPI.ShowError("2 ARC not found", "Error")
+	BrawlAPI.ShowError("2 ARC not found. Verify the open file is a stage .pac", "Error")
 	return 0	
 
 # Given any node, return its child node whose name contains the given nameStr
@@ -159,15 +160,13 @@ def getChildFromName(node, nameStr):
 msg = "Optimize file size for a stage .pac by auto-detecting and removing unused materials and textures. \n\nTEX0s inside ModelData BRRES are ignored, and must be checked manually.\n\n"
 msg += "DISCLAIMER: Always check the final results in-game, and save backups!\n\n"
 msg += "Only recommended for use with Battlefield, FD, or Palutena-based stages. This WILL break Hanenbow-based stages!"
-if BrawlAPI.ShowOKCancelPrompt(msg, "Optimize Stage Textures"):
-	# Get parent 2 ARC
-	PARENT_ARC = getParentArc()
+PARENT_2_ARC = getParentArc()
+# Get parent 2 ARC to verify the open file is a stage
+if PARENT_2_ARC and BrawlAPI.ShowOKCancelPrompt(msg, SCRIPT_NAME):
 	
-	if PARENT_ARC:
 	# Populate lists of used textures, and delete any unused materials
-		for node in PARENT_ARC.Children:
-			if isinstance(node, BRRESNode):
-				parseBrres(node)
+	for node in BrawlAPI.NodeListOfType[BRRESNode]():
+		parseBrres(node)
 	
 	# If a texture in TextureData is not used by any model or pat0, delete it
 	tex0List = reverseResourceList(tex0List)
@@ -181,11 +180,11 @@ if BrawlAPI.ShowOKCancelPrompt(msg, "Optimize Stage Textures"):
 	matsDeletedCount = len(deletedMatsNamesList)
 	tex0DeletedCount = len(deletedTex0NamesList)
 	CULL_ALL_COUNT = len(cullAllMatsNamesList)
-	REGENERATED_MDL0_COUNT = len(regeneratedModelsNamesList)	# Amount of mdl0's with unused normals/vertices
+	UNUSED_NODE_MDL0_COUNT = len(unusedNodesModelsNamesList)	# Amount of MDL0 nodes with unused normals/vertices
 	
 	# Print list of deleted tex0 names
-	if not matsDeletedCount and not tex0DeletedCount and not CULL_ALL_COUNT and not REGENERATED_MDL0_COUNT:
-		BrawlAPI.ShowMessage("No unused textures or materials detected", "Delete Unused Stage Textures")
+	if not matsDeletedCount and not tex0DeletedCount and not CULL_ALL_COUNT and not UNUSED_NODE_MDL0_COUNT:
+		BrawlAPI.ShowMessage("No unused textures or materials detected", SCRIPT_NAME)
 	else:
 		message = ""
 		if matsDeletedCount:
@@ -227,9 +226,9 @@ if BrawlAPI.ShowOKCancelPrompt(msg, "Optimize Stage Textures"):
 			BrawlAPI.ShowMessage(message, "Potential unused materials found")
 		
 		# List any unused vertex/normals nodes
-		if REGENERATED_MDL0_COUNT > 0:
+		if UNUSED_NODE_MDL0_COUNT > 0:
 			message = "Unused vertex/normal nodes found:\n\n"
 			
-			for i in regeneratedModelsNamesList:
+			for i in unusedNodesModelsNamesList:
 				message += i + "\n"
 			BrawlAPI.ShowMessage(message, "Unused nodes found")
