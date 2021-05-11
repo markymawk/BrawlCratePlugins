@@ -8,7 +8,7 @@ from BrawlLib.SSBB.Types import * #Types.ARCFileType
 from BrawlCrate.UI import MainForm
 from BrawlLib.Internal import *
 
-SCRIPT_NAME = "Assign Static Redirects"
+SCRIPT_NAME = "Generate Static Redirects"
 
 ## Begin helper methods
 
