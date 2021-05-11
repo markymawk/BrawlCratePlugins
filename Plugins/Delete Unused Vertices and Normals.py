@@ -1,7 +1,8 @@
 __author__ = "mawwwk"
-__version__ = "0.9.3"
-# EXPERIMENTAL - Updated 4/23/21, might break things still.
+__version__ = "0.9.4"
+
 # Always test in-game!! always save backups!!
+
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
 from BrawlCrate.UI import MainForm
@@ -32,19 +33,6 @@ def getChildFromName(node, nameStr):
 				return child
 	return 0
 
-# point parser to ModelData brres
-def parseBrres(node):
-	if "Model Data" in node.Name:
-		parseModelData(node)
-
-# Given a ModelData brres, iterate through appropriate child group nodes
-def parseModelData(brres):
-	# Iterate through models inside brres
-	modelsGroup = getChildFromName(brres, "3DModels")
-	if modelsGroup:
-		for mdl0 in modelsGroup.Children:
-			parseMDL0(mdl0)
-
 # Given a mdl0 node, delete any unused vertices or normals, and detect any used "Regenerated" nodes
 def parseMDL0(mdl0):
 	global deletedNodeCount
@@ -71,15 +59,6 @@ def parseMDL0(mdl0):
 	if usedRegeneratedFound:
 		usedRegeneratedModelsNamesList.append(mdl0.Parent.Parent.Name + "/" + mdl0.Name)
 
-# Return 2 ARC of currently opened file
-def getParentArc():
-	for i in BrawlAPI.RootNode.Children:
-		if i.Name == "2" and isinstance(i, ARCNode):
-			return i
-	
-	BrawlAPI.ShowError("2 ARC not found", "Error")
-	return 0
-
 ## End helper methods
 ## Start of main script
 
@@ -90,10 +69,9 @@ message += "DISCLAIMER: Always check the final results in-game.\n"
 if BrawlAPI.ShowOKCancelPrompt(message, SCRIPT_NAME):
 	global deletedNodeCount
 	
-	# Iterate through brres nodes
-	for node in getParentArc().Children:
-		if isinstance(node, BRRESNode):
-			parseBrres(node)
+	# Iterate through MDL0 nodes
+	for node in BrawlAPI.NodeListOfType[MDL0Node]():
+		parseMDL0(node)
 	
 	# Show results
 	
@@ -116,4 +94,3 @@ if BrawlAPI.ShowOKCancelPrompt(message, SCRIPT_NAME):
 			message += i + "\n"
 		
 		BrawlAPI.ShowError(message, SCRIPT_NAME)
-	
