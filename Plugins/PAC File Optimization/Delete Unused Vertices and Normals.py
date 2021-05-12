@@ -13,6 +13,7 @@ SCRIPT_NAME = "Clear Unused Vertices and Normals"
 deletedNodeCount = 0
 affectedModelsNamesList = []			# Names of all mdl0 nodes that contain nodes deleted during the script
 usedRegeneratedModelsNamesList = []		# Names of all mdl0 nodes that contain vertex/normal nodes named "Regenerated" that are used by objects
+sizeCount = 0							# Sum of deleted nodes file size, in uncompressed bytes
 
 ## Begin helper methods
 
@@ -36,6 +37,7 @@ def getChildFromName(node, nameStr):
 # Given a mdl0 node, delete any unused vertices or normals, and detect any used "Regenerated" nodes
 def parseMDL0(mdl0):
 	global deletedNodeCount
+	global sizeCount
 	unusedFound = False 			# Set to true if any unused nodes found
 	usedRegeneratedFound = False 	# Set to true if any nodes named "Regenerated" are actually used
 	
@@ -45,6 +47,7 @@ def parseMDL0(mdl0):
 			nodesList = reverseResourceList(group.Children)
 			for node in nodesList:
 				if len(node._objects) == 0:
+					sizeCount += node.UncompressedSize
 					node.Remove()
 					deletedNodeCount += 1
 					unusedFound = True
@@ -84,6 +87,7 @@ if BrawlAPI.ShowOKCancelPrompt(message, SCRIPT_NAME):
 		message = str(deletedNodeCount) + " unused nodes found and deleted.\n\n"
 		for i in affectedModelsNamesList:
 			message += i + "\n"
+		message += "\n" + str(sizeCount) + " bytes"
 		BrawlAPI.ShowMessage(message, SCRIPT_NAME)
 	
 	# If any used "Regenerated" nodes exist, warn the user

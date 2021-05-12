@@ -19,6 +19,7 @@ deletedTex0NamesList = []			# Names of deleted tex0 nodes (unused by any materia
 cullAllMatsNamesList = []			# Names of any mats set to Cull_All
 cullAllMDL0NamesList = []			# Names of any models containing Cull_All mats
 unusedNodesModelsNamesList = []		# Names of any MDL0 containing "Regenerated" vertices or normals
+sizeCount = 0						# Sum of uncompressed bytes deleted
 
 ## Begin helper methods
 
@@ -87,6 +88,7 @@ def parseMDL0(mdl0):
 		for m in reverseResourceList(matsGroup.Children):
 			if len(m._objects) == 0:
 				deletedMatsNamesList.append(m.Name)
+				sizeCount += m.UncompressedSize
 				m.Remove()
 			elif "Cull_All" in str(m._cull):
 				cullAllMatsNamesList.append(m.Name)
@@ -101,6 +103,7 @@ def parseMDL0(mdl0):
 				texturesInMaterialsNamesList.append(t.Name)
 			# If Texture node isn't used by any materials, delete it instead
 			else:
+				sizeCount += t.UncompressedSize
 				t.Remove()
 
 	# Scan for unused vertices or normals not used by any object.
@@ -173,6 +176,7 @@ if PARENT_2_ARC and BrawlAPI.ShowOKCancelPrompt(msg, SCRIPT_NAME):
 	for tex0 in tex0List:
 		if not tex0.Name in (texturesInMaterialsNamesList + texturesInPat0NamesList):
 			deletedTex0NamesList.append(tex0.Name)
+			sizeCount += tex0.UncompressedSize
 			tex0.Remove()
 
 	# RESULTS dialog boxes
@@ -215,6 +219,7 @@ if PARENT_2_ARC and BrawlAPI.ShowOKCancelPrompt(msg, SCRIPT_NAME):
 				message += "\n\n"
 		
 		if message != "":
+			message += str(sizeCount) + " bytes"
 			BrawlAPI.ShowMessage(message, "Deleted Unused Textures")
 		
 		# List any Cull_all mats
