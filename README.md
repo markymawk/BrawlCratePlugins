@@ -11,6 +11,7 @@ Plug-ins:
 - Delete Unused Animation Data
 - Delete Unused Stage Textures
 - Delete Unused Vertices and Normals
+- Detect Unused BRSTMs (P+)
 - Export ASL Info (P+)
 - Export Param Info (P+)
 - Export Tracklist Info (P+)
