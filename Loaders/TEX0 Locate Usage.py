@@ -12,13 +12,17 @@ SELECTED_TEX0_NAME = ""
 modelUses = []		# List of lists[3] which contain model, material, and object names that use the selected tex0
 usedPAT0Names = []	# List of PAT0 node names that use the selected tex0
 
-## Start enable check functions
+## Start enable check function
 # Check that tex0 is under a "2 ARC" to determine that the pac is a stage, not a character
 # Wrapper: TEX0Wrapper
 def EnableCheckTEX0(sender, event_args):
-	sender.Enabled = (BrawlAPI.SelectedNode is not None and BrawlAPI.SelectedNode.Parent is not None and BrawlAPI.SelectedNode.Parent.Parent is not None and BrawlAPI.SelectedNode.Parent.Parent.Parent is not None and BrawlAPI.SelectedNode.Parent.Parent.Parent.Name == "2")
+	sender.Enabled = (BrawlAPI.SelectedNode is not None \
+	and BrawlAPI.SelectedNode.Parent is not None \
+	and BrawlAPI.SelectedNode.Parent.Parent is not None \
+	and BrawlAPI.SelectedNode.Parent.Parent.Parent is not None \
+	and BrawlAPI.SelectedNode.Parent.Parent.Parent.Name == "2")
 
-## End enable check functions
+## End enable check function
 ## Start helper functions
 
 # Given any node, return its child node whose name contains the given nameStr
@@ -138,14 +142,13 @@ def locate_tex0_usage(sender, event_args):
 	
 	# Results
 	
-	IS_MDL0_FOUND = len(modelUses)
-	IS_PAT0_FOUND = len(usedPAT0Names)
-	
 	if not error:
-		message = ""
+	
 		# If tex0 is used
-		if IS_MDL0_FOUND or IS_PAT0_FOUND:
-			message += SELECTED_TEX0_NAME + " found in:\n\n"
+		if len(modelUses + usedPAT0Names):
+			message = SELECTED_TEX0_NAME + " found in:\n\n"
+			
+			# For each model use, show mdl0, material, and object names
 			for entry in modelUses:
 			
 				# MDL0 name
@@ -161,7 +164,7 @@ def locate_tex0_usage(sender, event_args):
 				
 				message += "\n\n"
 				
-			# PAT0 name
+			# For each pat0 use, add pat0 name
 			for i in usedPAT0Names:
 				message += i + "\n"
 			
