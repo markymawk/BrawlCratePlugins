@@ -8,6 +8,7 @@ from BrawlLib.SSBB.ResourceNodes import *
 from BrawlCrate.UI import MainForm
 from BrawlLib.Internal import *
 from System.IO import *
+from mawwwkLib import *
 
 SCRIPT_NAME = "Delete Unused Stage Textures"
 # Global lists, populated during run
@@ -22,19 +23,6 @@ unusedNodesModelsNamesList = []		# Names of any MDL0 containing "Regenerated" ve
 sizeCount = 0						# Sum of uncompressed bytes deleted
 
 ## Begin helper methods
-
-# Debug message
-def dmessage(msg):
-	BrawlAPI.ShowMessage(msg, "DEBUG")
-
-# Basic impl of list.reverse() to accommodate ResourceNode lists
-def reverseResourceList(nodeList):
-	nodeListReverse = []
-	for i in nodeList:
-		nodeListReverse.append(i)
-	
-	nodeListReverse.reverse()
-	return nodeListReverse
 
 # point parser to ModelData or TextureData behavior
 def parseBrres(node):
@@ -137,24 +125,7 @@ def parsePAT0(pat0):
 def parseTextureData(brresNode):
 	global tex0List
 	for tex0 in getChildFromName(brresNode, "Textures(NW4R)").Children:
-		tex0List.append(tex0)	
-
-# Function to return to 2 ARC of current file
-def getParentArc():
-	for i in BrawlAPI.RootNode.Children:
-		if i.Name == "2" and isinstance(i, ARCNode):
-			return i
-	# If not found, show an error and return 0
-	BrawlAPI.ShowError("2 ARC not found. Verify the open file is a stage .pac", "Error")
-	return 0	
-
-# Given any node, return its child node whose name contains the given nameStr
-def getChildFromName(node, nameStr):
-	if node.Children:
-		for child in node.Children:
-			if str(nameStr) in child.Name:
-				return child
-	return 0	# If not found, return 0
+		tex0List.append(tex0)
 
 ## End helper methods
 ## Start of main script

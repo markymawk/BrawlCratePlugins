@@ -5,6 +5,7 @@ from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
 from BrawlLib.SSBB.ResourceNodes import *
 from System.Windows.Forms import ToolStripMenuItem
+from mawwwkLib import *
 
 SCRIPT_NAME = "Locate TEX0 Usage"
 SELECTED_TEX0_NAME = ""
@@ -24,23 +25,6 @@ def EnableCheckTEX0(sender, event_args):
 
 ## End enable check function
 ## Start helper functions
-
-# Given any node, return its child node whose name contains the given nameStr
-def getChildFromName(node, nameStr, EXACT_NEEDED=False):
-	if node.Children:
-		for child in node.Children:
-			if EXACT_NEEDED and child.Name == str(nameStr):
-				return child
-			elif str(nameStr) in child.Name:
-				return child
-	return 0	# If not found, return 0
-
-# Return list containing group.Children node names
-def getChildNames(group):
-	list = []
-	for i in group.Children:
-		list.append(i.Name)
-	return list
 
 # Given a modeldata brres, iterate through MDL0 and PAT0 nodes
 def parseModelData(brres):

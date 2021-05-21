@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0"
+__version__ = "1.0.1"
 
 # Always test in-game!! always save backups!!
 
@@ -8,32 +8,16 @@ from BrawlLib.SSBB.ResourceNodes import *
 from BrawlCrate.UI import MainForm
 from BrawlLib.Internal import *
 from System.IO import *
+from mawwwkLib import *
 
 SCRIPT_NAME = "Clear Unused Vertices and Normals"
+
 deletedNodeCount = 0
 affectedModelsNamesList = []			# Names of all mdl0 nodes that contain nodes deleted during the script
 usedRegeneratedModelsNamesList = []		# Names of all mdl0 nodes that contain vertex/normal nodes named "Regenerated" that are used by objects
 sizeCount = 0							# Sum of deleted nodes file size, in uncompressed bytes
 
 ## Begin helper methods
-
-# Basic impl of list.reverse() to accommodate ResourceNode lists
-def reverseResourceList(nodeList):
-	nodeListReverse = []
-	for i in nodeList:
-		nodeListReverse.append(i)
-	
-	nodeListReverse.reverse()
-	return nodeListReverse
-
-# Given any node, return the first child node whose name contains the given nameStr, or return 0 if not found
-def getChildFromName(node, nameStr):
-	if node.HasChildren:
-		for child in node.Children:
-			if str(nameStr) in child.Name:
-				return child
-	return 0
-
 # Given a mdl0 node, delete any unused vertices or normals, and detect any used "Regenerated" nodes
 def parseMDL0(mdl0):
 	global deletedNodeCount

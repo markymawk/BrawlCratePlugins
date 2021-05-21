@@ -1,11 +1,14 @@
 __author__ = "mawwwk"
-__version__ = "0.9"
+__version__ = "0.9.1"
+
 # Always test in-game!! always save backups!!
+
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
 from BrawlCrate.UI import MainForm
 from BrawlLib.Internal import *
 from System.IO import *
+from mawwwkLib import *
 
 SCRIPT_NAME = "Delete Unused Animation Data"
 
@@ -18,26 +21,6 @@ brresBoneNameList = []		# Global list populated per-brres
 sizeCount = 0				# Size of deleted nodes, in uncompressed bytes
 
 ## Begin helper methods
-
-def dmessage(messagef):
-	BrawlAPI.ShowMessage(messagef, "ERROR")
-
-# Basic impl of list.reverse() to accommodate ResourceNode lists
-def reverseResourceList(nodeList):
-	nodeListReverse = []
-	for i in nodeList:
-		nodeListReverse.append(i)
-	
-	nodeListReverse.reverse()
-	return nodeListReverse
-
-# Given any node, return the first child node whose name contains the given nameStr, or return 0 if not found
-def getChildFromName(node, nameStr):
-	if node.HasChildren:
-		for child in node.Children:
-			if str(nameStr) in child.Name:
-				return child
-	return 0
 
 # Given a CHR or VIS animation, parse the parent BRRES for bone usage
 def checkForBones(anim):
@@ -59,7 +42,7 @@ def checkForBones(anim):
 					
 					animType = str(type(anim))[7:11]
 					affectedAnimNames.append(parentBRRES.Name + "/" + animType + " " + anim.Name + "/" + bone.Name)
-				
+
 def checkForMats(anim):
 	if anim.Children:
 		global sizeCount

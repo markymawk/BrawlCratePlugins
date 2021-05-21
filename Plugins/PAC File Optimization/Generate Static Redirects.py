@@ -7,39 +7,11 @@ from BrawlLib.SSBB import * #Types.ARCFileType?
 from BrawlLib.SSBB.Types import * #Types.ARCFileType
 from BrawlCrate.UI import MainForm
 from BrawlLib.Internal import *
+from mawwwkLib import *
 
 SCRIPT_NAME = "Generate Static Redirects"
 
 ## Begin helper methods
-
-# Given any node, return its child node whose name contains the given nameStr
-def getChildFromName(node, nameStr):
-	if node.Children:
-		for child in node.Children:
-			if str(nameStr) in child.Name:
-				return child
-	return 0	# If not found, return 0
-
-# Function to return to 2 ARC of current file
-def getParentArc():
-	if BrawlAPI.RootNode:
-		for i in BrawlAPI.RootNode.Children:
-			if i.Name == "2" and isinstance(i, ARCNode):
-				return i
-	# If not found, show an error and return 0
-	BrawlAPI.ShowError("2 ARC not found", "Error")
-	return 0	
-
-# Return true if given node is a brres, of exactly 640 bytes, and has exactly one mdl0 node named appropriately
-def isStaticBRRES(node):
-	modelsGroup = getChildFromName(node,"3DModels")
-	
-	if node.UncompressedSize == 640 \
-	and isinstance(node, BRRESNode) \
-	and modelsGroup and modelsGroup.HasChildren and len(modelsGroup.Children) == 1:
-		return True
-	else:
-		return False
 	
 # Create a new redirect ARCEntryNode given the FileIndex and RedirectIndex values
 def createRedirect(baseIndex, newRedirectIndex):
