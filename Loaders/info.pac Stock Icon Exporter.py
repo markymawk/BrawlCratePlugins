@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0.2"
+__version__ = "1.1"
 
 from BrawlCrate.API import *
 from BrawlCrate.API.BrawlAPI import AppPath
