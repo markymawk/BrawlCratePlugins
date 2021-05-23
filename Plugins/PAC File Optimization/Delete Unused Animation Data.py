@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "0.9.1"
+__version__ = "1.0"
 
 # Always test in-game!! always save backups!!
 
@@ -103,7 +103,7 @@ def populateBonesList(bone):
 ## Start of main script
 
 # Confirmation prompt
-message = "Detect and remove any unused bone or material references within animations.\n\n"
+message = "Detect and remove any unused bone or material references within stage animations.\n\n"
 message += "DISCLAIMER: Always check the final results in-game.\nNot recommended for Green Hill Zone, Green Greens/Dream Land, or other module-animation-dependent stages.\n"
 
 if BrawlAPI.ShowOKCancelPrompt(message, SCRIPT_NAME):

@@ -51,7 +51,7 @@ def parseMDL0(mdl0):
 
 # Confirmation prompt
 message = "Detect and remove any unused Vertex or Normal nodes inside models.\n\n"
-message += "DISCLAIMER: Always check the final results in-game.\n"
+message += "DISCLAIMER: Always check the final results in-game!\n"
 
 if BrawlAPI.ShowOKCancelPrompt(message, SCRIPT_NAME):
 	global deletedNodeCount
