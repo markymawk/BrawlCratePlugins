@@ -107,10 +107,10 @@ def main (outputAnimNamesList, baseFramesList):
 ## Start context menu add
 
 # Menu options from CLR0 material (AGameWatch)
-BrawlAPI.AddContextMenuItem(CLR0MaterialWrapper, "", "Export G&W color animations", EnableCheckGNWBorder, ToolStripMenuItem("Copy all GameWatch colors (border)", None, copy_gnw_colors_border))
-BrawlAPI.AddContextMenuItem(CLR0MaterialWrapper, "", "Export G&W color animations", EnableCheckGNWFill, ToolStripMenuItem("Copy all GameWatch colors (fill)", None, copy_gnw_colors_fill))
+BrawlAPI.AddContextMenuItem(CLR0MaterialWrapper, "", "Set all G&W border colors to this entry", EnableCheckGNWBorder, ToolStripMenuItem("Set all GameWatch colors (border)", None, copy_gnw_colors_border))
+BrawlAPI.AddContextMenuItem(CLR0MaterialWrapper, "", "Set all G&W fill colors to this entry", EnableCheckGNWFill, ToolStripMenuItem("Set all GameWatch colors (fill)", None, copy_gnw_colors_fill))
 
 # Menu options from CLR0 materialEntry (ColorRegister0)
-BrawlAPI.AddContextMenuItem(CLR0MaterialEntryWrapper, "", "Export G&W color animations", EnableCheckGNWBorderEntry, ToolStripMenuItem("Copy all GameWatch colors (border)", None, copy_gnw_colors_border_entry))
+BrawlAPI.AddContextMenuItem(CLR0MaterialEntryWrapper, "", "Set all G&W border colors to this entry", EnableCheckGNWBorderEntry, ToolStripMenuItem("Set all GameWatch colors (border)", None, copy_gnw_colors_border_entry))
 
-BrawlAPI.AddContextMenuItem(CLR0MaterialEntryWrapper, "", "Export G&W color animations", EnableCheckGNWFillEntry, ToolStripMenuItem("Copy all GameWatch colors (fill)", None, copy_gnw_colors_fill_entry))
+BrawlAPI.AddContextMenuItem(CLR0MaterialEntryWrapper, "", "Set all G&W fill colors to this entry", EnableCheckGNWFillEntry, ToolStripMenuItem("Set all GameWatch colors (fill)", None, copy_gnw_colors_fill_entry))
