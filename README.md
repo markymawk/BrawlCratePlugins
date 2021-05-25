@@ -18,11 +18,13 @@ Plug-ins:
 - Generate Static Redirects
 
 Loaders:
+- Set All Game & Watch Colors (for FitGameWatch00.pac color entries)
+- Clear Unused Animation Entries (CHR, VIS bones / SRT, CLR, PAT materials)
 - CLR0 Set and Rotate Hue
 - Export MenuRule as selcharacter2 (from menumain)
 - info.pac Stock Icon Exporter
 - Param File Navigator
 - TEX0 Locate Usage
-- Clear Unused Animation Entries (CHR, VIS bones / SRT, CLR, PAT materials)
+- TLST Reset Track Frequencies
 
 Feedback always welcome @ mawwwk#1068
