@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.5.1"
+__version__ = "1.7.1"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
@@ -138,7 +138,7 @@ def getTracklistName(parentNode):
 	# If tracklist file is missing, append error string to tracklist filename, and append error string
 	elif not File.Exists(TRACKLIST_DIR_PATH + "\\" + tracklist):
 		missingTracklistParams.append(parentNode.Name)
-		return tracklist + ".tlst [TRACKLIST FILE MISSING]"
+		return tracklist + " [TRACKLIST FILE MISSING]"
 	
 	# If tracklist file exists
 	else:
