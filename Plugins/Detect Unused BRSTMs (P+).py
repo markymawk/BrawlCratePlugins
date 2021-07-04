@@ -55,10 +55,20 @@ def checkTrackName(track):
 	# If not found, return -1
 	return -1
 
+# Given a track entry node with a SongSwitch > 1, find and return the index of the track name inside brstmFiles[]
+def getPinchTrackIndex(track):
+	trackName = str(track.SongFileName).lower() + "_b.brstm"
+	trackName = trackName.replace("\\", "/")
+	
+	for i in range(0, len(brstmFiles), 1):
+		fileName = brstmFiles[i].lower()
+		if trackName == fileName.lower():
+			return i
+	
 ## End helper methods
 ## Start of main script
 
-# Prompt for the pf or sound directory
+# Prompt for directory
 workingDir = BrawlAPI.OpenFolderDialog("Open pf, sound, or strm folder")
 workingDir = str(workingDir)
 
@@ -112,6 +122,9 @@ elif workingDir:
 				trackIndex = checkTrackName(track)
 				if trackIndex >= 0:
 					del brstmFiles[trackIndex]
+					if track.SongSwitch:
+						del brstmFiles[getPinchTrackIndex(track)]
+				
 			
 		# Stop the loop if all brstm files are used
 		if len(brstmFiles) == 0:
