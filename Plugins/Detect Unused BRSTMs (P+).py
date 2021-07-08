@@ -169,7 +169,7 @@ elif workingDir:
 		
 		# Truncate list at MAX_BRAWL_LIST
 		if MAX_BRAWL_LIST < len(brawlBrstmFiles):
-			message += "...and" + str((len(brawlBrstmFiles) - MAX_BRAWL_LIST)) + " more\n"
+			message += "...and " + str((len(brawlBrstmFiles) - MAX_BRAWL_LIST)) + " more\n"
 		
 		# List unused brstm files with custom names
 		while customListPrintedCount < MAX_CUSTOM_LIST and customListPrintedCount < len(brstmFiles):
