@@ -15,7 +15,7 @@ Plug-ins:
 - Export ASL Info (P+)
 - Export Param Info (P+)
 - Export Tracklist Info (P+)
-- Generate Static Redirects
+- Generate Static BRRES Redirects
 
 Loaders:
 - Set All Game & Watch Colors (for FitGameWatch00.pac color entries)
