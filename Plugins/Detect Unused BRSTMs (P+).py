@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0"
+__version__ = "1.1"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
@@ -122,8 +122,11 @@ elif workingDir:
 				trackIndex = checkTrackName(track)
 				if trackIndex >= 0:
 					del brstmFiles[trackIndex]
+					# Check pinch mode track (trackname_b.brstm)
 					if track.SongSwitch:
-						del brstmFiles[getPinchTrackIndex(track)]
+						pinchIndex = getPinchTrackIndex(track)
+						if pinchIndex >= 0:
+							del brstmFiles[getPinchTrackIndex(track)]
 				
 			
 		# Stop the loop if all brstm files are used
