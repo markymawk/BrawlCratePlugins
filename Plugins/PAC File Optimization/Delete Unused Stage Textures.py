@@ -63,6 +63,7 @@ def parseModelData(brres):
 
 # Given a mdl0 node, delete any unused materials, then log any texture references
 def parseMDL0(mdl0):
+	global sizeCount
 	matsGroup = getChildFromName(mdl0, "Materials")
 	mdl0TexturesGroup = getChildFromName(mdl0,"Textures")
 	verticesGroup = getChildFromName(mdl0,"Vertices")
