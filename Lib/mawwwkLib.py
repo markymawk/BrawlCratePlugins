@@ -1,4 +1,4 @@
-﻿version = "1.0"
+﻿version = "1.1"
 # mawwwkLib
 # Common functions for use with BrawlAPI scripts
 
@@ -97,7 +97,7 @@ BRAWL_MODULES = [
 # Given a list of nodes with the same parent, delete those nodes using RemoveChild()
 # use reverse() to avoid top-down errors
 # params:
-#	nodeList: any list of ResourceNodes
+#	nodeList: any list of ResourceNodes which share a Parent
 def removeChildNodes(nodeList):
 	nodeList.reverse()
 	parentNode = nodeList[0].Parent
@@ -129,6 +129,15 @@ def getChildFromName(node, nameStr, EXACT_NEEDED=False):
 			if EXACT_NEEDED and child.Name == str(nameStr):
 				return child
 			elif str(nameStr) in child.Name:
+				return child
+	return 0	# If not found, return 0
+	
+def getChildWrapperFromName(wrapper, nameStr, EXACT_NEEDED=False):
+	if wrapper.Nodes:
+		for child in wrapper.Nodes:
+			if EXACT_NEEDED and child.Resource.Name == str(nameStr):
+				return child
+			elif str(nameStr) in child.Resource.Name:
 				return child
 	return 0	# If not found, return 0
 
@@ -269,4 +278,4 @@ def formatHex(value, DIGIT_COUNT=4):
 # params
 #	msg: any string
 def dmessage(msg):
-	BrawlAPI.ShowMessage(msg, "DEBUG")
+	BrawlAPI.ShowMessage(str(msg), "DEBUG")
