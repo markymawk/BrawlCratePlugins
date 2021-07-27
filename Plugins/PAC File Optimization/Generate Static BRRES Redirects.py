@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.1"
+__version__ = "1.2"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
@@ -14,11 +14,10 @@ SCRIPT_NAME = "Generate Static Redirects"
 ## Begin helper methods
 	
 # Create a new redirect ARCEntryNode given the FileIndex and RedirectIndex values
-def createRedirect(baseIndex, newRedirectIndex):
-	global PARENT_2_ARC
+def createRedirect(baseIndex, newRedirectIndex, parentARC):
 	newNode = ARCEntryNode()
 	
-	PARENT_2_ARC.AddChild(newNode)
+	parentARC.AddChild(newNode)
 	newNode.FileType = ARCFileType.ModelData
 	newNode.FileIndex = baseIndex
 	newNode.RedirectIndex = newRedirectIndex
@@ -26,8 +25,11 @@ def createRedirect(baseIndex, newRedirectIndex):
 ## End helper methods
 ## Start of main method
 
-PARENT_2_ARC = getParentArc()
-if PARENT_2_ARC:
+def main():
+	PARENT_2_ARC = getParentArc()
+	if not PARENT_2_ARC:
+		return
+	
 	hashIndexDict = {}		# MD5 to AbsoluteIndex key-value dict
 	redirectCount = 0		# Number of redirect nodes created
 	convertedNodes = []		# List of BRRES nodes converted, to delete later
@@ -44,7 +46,7 @@ if PARENT_2_ARC:
 			# If matching hash exists...
 			if nodeHash in hashIndexDict.keys():
 				# ...create a redirect
-				createRedirect(node.FileIndex, hashIndexDict[nodeHash])
+				createRedirect(node.FileIndex, hashIndexDict[nodeHash], parentARC)
 				redirectCount += 1
 				
 				# Mark the BRRES to delete later
@@ -63,3 +65,5 @@ if PARENT_2_ARC:
 		BrawlAPI.ShowMessage(str(redirectCount) + " static redirects generated", SCRIPT_NAME)
 	else:
 		BrawlAPI.ShowMessage("No possible static redirects found", SCRIPT_NAME)
+
+main()

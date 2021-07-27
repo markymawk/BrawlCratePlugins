@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0"
+__version__ = "1.0.1"
 
 # Always test in-game!! always save backups!!
 
@@ -10,29 +10,31 @@ from BrawlLib.Internal import *
 from System.IO import *
 from mawwwkLib import *
 
-SCRIPT_NAME = "Delete Unused Animation Data"
+## Begin global variables
 
+SCRIPT_NAME = "Delete Unused Animation Data"
 bonesToDelete = []		# Bone targets for CHR, VIS animations
 matsToDelete = []		# Material targets for SRT, CLR, PAT animations
 affectedAnimNames = []	# Formatted names containing brres name, anim type, and anim name
 affectedAnims = []		# Animation node
-
 brresBoneNameList = []		# Global list populated per-brres
 sizeCount = 0				# Size of deleted nodes, in uncompressed bytes
 
+## End global variables
 ## Begin helper methods
 
 # Given a CHR or VIS animation, parse the parent BRRES for bone usage
 def checkForBones(anim):
-	if anim.Children:
+	if anim.Children and anim.Parent and anim.Parent.Parent:
 		
 		parentBRRES = anim.Parent.Parent
 		
 		if "Model Data" in parentBRRES.Name:
-			getBoneListFromBRRES(parentBRRES)
-			
 			global brresBoneNameList
 			global sizeCount
+			
+			getBoneListFromBRRES(parentBRRES)
+			
 			
 			for bone in anim.Children:
 				if not bone.Name in brresBoneNameList:
@@ -127,12 +129,13 @@ if BrawlAPI.ShowOKCancelPrompt(message, SCRIPT_NAME):
 	# Show results
 	else:
 		message = "Unused data found in:\n\n"
+		MAX_LIST = 20
 		
-		# If more than 20 entries, cap out at 20
-		if len(affectedAnimNames) > 20:
-			for i in range(0, 20, 1):
+		# If more than maximum entries, truncate the list
+		if len(affectedAnimNames) > MAX_LIST:
+			for i in range(0, MAX_LIST, 1):
 				message += affectedAnimNames[i] + "\n"
-			message += "...and " + str((len(affectedAnimNames) - 20)) + " more\n"
+			message += "...and " + str((len(affectedAnimNames) - MAX_LIST)) + " more\n"
 		else:
 			for anim in affectedAnimNames:
 				message += anim + "\n"
@@ -145,9 +148,8 @@ if BrawlAPI.ShowOKCancelPrompt(message, SCRIPT_NAME):
 			for bone in bonesToDelete:
 				bone.Remove()
 				
-			# Commented out for cases like GHZ and others where the animation might need to exist?
+			## In cases like GHZ, the animation might need to exist?
 			
 			#for anim in affectedAnims:	
 			#	if not anim.HasChildren:
 			#		anim.Remove()
-					

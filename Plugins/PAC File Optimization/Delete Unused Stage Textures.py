@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 # Relatively safe to use, but WILL break Hanenbow based stages.
 # Always test in game!!
 # Does anyone read the python comments lol
@@ -10,8 +10,9 @@ from BrawlLib.Internal import *
 from System.IO import *
 from mawwwkLib import *
 
+## Begin global variables
+
 SCRIPT_NAME = "Delete Unused Stage Textures"
-# Global lists, populated during run
 texturesInMaterialsNamesList = []	# Names of textures used by mats
 texturesInPat0NamesList = []		# Names of textures used in PAT0s
 tex0List = []						# Tex0 nodes inside any brres
@@ -22,6 +23,7 @@ cullAllMDL0NamesList = []			# Names of any models containing Cull_All mats
 unusedNodesModelsNamesList = []		# Names of any MDL0 containing "Regenerated" vertices or normals
 sizeCount = 0						# Sum of uncompressed bytes deleted
 
+## End global variables
 ## Begin helper methods
 
 # point parser to ModelData or TextureData behavior
@@ -37,7 +39,7 @@ def parseModelData(brres):
 	pat0Group = getChildFromName(brres, "AnmTexPat")
 	modelDataTexturesGroup = getChildFromName(brres, "Textures(NW4R)")
 	
-	# Iterate through models
+	# Iterate through models to tally the used textures, and remove unused mats
 	if modelsGroup:
 		for mdl0 in modelsGroup.Children:
 			texturesGroup = getChildFromName(mdl0, "Textures")
@@ -48,7 +50,7 @@ def parseModelData(brres):
 			if texturesGroup or modelMaterialsGroup or verticesGroup or normalsGroup:
 				parseMDL0(mdl0)
 	
-	# Iterate through pat0s
+	# Iterate through pat0s to tally the used textures
 	if pat0Group:
 		for pat0 in pat0Group.Children:
 			parsePAT0(pat0)
@@ -65,32 +67,37 @@ def parseModelData(brres):
 def parseMDL0(mdl0):
 	global sizeCount
 	matsGroup = getChildFromName(mdl0, "Materials")
-	mdl0TexturesGroup = getChildFromName(mdl0,"Textures")
-	verticesGroup = getChildFromName(mdl0,"Vertices")
-	normalsGroup = getChildFromName(mdl0,"Normals")
-	isUnusedFound = False # True if any unused verts/norms found
+	mdl0TexturesGroup = getChildFromName(mdl0, "Textures")
+	verticesGroup = getChildFromName(mdl0, "Vertices")
+	normalsGroup = getChildFromName(mdl0, "Normals")
+	isUnusedFound = False # Gets set if any unused verts/norms found
 	
-	# Start with deleting materials assigned to no objects
+	# Check for materials not assigned to objects
 	if matsGroup:
+		
 		# Iterate through materials in mdl0
-		# If object count == 0, delete the material
 		for m in reverseResourceList(matsGroup.Children):
+		
+			# If object count == 0, delete the material
 			if len(m._objects) == 0:
 				deletedMatsNamesList.append(m.Name)
 				sizeCount += m.UncompressedSize
 				m.Remove()
+			
+			# If material set to Cull All, don't delete it, but add to appropriate lists
 			elif "Cull_All" in str(m._cull):
 				cullAllMatsNamesList.append(m.Name)
 				cullAllMDL0NamesList.append(mdl0.Parent.Parent.Name + "/" + mdl0.Name)
 	
 	# In each model, get the "Textures" folder and populate the script's list of used textures
 	if mdl0TexturesGroup:
+	
 		# Iterate through texture references in mdl0, from bottom-up.
-		# If material references == 0, delete the texture
 		for t in reverseResourceList(mdl0TexturesGroup.Children):
 			if t.References:
 				texturesInMaterialsNamesList.append(t.Name)
-			# If Texture node isn't used by any materials, delete it instead
+			
+			# If Texture node isn't used by any materials, delete it
 			else:
 				sizeCount += t.UncompressedSize
 				t.Remove()

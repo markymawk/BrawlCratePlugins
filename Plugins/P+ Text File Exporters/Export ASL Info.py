@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.5.1"
+__version__ = "1.7.2"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
@@ -11,12 +11,14 @@ from System.IO import *
 from BrawlLib.Internal.Windows.Forms import ProgressWindow
 from mawwwkLib import *
 
-FLAGS_LIST = [4096, 2048, 1024, 512, 256, 64, 32, 16, 8, 4, 2, 1]
-OUTPUT_TEXT_FILENAME = "_ASL Data.txt"
+## Begin global variables
 
+OUTPUT_TEXT_FILENAME = "_ASL Data.txt"
+FLAGS_LIST = [4096, 2048, 1024, 512, 256, 64, 32, 16, 8, 4, 2, 1]
 missingASLList = []
 missingParamFiles = []
 
+## End global variables
 ## Begin helper methods
 
 # Print header for each file

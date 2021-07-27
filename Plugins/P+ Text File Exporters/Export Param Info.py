@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.7.1"
+__version__ = "1.7.2"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
@@ -11,12 +11,14 @@ from System.IO import *
 from BrawlLib.Internal.Windows.Forms import ProgressWindow
 from mawwwkLib import *
 
-OUTPUT_TEXT_FILENAME = "_Stage Param Data.txt"
+## Begin global variables
 
+OUTPUT_TEXT_FILENAME = "_Stage Param Data.txt"
 missingPacParams = []
 missingModuleParams = []
 missingTracklistParams = []
 
+## End global variables
 ## Start helper methods
 
 # Returns a string containing pac filename.

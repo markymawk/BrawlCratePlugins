@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.5.1"
+__version__ = "1.7.2"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
@@ -10,13 +10,14 @@ from System.IO import *
 from BrawlLib.Internal.Windows.Forms import ProgressWindow
 from mawwwkLib import *
 
+## Begin global variables
 OUTPUT_TEXT_FILENAME = "_Tracklist Data.txt"
- 
 missingPathTracklists = []		# Names of tlst nodes which contain missing file paths
-missingTracks = []				# Track names corresponding to missing file paths
+missingTracks = []				# Names of tracks with missing file paths
 duplicateIDsTracklists = []		# Names of tlst nodes with duplicate song IDs
 existingFilePaths = []			# Saves any found file paths, for faster checks
 
+## End global variables
 ## Begin helper methods
 
 # Print header for each tracklist containing filename and number of tracks
