@@ -47,9 +47,9 @@ def main():
 	if not destDir:
 		return
 	
-	#sourceDir = "C:\Users\m\Desktop\_tracklist source test"
-	#destDir = "C:\Users\m\Desktop\_tracklist dest test"
-	
+	# Store currently opened file
+	CURRENT_OPEN_FILE = getOpenFile()
+		
 	SOURCE_DIR_FILES = Directory.CreateDirectory(sourceDir).GetFiles()
 	
 	# Progress bar start
@@ -107,6 +107,9 @@ def main():
 	# Progress bar close
 	progressBar.Finish()
 	
+	# Reopen previously-opened file
+	if CURRENT_OPEN_FILE:
+		BrawlAPI.OpenFile(CURRENT_OPEN_FILE)
 	# RESULTS
 	
 	if tracklistsAffectedCount >= 1:
@@ -114,7 +117,7 @@ def main():
 		listPrintedCount = 0
 		
 		# List track names that have modified frequencies
-		message = str(tracksAffectedCount) + " track frequency value(s) updated across " + str(tracklistsAffectedCount) + " tracklists\n\n"
+		message = str(tracksAffectedCount) + " track frequency value(s) updated across " + str(tracklistsAffectedCount) + " tracklist(s)\n\n"
 		
 		# If greater than max limit, cut off list
 		while listPrintedCount < MAX_LIST and listPrintedCount < len(modifiedTrackNames):
