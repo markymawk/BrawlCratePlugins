@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.2"
+__version__ = "1.3"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
@@ -34,7 +34,7 @@ def main():
 	redirectCount = 0		# Number of redirect nodes created
 	convertedNodes = []		# List of BRRES nodes converted, to delete later
 	
-	# Iterate through all brres nodes to find the first static 
+	# Iterate through all brres nodes
 	for i in range(0,len(PARENT_2_ARC.Children),1):
 	
 		node = PARENT_2_ARC.Children[i]
@@ -46,7 +46,7 @@ def main():
 			# If matching hash exists...
 			if nodeHash in hashIndexDict.keys():
 				# ...create a redirect
-				createRedirect(node.FileIndex, hashIndexDict[nodeHash], parentARC)
+				createRedirect(node.FileIndex, hashIndexDict[nodeHash], PARENT_2_ARC)
 				redirectCount += 1
 				
 				# Mark the BRRES to delete later
@@ -57,8 +57,7 @@ def main():
 				hashIndexDict[nodeHash] = node.AbsoluteIndex
 	
 	# Delete all converted BRRES nodes
-	for node in convertedNodes:
-		node.Remove()
+	removeChildNodes(convertedNodes)
 		
 	# Results dialog
 	if redirectCount:

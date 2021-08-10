@@ -45,7 +45,7 @@ def sortTextures(textureWrappers, AUTO_SAVE):
 	
 	# Iterate through textures
 	for i in range(1, len(textureWrappers), 1):
-		# Auto-save if enabled, and only if not in amid a colorsmash group
+		# Auto-save if enabled, and only if not amid a colorsmash group
 		if AUTO_SAVE and not inSharesDataGroup and tex0MovedCount >= 13:
 			BrawlAPI.SaveFile()
 			tex0MovedCount = tex0MovedCount % 13
