@@ -33,7 +33,7 @@ def main():
 	# Get source tracklist dir
 	if BrawlAPI.ShowOKCancelPrompt(\
 	"Copy track frequencies from one tracklist folder to another.\n\n"\
-	"Click OK to continue, then choose the source folder to copy from.", SCRIPT_NAME):
+	"Click OK to continue, then choose the source tracklist folder to copy from (typically Project+\pf\sound\tracklist)", SCRIPT_NAME):
 		sourceDir = BrawlAPI.OpenFolderDialog("Choose source tracklist folder")
 	else:
 		return
