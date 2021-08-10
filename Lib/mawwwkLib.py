@@ -1,4 +1,4 @@
-﻿version = "1.1"
+﻿version = "1.2"
 # mawwwkLib
 # Common functions for use with BrawlAPI scripts
 
@@ -105,6 +105,9 @@ def removeChildNodes(nodeList):
 	for node in nodeList:
 		parentNode.RemoveChild(node)
 
+def removeNode(node):
+	node.Parent.RemoveChild(node)
+
 # reverseResourceList()
 # Basic impl of list.reverse() to accommodate ResourceNode lists
 # params:
@@ -166,6 +169,14 @@ def getChildNames(group):
 		list.append(i.Name)
 	return list
 
+def getChildNodes(node):
+	if node.HasChildren:
+		childrenList = []
+		for i in node.Children:
+			childrenList.append(i)
+	
+		return childrenList
+	return 0
 # Return true if given node is a brres, of exactly 640 bytes, and has exactly one mdl0 node
 def isStaticBRRES(node):
 	modelsGroup = getChildFromName(node,"3DModels")
@@ -279,3 +290,6 @@ def formatHex(value, DIGIT_COUNT=4):
 #	msg: any string
 def dmessage(msg):
 	BrawlAPI.ShowMessage(str(msg), "DEBUG")
+
+def dmsg(msg):
+	dmessage(msg)
