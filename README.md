@@ -12,19 +12,20 @@ Plug-ins:
 - Delete Unused Animation Data
 - Delete Unused Stage Textures
 - Delete Unused Vertices and Normals
-- Detect Unused BRSTMs (P+)
-- Export ASL Info (P+)
-- Export Param Info (P+)
-- Export Tracklist Info (P+)
+- Detect Unused BRSTMs
 - Generate Static BRRES Redirects
+- Verify ASL (stageslot) File Data
+- Verify Param (stageinfo) File Data
+- Verify Tracklist (TLST) File Data
 
 Loaders:
+- CLR0 Set and Rotate Hue
 - Colorsmash-safe Texture Sort
 - Clear Unused Animation Entries (CHR, VIS bones / SRT, CLR, PAT materials)
-- CLR0 Set and Rotate Hue
 - Export MenuRule as selcharacter2 (from menumain)
 - info.pac Stock Icon Exporter
 - MDL0 Copy Fighter Model
+- MDL0 Import Material Settings
 - Param File Navigator
 - Set All Game & Watch Colors (for FitGameWatch00.pac color entries)
 - TEX0 Locate Usage
