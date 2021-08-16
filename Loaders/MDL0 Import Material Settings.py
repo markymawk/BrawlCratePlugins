@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0"
+__version__ = "1.1"
 
 from System.Windows.Forms import ToolStripMenuItem # Needed for all loaders
 from BrawlCrate.API import *
@@ -18,43 +18,42 @@ def EnableCheck(sender, event_args):
 ## Start loader functions
 
 def import_model_settings(sender, event_args):
+
 	# "Dest model" refers to the selected model whose mats/shaders are being replaced
 	DEST_MODEL = BrawlAPI.SelectedNode
 	DEST_MODEL_WRAPPER = BrawlAPI.SelectedNodeWrapper
 	PARENT_MODELS_GROUP = BrawlAPI.SelectedNode.Parent
+	DEST_MODEL_MAT_GROUP = getChildFromName(DEST_MODEL, "Materials")
+	DEST_MODEL_SHADERS = getChildFromName(DEST_MODEL, "Shaders").Children
 	
-	# "Source model" refers to the imported model from which settings are being imported
+	# Import temporary external MDL0
 	BrawlAPI.SelectedNodeWrapper.Parent.Parent.ImportModel()
 	
+	# "Source model" refers to the imported model from which settings are being imported
 	SOURCE_MODEL_INDEX = len(PARENT_MODELS_GROUP.Children)-1
 	SOURCE_MODEL = DEST_MODEL.Parent.Children[SOURCE_MODEL_INDEX]
-	
-	DEST_MODEL_MAT_GROUP = getChildFromName(DEST_MODEL, "Materials")
 	SOURCE_MODEL_MAT_GROUP = getChildFromName(SOURCE_MODEL, "Materials")
-	
-	DEST_MODEL_SHADERS = getChildFromName(DEST_MODEL, "Shaders").Children
 	SOURCE_MODEL_SHADERS = getChildFromName(SOURCE_MODEL, "Shaders").Children
 	
 	sourceMatsList = getChildNodes(SOURCE_MODEL_MAT_GROUP)
 	
 	# Replace materials that share names
-	for mat in DEST_MODEL_MAT_GROUP.Children:
-		sourceMatName = mat.Name
-		sourceMat = getChildFromName(SOURCE_MODEL_MAT_GROUP, sourceMatName)
+	for destMat in DEST_MODEL_MAT_GROUP.Children:
+		sourceMat = getChildFromName(SOURCE_MODEL_MAT_GROUP, destMat.Name)
 		
 		# If material exists in source model, assign it to dest model
 		if sourceMat:
-			mat.Replace(sourceMat)
+			destMat.Replace(sourceMat)
 			sourceMatsList.remove(sourceMat)
 	
-	# Copy any remaining materials (which don't share names)
+	# Copy any remaining materials (those that don't share names)
 	for sourceMat in sourceMatsList:
 		newMat = DEST_MODEL_WRAPPER.NewMaterial()
 		newMat.Replace(sourceMat)
 		newMat.Name = sourceMat.Name
 	
 	# Copy over shaders
-	# If dest model has fewer shaders than source model, add more to dest model until it's equal
+	# If dest model has fewer shaders than source model, add more to dest model until the amount of shaders in each mdl0 is equal
 	DEST_SHADER_COUNT = len(DEST_MODEL_SHADERS)
 	SOURCE_SHADER_COUNT = len(SOURCE_MODEL_SHADERS)
 	
@@ -75,7 +74,13 @@ def import_model_settings(sender, event_args):
 	# Number of materials imported that aren't assigned to any objects -- may be incorrectly assigned or unused
 	EMPTY_MATS_COUNT = len(sourceMatsList)
 	
-	BrawlAPI.ShowMessage("Materials and shaders imported successfully!\n\n" + str(EMPTY_MATS_COUNT) + " materials unassigned to objects (may be incorrectly assigned, or unused)","Success")
+	message = "Materials and shaders imported successfully!"
+	
+	if EMPTY_MATS_COUNT:
+		message += "\n\n" + str(EMPTY_MATS_COUNT) + " materials unassigned to objects (may be incorrectly assigned, or unused)"
+		
+	BrawlAPI.ShowMessage(message, "Success")
+
 ## End loader functions
 ## Start context menu add
 
