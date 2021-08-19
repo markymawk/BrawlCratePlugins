@@ -6,7 +6,6 @@ from BrawlLib.SSBB.ResourceNodes import *
 from BrawlLib.SSBB.ResourceNodes.ProjectPlus import *
 from BrawlCrate.UI import MainForm
 from BrawlLib.Internal import *
-from BrawlLib.Imaging import *
 from System.IO import *
 from BrawlLib.Internal.Windows.Forms import ProgressWindow
 from mawwwkLib import *

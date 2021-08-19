@@ -14,7 +14,7 @@ from mawwwkLib import *
 
 SCRIPT_NAME = "Verify Tracklist File Data"
 OUTPUT_TEXT_FILENAME = "_Tracklist Data.txt"
-missingTracks = []				# List[2] of tracklists:tracks with missing file paths
+missingTracks = []				# List of [tracklists, tracks with missing file paths]
 existingFilePaths = []			# Saves any found file paths, for faster checks
 
 ## End global variables
@@ -39,7 +39,7 @@ def getBrstmFilePath(track):
 	# If file path is empty, track should be from ISO
 	if str(track.SongFileName) == "None":
 	
-		# Append Brawl track to tracklist string, including BRSTM filename and hex ID
+		# Append Brawl track to tracklist string using static BrawlCrate dict
 		brawlBrstmFilePath = track.BrawlBRSTMs[track.SongID] + ".brstm"
 		brawlSongHex = formatHex(track.SongID)
 		
@@ -51,14 +51,13 @@ def getBrstmFilePath(track):
 		
 		# Derive filepath string
 		trackStr = str(track.SongFileName) + ".brstm"
-		trackFilePath = track.rstmPath
 		
 		# If track filepath has already been found, return it without extra checks
-		if trackFilePath in existingFilePaths:
+		if track.rstmPath in existingFilePaths:
 			return trackStr
 			
 		# If brstm file is missing, add it to the "missing" list and mark it accordingly in output
-		elif track.SongFileName not in BRAWL_SONG_ID_LIST and not File.Exists(trackFilePath):
+		elif track.SongFileName not in BRAWL_SONG_ID_LIST and not File.Exists(track.rstmPath):
 			tracklistName = str(track.Parent.Name) + ".tlst"
 			missingTrackName = str(track.SongFileName) + ".brstm"
 			missingTracks.append([tracklistName, missingTrackName])

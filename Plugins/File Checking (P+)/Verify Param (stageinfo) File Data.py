@@ -1,12 +1,11 @@
 __author__ = "mawwwk"
-__version__ = "2.0"
+__version__ = "2.0.1"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
 from BrawlLib.SSBB.ResourceNodes.ProjectPlus import *
 from BrawlCrate.UI import MainForm
 from BrawlLib.Internal import *
-from BrawlLib.Imaging import *
 from System.IO import *
 from BrawlLib.Internal.Windows.Forms import ProgressWindow
 from mawwwkLib import *
@@ -301,18 +300,21 @@ def main():
 		if errors:
 			message = "Stage param file errors found.\n\n"
 			
+			# List missing stage pac files
 			if len(missingPacParams):
 				message += "Stage .pac file not found:\n"
 				for p in missingPacParams:
 					message += p + ".param\n"
 				message += "\n"
-				
+			
+			# List missing stage module files
 			if len(missingModuleParams):
 				message += "Module file not found:\n"
 				for p in missingModuleParams:
 					message += p + ".param\n"
 				message += "\n"
-				
+			
+			# List missing tracklist files
 			if len(missingTracklistParams):
 				message += "Tracklist file not found:\n"
 				for p in missingTracklistParams:
@@ -322,11 +324,11 @@ def main():
 			BrawlAPI.ShowError(message, "Missing files")
 
 		# Success, no errors, file write enabled
-		elif not errors and DO_FILE_WRITE:
+		elif DO_FILE_WRITE:
 			BrawlAPI.ShowMessage("Contents of " + str(paramFilesOpenedCount) + " param files exported with no errors to:\n" + str(FULL_TEXT_FILE_PATH), "Success!")
 		
 		# Success, no file write
-		elif not errors:
+		else:
 			BrawlAPI.ShowMessage("Contents of " + str(paramFilesOpenedCount) + " param files verified with no errors.", "Success!")
 
 main()
