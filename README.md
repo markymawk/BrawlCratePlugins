@@ -29,6 +29,7 @@ Loaders:
 - Param File Navigator
 - Set All Game & Watch Colors (for FitGameWatch00.pac color entries)
 - TEX0 Locate Usage
+- TLST Add BRSTMs to Tracklist
 - TLST Reset Track Frequencies
 
 Feedback always welcome @ mawwwk#1068
