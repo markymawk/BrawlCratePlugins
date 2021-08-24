@@ -1,5 +1,5 @@
 # BrawlCratePlugins
-Plug-ins for BrawlCrate using BrawlAPI. Includes scripts for optimizing stage .pac files, exporting mass info to text files, and some other helpful automated processes.
+Plug-ins for BrawlCrate using BrawlAPI. Includes scripts for optimizing stage .pac files, maintaining custom builds, and some other helpful automated processes.
 
 To install:  
 In BrawlCrate, navigate to Tools > Settings > Updater tab, and click the Manage Subscriptions button.  
@@ -12,11 +12,11 @@ Plug-ins:
 - Delete Unused Animation Data
 - Delete Unused Stage Textures
 - Delete Unused Vertices and Normals
-- Detect Unused BRSTMs
+- Detect Unused BRSTMs (P+)
 - Generate Static BRRES Redirects
-- Verify ASL (stageslot) File Data
-- Verify Param (stageinfo) File Data
-- Verify Tracklist (TLST) File Data
+- Verify ASL (stageslot) File Data (P+)
+- Verify Param (stageinfo) File Data (P+)
+- Verify Tracklist (TLST) File Data (P+)
 
 Loaders:
 - CLR0 Set and Rotate Hue
