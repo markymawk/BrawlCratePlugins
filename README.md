@@ -13,7 +13,7 @@ Feedback welcome @ mawwwk#1068
 ## Convert PNGs to Battle Portraits
 **Usage:** Plugins menu
 
-Select one or more battle portrait PNG files, along with a starting index. Exports each PNG as an InfFaceXXXX.brres file. Supports 3-digit (vBrawl) and 4-digit (50CC) indices.
+Select one or more battle portrait PNG files, along with a starting index value. Each selected image will be exported as an InfFaceXXXX.brres file. Supports 3-digit (vBrawl) and 4-digit (50CC) indices.
 
 ## Colorsmash-safe Texture Sort
 **Usage:** Right-click any "Textures" group, or parent BRRES
@@ -28,7 +28,7 @@ Automatically exports the MenuRule_en ARC into the identical ARC inside sc_selch
 ## info.pac Stock Icon Exporter
 **Usage:** info.pac > Right-click BRRES Misc Data 30 (or parent ARC)
 
-Exports stock textures and corresponding PAT0 animation to the other files where stock icon data is used: STGRESULT.pac, StockFaceTex.brres, and sc_selcharacter.pac.
+Exports stock textures and StockFace PAT0 animation data to the other files where stock icon data is used: STGRESULT.pac, StockFaceTex.brres, and sc_selcharacter.pac.
 
 # P+ build management plug-ins
 
@@ -63,12 +63,12 @@ Select the build's pf, sound, or tracklist folder. All .TLST files will be check
 Easily open the stage .pac or .tlst file associated with the given .param file. Specific substage .pac files can also be opened via right-clicking them.
 
 ## TLST Add BRSTMs to Tracklist
-**Usage:** Right-click tracklist node
+**Usage:** Right-click tracklist root node
 
-Select one or more BRSTM files, and tracklist nodes will be automatically generated and renamed according to the BRSTM's filepath. If the BRSTM file exists outside of a strm folder, a custom prefix can be added to describe the relative path, such as ../../
+Select one or more BRSTM files. New tracklist entries will be automatically generated and configured according to each BRSTM's filepath. If the BRSTM files exist outside of a strm folder, a custom prefix can be added to describe the relative path, such as `../../`
 
 ## TLST Reset Track Frequencies
-**Usage:** Right-click tracklist node
+**Usage:** Right-click tracklist root node
 
 Resets all Frequency values of track entries to their default value (40).
 
@@ -77,17 +77,17 @@ Resets all Frequency values of track entries to their default value (40).
 ## Delete Unused Animation Data
 **Usage:** Plugins menu > PAC File Optimization
 
-Iterates through CHR0, VIS0, SRT0, CLR0, and PAT0 animations in the currently opened stage .pac file, detects any unused entries, and deletes them from the animation. The result should always be tested in-game, with a backup .pac file saved.
+Checks CHR0, VIS0, SRT0, CLR0, and PAT0 animations in the currently opened stage .pac file, then detects any unused entries and deletes them from the animation. Only recommended for FD, BF, or Palutena-based stages. The result should always be tested in-game, with a backup .pac file saved.
 
 ## Delete Unused Stage Textures
 **Usage:** Plugins menu > PAC File Optimization
 
-Iterates through material entries and TEX0 entries in the currently opened stage .pac file, and deletes any textures unused by materials or PAT0 animations. Lists any materials set to Cull_All, but leaves them to the user to manually delete. Also lists any models with unused Normals or Vertices nodes. **WILL break Hanenbow-based stages**, and may have untested, undesired effects on others (be wary of Star Fox or Shadow Moses-based stages). 
+Checks materials and TEX0 nodes in the currently opened stage .pac file. Deletes any materials that are unused by objects, PAT0 animations, or SRT0 animations, then deletes any textures unused by materials or PAT0 animations. Lists any materials set to Cull_All, but leaves them to the user to manually delete. Also lists any models with unused Normals or Vertices nodes. **WILL break Hanenbow-based stages**, and may have untested, undesired effects on others (be wary of Star Fox or Shadow Moses-based stages). The result should always be tested in-game, with a backup .pac file saved.
 
 ## Delete Unused Vertices and Normals
 **Usage:** Plugins menu > PAC File Optimization
 
-Iterates through models in the currently opened stage .pac file, and deletes any Normals or Vertices nodes unused by any objects. Lists any nodes named "Regenerated" as these may appear misleading to others (this is a common name for unused junk data). The result should always be tested in-game, with a backup .pac file saved.
+Checks all models in the currently opened stage .pac file, and deletes any Normal or Vertex nodes unused by any objects. Any nodes named "Regenerated" are listed, as this is a common name for unused junk data and may appear misleading. The result should always be tested in-game, with a backup .pac file saved.
 
 ## Generate Static BRRES Redirects
 **Usage:** Plugins menu > PAC File Optimization
@@ -97,19 +97,19 @@ Improves readability of stage .pac files by converting "Static" BRRES nodes (nod
 ## Clear Unused Animation Entries
 **Usage:** Right-click a CHR0, VIS0, STR0, CLR0, or PAT0 animation node
 
-A single-use version of "Delete Unused Animation Data" that checks a single animation entry for unused bones (CHR0, VIS0) or materials (SRT0, CLR0, PAT0). The result should always be tested in-game, with a backup .pac file saved.
+A single-use version of "Delete Unused Animation Data" that checks a single animation for unused bones (CHR0, VIS0) or materials (SRT0, CLR0, PAT0). The result should always be tested in-game, with a backup .pac file saved.
 
 # Model & animation shortcuts
 
 ## CLR0 Set and Rotate Hue
-**Usage:** Right-click a CLR0 animation node
+**Usage:** Right-click a CLR0 animation node, CLR0 material, or CLR0 material entry
 
-Modifies all frames of a CLR0 entry at once. **Set Hue** changes all color values to the same hue (0 to 359 valid). **Rotate Hue** adds a given value to all colors' hue values, rotating them along the color wheel (-180 to 180 valid).
+Modifies all color frames of the animation at once. **Set Hue** changes all color values to the same hue (0 to 359 valid). **Rotate Hue** adds a given value to all colors' hue values, rotating them along the color wheel (-180 to 180 valid). Can be run on the full CLR0 animation, any individual CLR0Material, or CLR0 material entry
 
 ## MDL0 Copy Fighter Model
 **Usage:** Right-click a MDL0 node inside a costume .pac file
 
-Exports the selected MDL0 node to the same location inside all other costume .pac files in the same folder with the same name. Useful for optimizing or iterating on several recolors at once.
+Replaces all identically-named MDL0 nodes in the fighter's directory with the selected MDL0. Useful for optimizing or iterating on several recolors at once.
 
 ## MDL0 Import Material Settings
 **Usage:** Right-click any MDL0 node
@@ -119,7 +119,7 @@ Imports materials and shaders from an external .MDL0 file, replacing all setting
 ## Set All Game & Watch Colors
 **Usage:** Right-click a CLR0 animation inside FitGameWatch00.pac, or the corresponding ColorRegister0 entry
 
-Exports the selected color sequence to the other matching entries inside the FitGamewatch00 file. Must be ran separately for fill and border entries.
+Replaces all fill/border entries with the selected color sequence inside the FitGamewatch00 file. Must be ran separately for fill and border entries.
 
 ## Locate Texture Usage
 **Usage:** Right-click a TEX0 node inside a stage .pac file
