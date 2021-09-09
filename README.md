@@ -35,7 +35,7 @@ Exports stock textures and corresponding PAT0 animation to the other files where
 ## Copy Tracklist Frequencies (P+)
 **Usage:** Plugins menu
 
-Select a "source" tracklist folder (typically Project+/pf/sound/tracklist) and a "destination" tracklist folder. Song frequency values will be copied from the source to the destination tracklists, based on song name or filename.
+Transfer entire tracklist frequencies across build updates. Select a "source" tracklist folder (typically Project+/pf/sound/tracklist) and a "destination" tracklist folder. Song frequency values will be copied from the source to the destination tracklists, based on song name or filename.
 
 ## Detect Unused BRSTMs (P+)
 **Usage:** Plugins menu > File Checking (P+)
