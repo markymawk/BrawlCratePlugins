@@ -79,6 +79,8 @@ Resets all Frequency values of track entries to their default value (40).
 
 Checks CHR0, VIS0, SRT0, CLR0, and PAT0 animations in the currently opened stage .pac file, then detects any unused entries and deletes them from the animation. Only recommended for FD, BF, or Palutena-based stages. The result should always be tested in-game, with a backup .pac file saved.
 
+*Alternate: can be run per-animation as well, via any individual animation's right-click > plug-ins menu*
+
 ## Delete Unused Stage Textures
 **Usage:** Plugins menu > PAC File Optimization
 
