@@ -96,11 +96,6 @@ Checks all models in the currently opened stage .pac file, and deletes any Norma
 
 Improves readability of stage .pac files by converting "Static" BRRES nodes (nodes where the only entry is a Static model) to Redirect nodes at the end of the file. The result should always be tested in-game, with a backup .pac file saved.
 
-## Clear Unused Animation Entries
-**Usage:** Right-click a CHR0, VIS0, STR0, CLR0, or PAT0 animation node
-
-A single-use version of "Delete Unused Animation Data" that checks a single animation for unused bones (CHR0, VIS0) or materials (SRT0, CLR0, PAT0). The result should always be tested in-game, with a backup .pac file saved.
-
 # Model & animation shortcuts
 
 ## CLR0 Set and Rotate Hue
