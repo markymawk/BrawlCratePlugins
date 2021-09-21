@@ -144,6 +144,13 @@ def getChildWrapperFromName(wrapper, nameStr, EXACT_NEEDED=False):
 				return child
 	return 0	# If not found, return 0
 
+def listToString(list):
+	message = ""
+	for item in list:
+		message += item + "\n"
+	
+	return message
+
 ## End list functions
 ## Start node functions
 
