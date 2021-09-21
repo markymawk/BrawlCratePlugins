@@ -122,3 +122,8 @@ Replaces all fill/border entries with the selected color sequence inside the Fit
 **Usage:** Right-click a TEX0 node inside a stage .pac file
 
 Lists all models, materials, objects, and PAT animations using the selected texture.
+
+## Locate SCN0 LightSet/Fog Usage
+**Usage:** Right-click a LightSet or Fog node
+
+Lists all materials to which the selected LightSet or Fog is assigned
