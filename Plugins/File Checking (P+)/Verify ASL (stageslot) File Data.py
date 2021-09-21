@@ -29,7 +29,7 @@ def writeHeader(textfile, parentNode):
 	if childCount == 1:
 		writeStr += "1 alt stage\n\n"
 	else:
-		writeStr += str(childCount) + " alt stages\n\n"
+		writeStr += str(childCount) + " entries\n\n"
 	
 	textfile.write(writeStr)
 
