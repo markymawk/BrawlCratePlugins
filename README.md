@@ -45,14 +45,14 @@ Select the build's pf (or sound, or strm) folder. Any BRSTM files inside sound/s
 ## Verify ASL (stageslot) File Data (P+)
 **Usage:** Plugins menu > File Checking (P+)
 
-Select the build's pf, stage, or stageslot folder. All .ASL files will be checked for valid .param file locations. Optionally, the contents can be exported to a .txt file inside the stageslot folder, for record-keeping or version control.
+Select the build's pf, stage, or stageslot folder. All .ASL files will be checked for valid .param file locations. Optionally, the contents can be exported to a .txt file inside the stageslot folder, listing all stage entries in each ASL file along with the corresponding button combination for each.
 
 ## Verify Param (stageinfo) File Data (P+)
 **Usage:** Plugins menu > File Checking (P+)
 
 Select the build's pf, stage, or stageinfo folder. All .param files will be checked for valid stage .pac, stage module, and tracklist file locations. Optionally, the contents can be exported to a .txt file inside the stageinfo folder, including SFX/GFX banks, stage flags, and character color overlay values.
 
-## Verify Tracklist (TLST) File Data (P+)
+## Verify TLST (tracklist) File Data (P+)
 **Usage:** Plugins menu > File Checking (P+)
 
 Select the build's pf, sound, or tracklist folder. All .TLST files will be checked for valid BRSTM file paths and song IDs, including pinch mode (SongSwitch) tracks. Optionally, the contents can be exported to a .txt file inside the tracklist folder, including frequency, volume (for custom BRSTMs), and SongDelay values.
