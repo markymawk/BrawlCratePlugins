@@ -198,7 +198,7 @@ if PARENT_2_ARC and BrawlAPI.ShowOKCancelPrompt(msg, SCRIPT_NAME):
 				message += "\n\n"
 		
 		if message != "":
-			message += str(sizeCount) + " bytes"
+			message += "\n\n" + str(sizeCount) + " bytes"
 			BrawlAPI.ShowMessage(message, "Deleted Unused Textures")
 		
 		# List any Cull_all mats
