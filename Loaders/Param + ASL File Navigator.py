@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.1.2"
+__version__ = "1.2"
 
 from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import GenericWrapper
@@ -27,6 +27,11 @@ def EnableCheckSubstagePAC(sender, event_args):
 def EnableCheckTLST(sender, event_args):
 	param = BrawlAPI.RootNode
 	sender.Enabled = (param is not None and param.TrackList is not "")
+
+# ASL Entry enable check: SelectedNode is an ASLSEntryNode
+def EnableCheckASLEntry(sender, event_args):
+	entry = BrawlAPI.SelectedNode
+	sender.Enabled = (entry is not None and "ASLSEntryNode" in str(type(entry)))
 
 ## End enable check functions
 ## Start loader functions
@@ -70,15 +75,25 @@ def open_stage_tlst(sender, event_args):
 	TLST_FILE_PATH = PF_FOLDER + "\sound\\tracklist\\" + BrawlAPI.RootNode.TrackList + ".tlst"
 	
 	BrawlAPI.OpenFile(TLST_FILE_PATH)
+	
+# Function to open param file
+def open_param(sender, event_args):
+	STAGE_FOLDER = str(BrawlAPI.RootNode.FilePath).split("\stageslot\\")[0]
+	PARAM_FILE_PATH = STAGE_FOLDER + "\stageinfo\\" + BrawlAPI.SelectedNode.Name + ".param"
+	
+	BrawlAPI.OpenFile(PARAM_FILE_PATH)
 
 ## End loader functions
 ## Start context menu add
 
-# Open single pac
+# Param > Open stage pac
 BrawlAPI.AddContextMenuItem(STEXWrapper, "", "Open associated stage .pac file", EnableCheckPAC, ToolStripMenuItem("Open stage .pac", None, open_stage_pac))
 
-# Open substage pac
+# Param > Open substage pac
 BrawlAPI.AddContextMenuItem(GenericWrapper, "", "Open substage .pac file", EnableCheckSubstagePAC, ToolStripMenuItem("Open substage .pac", None, open_substage_pac))
 
-# Open TLST
+# Param > Open TLST
 BrawlAPI.AddContextMenuItem(STEXWrapper, "", "Open associated .tlst file", EnableCheckTLST, ToolStripMenuItem("Open tracklist", None, open_stage_tlst))
+
+# ASL > Open param
+BrawlAPI.AddContextMenuItem(GenericWrapper, "", "Open associated .param file", EnableCheckASLEntry, ToolStripMenuItem("Open .param", None, open_param))
