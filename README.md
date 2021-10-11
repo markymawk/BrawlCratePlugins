@@ -57,21 +57,25 @@ Select the build's pf, stage, or stageinfo folder. All .param files will be chec
 
 Select the build's pf, sound, or tracklist folder. All .TLST files will be checked for valid BRSTM file paths and song IDs, including pinch mode (SongSwitch) tracks. Optionally, the contents can be exported to a .txt file inside the tracklist folder, including frequency, volume (for custom BRSTMs), and SongDelay values.
 
-## Param File Navigator
-**Usage:** Right-click param node, or any substage entry
+## Param + ASL File Navigator
+**Usage:** Right-click a param parent node, ASL entry node, or any param substage entry.
 
-Easily open the stage .pac or .tlst file associated with the given .param file. Specific substage .pac files can also be opened via right-clicking them.
+Easily open a .param file from its ASL entry, or open the stage .pac or .tlst file associated with a given .param file. Specific substage .pac files can also be opened via right-clicking their child nodes.
 
 ## TLST Add BRSTMs to Tracklist
-**Usage:** Right-click tracklist root node
+**Usage:** Right-click tracklist parent node
 
 Select one or more BRSTM files. New tracklist entries will be automatically generated and configured according to each BRSTM's filepath. If the BRSTM files exist outside of a strm folder, a custom prefix can be added to describe the relative path, such as `../../`
 
 ## TLST Reset Track Frequencies
-**Usage:** Right-click tracklist root node
+**Usage:** Right-click tracklist parent node
 
 Resets all Frequency values of track entries to their default value (40).
 
+## TLST Check Missing Tracks
+**Usage:** Right-click tracklist parent node
+
+Checks all tracklist entries for missing BRSTM file paths (and SongSwitch paths, when applicable).
 # Stage optimization plug-ins
 
 ## Delete Unused Animation Data
