@@ -92,6 +92,7 @@ def set_hue_from_material(sender, event_args):
 def set_hue_from_mat_entry(sender, event_args):
 	hue = getHueValue(SET_HUE_VALUE_PROMPT, 0, 359)
 	setHueForAllFrames(BrawlAPI.SelectedNode, hue)
+	node = BrawlAPI.SelectedNode
 	
 	if successCheck:
 		BrawlAPI.ShowMessage("All color frames set to hue '" + str(hue) + "' inside\n" + node.Parent.Name + " > " + node.Name, "Success")
