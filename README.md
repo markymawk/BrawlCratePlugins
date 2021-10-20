@@ -4,7 +4,8 @@ To install:
 In BrawlCrate, navigate to Tools > Settings > Updater tab, and click the Manage Subscriptions button.  
 Click add, then paste the link to this Github repo: https://github.com/markymawk/BrawlCratePlugins  
 Then, these plug-ins will download and update automatically!  
-*BrawlCrate v0.37 or newer required for installation & auto-updates.*
+*BrawlCrate v0.37 or newer required for installation & auto-updates.*  
+*Python 3.9.x required to run. Set install path inside Tools > Settings > BrawlAPI tab.*
 
 Feedback welcome @ mawwwk#1068
 
