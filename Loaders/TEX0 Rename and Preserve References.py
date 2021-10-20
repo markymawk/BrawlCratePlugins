@@ -7,7 +7,7 @@ from BrawlLib.SSBB.ResourceNodes import *
 from System.Windows.Forms import ToolStripMenuItem
 from mawwwkLib import *
 
-SCRIPT_NAME = "Rename Within PAT0"
+SCRIPT_NAME = "Rename TEX0 (preserve references)"
 
 ## Start enable check function
 # Check that tex0 is under a BRRES
@@ -36,7 +36,7 @@ def renamePAT0(pat0, oldName, newName):
 ## End helper functions
 ## Start loader function
 
-def rename_tex0_within_pat0(sender, event_args):
+def rename_tex0_and_references(sender, event_args):
 	textureNode = BrawlAPI.SelectedNode
 	nodeNameOrig = textureNode.Name
 	
@@ -54,22 +54,45 @@ def rename_tex0_within_pat0(sender, event_args):
 	# Change TEX0 name
 	textureNode.Name = newName
 	
-	# If TEX0 is inside a TextureData BRRES, change PAT0s across the entire file
+	# If TEX0 is inside a TextureData BRRES, rename references across the entire file
 	parentBRRES = textureNode.Parent.Parent
-	if "Texture" in parentBRRES.Name and isinstance(parentBRRES, BRESNode):
+	if "Texture" in parentBRRES.Name and isinstance(parentBRRES, BRRESNode):
+	
+		# Rename PAT0 references
 		for pat0 in BrawlAPI.NodeListOfType[PAT0Node]():
 			dmsg(pat0.Name)
 			renamePAT0(pat0, nodeNameOrig, newName)
+		
+		# Rename mat references 
+		for matRef in BrawlAPI.NodeListOfType[MDL0MaterialRefNode]():
+			if matRef.Name == nodeNameOrig:
+				matRef.Name = newName
+				matRef.Palette = newName
 	
-	# if TEX0 is inside a ModelData or MiscData brres, change PAT0 only inside that BRRES
+	# If TEX0 is inside a ModelData or MiscData brres, rename only within that BRRES
 	else:
 		PAT0Group = getChildFromName(parentBRRES, "AnmTexPat")
+		modelsGroup = getChildFromName(parentBRRES, "Models")
 		
+		# Rename PAT0 references
 		if PAT0Group:
 			for pat0 in PAT0Group.Children:
 				renamePAT0(pat0, nodeNameOrig, newName)
+		
+		# Rename mat references
+		if modelsGroup:
+			for mdl0 in modelsGroup.Children:
+				matsGroup = getChildFromName(mdl0, "Materials")
+				if matsGroup:
+					for mat in matsGroup.Children:
+						if mat.Children:
+							for matRef in mat.Children:
+								if matRef.Name == nodeNameOrig:
+									matRef.Name = newName
+									matRef.Palette = newName
+			
 
 ## End loader function
 ## Start context menu add
 
-BrawlAPI.AddContextMenuItem(TEX0Wrapper, "", "Rename TEX0 and all matching entries in PAT0 animations", EnableCheckTEX0, ToolStripMenuItem("Rename (Preserve PAT0 entries)", None, rename_tex0_within_pat0))
+BrawlAPI.AddContextMenuItem(TEX0Wrapper, "", "Rename TEX0 and all matching entries in PAT0s or matRefs", EnableCheckTEX0, ToolStripMenuItem("Rename (preserve references)", None, rename_tex0_and_references))
