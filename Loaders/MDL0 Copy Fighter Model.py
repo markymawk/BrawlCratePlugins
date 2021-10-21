@@ -84,11 +84,11 @@ def copy_fighter_model(sender, event_args):
 	# Results
 	
 	# If no files edited, show help/error
-	if len(filesUpdated) == 0:
+	if len(filesEdited) == 0:
 		BrawlAPI.ShowError("No files updated.\n\n(If this is unexpected, verify the MDL0 names and locations are identical among files you want to update.)")
 	# If any files are modified, list changed file names
 	else:
-		msg = str(len(filesUpdated)) + " files updated!\n\n"
+		msg = str(len(filesEdited)) + " files updated!\n\n"
 		for i in filesEdited:
 			msg += i + "\n"
 		
