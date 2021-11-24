@@ -33,7 +33,7 @@ Exports stock textures and StockFace PAT0 animation data to the other files wher
 
 # 2. P+ build management plug-ins
 
-## 2.1 Copy Tracklist Frequencies (P+)
+## 2.1 Copy Tracklist Frequencies
 **Usage:** Plugins menu
 
 Transfer entire tracklist frequencies across build updates. Select a "source" tracklist folder (typically Project+/pf/sound/tracklist) and a "destination" tracklist folder. Song frequency values will be copied from the source to the destination tracklists, based on song name or filename.
@@ -43,17 +43,17 @@ Transfer entire tracklist frequencies across build updates. Select a "source" tr
 
 Select the build's pf (or sound, or strm) folder. Any BRSTM files inside sound/strm/ that aren't used by tracklists inside sound/tracklist/ will be listed.
 
-## 2.3 Verify ASL (stageslot) File Data (P+)
+## 2.3 Verify ASL (stageslot) File Data
 **Usage:** Plugins menu > File Checking (P+)
 
 Select the build's pf, stage, or stageslot folder. All .ASL files will be checked for valid .param file locations. Optionally, the contents can be exported to a .txt file inside the stageslot folder, listing all stage entries in each ASL file along with the corresponding button combination for each.
 
-## 2.4 Verify Param (stageinfo) File Data (P+)
+## 2.4 Verify Param (stageinfo) File Data
 **Usage:** Plugins menu > File Checking (P+)
 
 Select the build's pf, stage, or stageinfo folder. All .param files will be checked for valid stage .pac, stage module, and tracklist file locations. Optionally, the contents can be exported to a .txt file inside the stageinfo folder, including SFX/GFX banks, stage flags, and character color overlay values.
 
-## 2.5 Verify TLST (tracklist) File Data (P+)
+## 2.5 Verify TLST (tracklist) File Data
 **Usage:** Plugins menu > File Checking (P+)
 
 Select the build's pf, sound, or tracklist folder. All .TLST files will be checked for valid BRSTM file paths and song IDs, including pinch mode (SongSwitch) tracks. Optionally, the contents can be exported to a .txt file inside the tracklist folder, including frequency, volume (for custom BRSTMs), and SongDelay values.
@@ -104,12 +104,12 @@ Improves readability of stage .pac files by converting "Static" BRRES nodes (nod
 # 4. Model, animation, & texture shortcuts
 
 ## 4.1 CLR0 Set and Rotate Hue
-**Usage:** Right-click a CLR0 animation node, CLR0 material, or CLR0 material entry
+**Usage:** Right-click a MDL0 Color node, CLR0 animation node, CLR0 material, CLR0 material entry
 
-Modifies all color frames of the animation at once. **Set Hue** changes all color values to the same hue (0 to 359 valid). **Rotate Hue** adds a given value to all colors' hue values, rotating them along the color wheel (-180 to 180 valid). Can be run on the full CLR0 animation, any individual CLR0Material, or CLR0 material entry
+Modifies all color entries of the selected item at once. **Set Hue** changes all colors to the same hue (0 to 359 valid). **Rotate Hue** adds a given value to all colors' hue values, rotating them along the color wheel (-180 to 180 valid).
 
 ## 4.2 MDL0 Copy Fighter Model
-**Usage:** Right-click a MDL0 node inside a costume .pac file
+**Usage:** Right-click a MDL0 node inside any costume .pac file
 
 Replaces all identically-named MDL0 nodes in the fighter's directory with the selected MDL0. Useful for optimizing or iterating on several recolors at once.
 
@@ -126,7 +126,7 @@ Set all of the model's materials' FogIndex or LightSetIndex values to the given 
 ## 4.5 Set All Game & Watch Colors
 **Usage:** Right-click a CLR0 animation inside FitGameWatch00.pac, or the corresponding ColorRegister0 entry
 
-Replaces all fill/border entries with the selected color sequence inside the FitGamewatch00 file. Must be ran separately for fill and border entries.
+Replaces all matching ColorRegister0 entries with the selected color sequence inside the FitGamewatch00 file. Must be ran separately for fill and border entries.
 
 ## 4.6 Locate Texture Usage
 **Usage:** Right-click a TEX0 node inside a stage .pac file
