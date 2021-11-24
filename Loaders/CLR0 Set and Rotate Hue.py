@@ -28,6 +28,9 @@ def EnableCheckCLR0Mat(sender, event_args):
 def EnableCheckCLR0(sender, event_args):
 	sender.Enabled = (BrawlAPI.SelectedNode is not None and BrawlAPI.SelectedNode.HasChildren)
 
+# Wrapper: MDL0ColorWrapper
+def EnableCheckMDL0Color(sender, event_args):
+	sender.Enabled = (BrawlAPI.SelectedNode is not None)
 ## End enable check functions
 ## Start helper functions
 
@@ -69,6 +72,24 @@ def rotate_hue_from_material(sender, event_args):
 	if successCheck:
 		BrawlAPI.ShowMessage("All color frames rotated by hue '" + str(hue) + "' inside\n" + BrawlAPI.SelectedNode.Name, "Success")
 
+def rotate_hue_from_mat_entry(sender, event_args):
+	hue = getHueValue(ROTATE_HUE_VALUE_PROMPT, -180, 180, -999)
+	rotateHueForAllFrames(BrawlAPI.SelectedNode, hue)
+	
+	if successCheck:
+		entryName = BrawlAPI.SelectedNode.Name
+		materialName = BrawlAPI.SelectedNode.Parent.Name
+		BrawlAPI.ShowMessage("All color frames rotated by hue '" + str(hue) + "' inside\n" + materialName + " > " + entryName, "Success")
+		
+def rotate_hue_from_mdl0_vertex_color(sender, event_args):
+	hue = getHueValue(ROTATE_HUE_VALUE_PROMPT, -180, 180, -999)
+	rotateHueForAllFrames(BrawlAPI.SelectedNode, hue)
+	
+	if successCheck:
+		entryName = BrawlAPI.SelectedNode.Name
+		materialName = BrawlAPI.SelectedNode.Parent.Name
+		BrawlAPI.ShowMessage("All color frames rotated by hue '" + str(hue) + "' inside\n" + materialName + " > " + entryName, "Success")
+
 # Initial loader functions to run setHueForAllFrames()
 def set_hue_from_clr0(sender, event_args):
 	hue = getHueValue(SET_HUE_VALUE_PROMPT, 0, 359)
@@ -97,14 +118,13 @@ def set_hue_from_mat_entry(sender, event_args):
 	if successCheck:
 		BrawlAPI.ShowMessage("All color frames set to hue '" + str(hue) + "' inside\n" + node.Parent.Name + " > " + node.Name, "Success")
 
-def rotate_hue_from_mat_entry(sender, event_args):
-	hue = getHueValue(ROTATE_HUE_VALUE_PROMPT, -180, 180, -999)
-	rotateHueForAllFrames(BrawlAPI.SelectedNode, hue)
+def set_hue_from_mdl0_vertex_color(sender, event_args):
+	hue = getHueValue(SET_HUE_VALUE_PROMPT, 0, 359)
+	setHueForAllFrames(BrawlAPI.SelectedNode, hue)
+	node = BrawlAPI.SelectedNode
 	
 	if successCheck:
-		entryName = BrawlAPI.SelectedNode.Name
-		materialName = BrawlAPI.SelectedNode.Parent.Name
-		BrawlAPI.ShowMessage("All color frames rotated by hue '" + str(hue) + "' inside\n" + materialName + " > " + entryName, "Success")
+		BrawlAPI.ShowMessage("All color frames set to hue '" + str(hue) + "' inside\n" + node.Parent.Name + " > " + node.Name, "Success")
 
 ## End loader functions
 ## Start main functions
@@ -166,6 +186,8 @@ BrawlAPI.AddContextMenuItem(CLR0MaterialEntryWrapper, "", "Set the hue of all fr
 BrawlAPI.AddContextMenuItem(CLR0MaterialWrapper, "", "Set the hue of all frames to a defined integer", EnableCheckCLR0MatEntry, ToolStripMenuItem("Set hue (all entries)", None, set_hue_from_material))
 # Set from CLR0
 BrawlAPI.AddContextMenuItem(CLR0Wrapper, "", "Set the hue of all frames to a defined integer", EnableCheckCLR0MatEntry, ToolStripMenuItem("Set hue (all entries)", None, set_hue_from_clr0))
+# Set from MDL0 Vertex color
+BrawlAPI.AddContextMenuItem(MDL0ColorWrapper, "", "Set the hue of all frames to a defined integer", EnableCheckMDL0Color, ToolStripMenuItem("Set hue (all entries)", None, set_hue_from_mdl0_vertex_color))
 
 # "Rotate hue" context options
 # Set from Material Entry (LightChannel0MaterialColor)
@@ -174,3 +196,5 @@ BrawlAPI.AddContextMenuItem(CLR0MaterialEntryWrapper, "", "Rotate the hue of all
 BrawlAPI.AddContextMenuItem(CLR0MaterialWrapper, "", "Rotate the hue of all frames by a defined integer", EnableCheckCLR0MatEntry, ToolStripMenuItem("Rotate hue (all entries)", None, rotate_hue_from_material))
 # Set from CLR0
 BrawlAPI.AddContextMenuItem(CLR0Wrapper, "", "Rotate the hue of all frames by a defined integer", EnableCheckCLR0MatEntry, ToolStripMenuItem("Rotate hue (all entries)", None, rotate_hue_from_clr0))
+# Set from MDL0 Vertex color
+BrawlAPI.AddContextMenuItem(MDL0ColorWrapper, "", "Rotate the hue of all frames by a defined integer", EnableCheckMDL0Color, ToolStripMenuItem("Rotate hue (all entries)", None, rotate_hue_from_mdl0_vertex_color))
