@@ -49,4 +49,4 @@ def export_selcharacter2(sender, event_args):
 		BrawlAPI.ShowMessage("Export complete!", SCRIPT_NAME)
 	
 # Add right-click contextual menu options
-BrawlAPI.AddContextMenuItem(ARCWrapper, "", "Export archive as a sc_selcharacter2.pac", EnableCheckARC, ToolStripMenuItem("Export to selcharacter2", None, export_selcharacter2))
+BrawlAPI.AddContextMenuItem(ARCWrapper, "", "Export archive as a sc_selcharacter2.pac", EnableCheckARC, ToolStripMenuItem("Export as selcharacter2", None, export_selcharacter2))
