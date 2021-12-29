@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.1"
+__version__ = "1.2"
 
 from System.Windows.Forms import ToolStripMenuItem # Needed for all loaders
 from BrawlCrate.API import *
@@ -19,12 +19,15 @@ def EnableCheck(sender, event_args):
 
 def import_model_settings(sender, event_args):
 
-	# "Dest model" refers to the selected model whose mats/shaders are being replaced
+	# "Dest model" refers to the existing, selected mdl0 whose mats/shaders are being replaced
 	DEST_MODEL = BrawlAPI.SelectedNode
 	DEST_MODEL_WRAPPER = BrawlAPI.SelectedNodeWrapper
 	PARENT_MODELS_GROUP = BrawlAPI.SelectedNode.Parent
 	DEST_MODEL_MAT_GROUP = getChildFromName(DEST_MODEL, "Materials")
 	DEST_MODEL_SHADERS = getChildFromName(DEST_MODEL, "Shaders").Children
+	
+	# Count number of models to later determine if one should be deleted
+	ORIGINAL_MODEL_COUNT = len(DEST_MODEL.Parent.Children)
 	
 	# Import temporary external MDL0
 	BrawlAPI.SelectedNodeWrapper.Parent.Parent.ImportModel()
@@ -34,6 +37,10 @@ def import_model_settings(sender, event_args):
 	SOURCE_MODEL = DEST_MODEL.Parent.Children[SOURCE_MODEL_INDEX]
 	SOURCE_MODEL_MAT_GROUP = getChildFromName(SOURCE_MODEL, "Materials")
 	SOURCE_MODEL_SHADERS = getChildFromName(SOURCE_MODEL, "Shaders").Children
+	
+	# If a model wasn't imported (i.e. window closed), terminate the script
+	if (ORIGINAL_MODEL_COUNT == len(DEST_MODEL.Parent.Children)):
+		return
 	
 	sourceMatsList = getChildNodes(SOURCE_MODEL_MAT_GROUP)
 	
@@ -52,7 +59,7 @@ def import_model_settings(sender, event_args):
 		newMat.Replace(sourceMat)
 		newMat.Name = sourceMat.Name
 	
-	# Copy over shaders
+	# Start shader stuff
 	# If dest model has fewer shaders than source model, add more to dest model until the amount of shaders in each mdl0 is equal
 	DEST_SHADER_COUNT = len(DEST_MODEL_SHADERS)
 	SOURCE_SHADER_COUNT = len(SOURCE_MODEL_SHADERS)
@@ -68,8 +75,11 @@ def import_model_settings(sender, event_args):
 		
 		destShader.Replace(sourceShader)
 	
-	# Delete temp stuff
+	# Delete temp mdl0 
 	removeNode(SOURCE_MODEL)
+	
+	# Select destination mdl0 node again
+	DEST_MODEL.Parent.SelectChildAtIndex(DEST_MODEL.Index)
 	
 	# Number of materials imported that aren't assigned to any objects -- may be incorrectly assigned or unused
 	EMPTY_MATS_COUNT = len(sourceMatsList)
