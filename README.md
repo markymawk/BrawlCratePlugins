@@ -123,23 +123,27 @@ Imports materials and shaders from an external .MDL0 file, replacing all setting
 
 Set all of the model's materials' FogIndex or LightSetIndex values to the given integer (-1 to 20).
 
-## 4.5 Set All Game & Watch Colors
+## 4.5 PAT0 Set Palettes to Texture Name
+**Usage:** Right-click any PAT0, PAT0 texture entry, or PAT0 material entry
+Set all PAT0 frames' palettes to match the texture. Shows an error message if HasPalette is set to False.
+
+## 4.6 Set All Game & Watch Colors
 **Usage:** Right-click a CLR0 animation inside FitGameWatch00.pac, or the corresponding ColorRegister0 entry
 
 Replaces all matching ColorRegister0 entries with the selected color sequence inside the FitGamewatch00 file. Must be ran separately for fill and border entries.
 
-## 4.6 Locate Texture Usage
+## 4.7 Locate Texture Usage
 **Usage:** Right-click a TEX0 node inside a stage .pac file
 
 Lists all models, materials, objects, and PAT animations using the selected texture.
 
-## 4.7 Rename TEX0 (preserve references)
+## 4.8 Rename TEX0 (preserve references)
 **Usage:** Right-click a TEX0 node within any BRRES
 
 Renames the TEX0, as well as any matRefs or PAT0 entries where the texture is used.
 For TEX0s within a MiscData or ModelData, only that BRRES is affected. If within a TextureData, the whole file will be checked.
 
-## 4.8 Locate SCN0 LightSet/Fog Usage
+## 4.9 Locate SCN0 LightSet/Fog Usage
 **Usage:** Right-click a LightSet or Fog node
 
 Lists all materials to which the selected LightSet or Fog is assigned
