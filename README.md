@@ -124,7 +124,8 @@ Imports materials and shaders from an external .MDL0 file, replacing all setting
 Set all of the model's materials' FogIndex or LightSetIndex values to the given integer (-1 to 20).
 
 ## 4.5 PAT0 Set Palettes to Texture Name
-**Usage:** Right-click any PAT0, PAT0 texture entry, or PAT0 material entry
+**Usage:** Right-click any PAT0, PAT0 texture entry, or PAT0 material entry  
+
 Set all PAT0 frames' palettes to match the texture. Shows an error message if HasPalette is set to False.
 
 ## 4.6 Set All Game & Watch Colors
