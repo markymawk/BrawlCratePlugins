@@ -21,22 +21,22 @@ existingFilePaths = []			# Saves any found file paths, for faster checks
 ## Begin helper methods
 
 # Print header for each tracklist containing filename and number of tracks
-def writeHeader(textfile, parentNode):
+def getHeader(parentNode):
 	trackCount = len(parentNode.Children)
 	
-	writeStr = "################\n" + str(parentNode.Name) + ".tlst - "
+	headerStr = "################\n" + str(parentNode.Name) + ".tlst - "
 	
 	if trackCount == 1:
-		writeStr += "1 track\n\n"
+		headerStr += "1 track\n\n"
 	else:
-		writeStr += str(trackCount) + " tracks\n\n"
+		headerStr += str(trackCount) + " tracks\n\n"
 
-	textfile.write(writeStr)
+	return headerStr
 
 # Get file path of a brstm given a track node
-def getBrstmFilePath(track):
+def checkBRSTMFilePath(track):
 
-	# If file path is empty, track should be from ISO
+	# If file path is empty (track is from ISO)
 	if str(track.SongFileName) == "None":
 	
 		# Append Brawl track to tracklist string using static BrawlCrate dict
@@ -46,13 +46,13 @@ def getBrstmFilePath(track):
 		# Return formatted string containing filepath and Brawl hex ID
 		return brawlBrstmFilePath + " (" + brawlSongHex + ")"
 	
-	# If file path isn't empty, the track is a custom .brstm
+	# If file path isn't empty (track is a custom .brstm)
 	else:
 		
 		# Derive filepath string
 		trackStr = str(track.SongFileName) + ".brstm"
 		
-		# If track filepath has already been found, return it without extra checks
+		# If track filepath has already been found in this script run, return it without extra checks
 		if track.rstmPath in existingFilePaths:
 			return trackStr
 			
@@ -74,7 +74,7 @@ def getPinchModeStr(track):
 	trackStr = "[PINCH MODE TRACK: " + str(track.SongSwitch) + " frames]\n"
 	trackStr += "\t" + str(track.SongFileName) + "_b.brstm"
 	
-	# Check if pinch brstm file exists
+	# If pinch brstm file doesn't exist, append to missingTracks[] and indicate such in the string
 	if not File.Exists(str(track.rstmPath)[0:-6] + "_b.brstm"):
 		tracklistName = str(track.Parent.Name) + ".tlst"
 		missingTrackName = str(track.SongFileName) + "_b.brstm"
@@ -105,143 +105,140 @@ def main():
 	message += "\nwill be checked for valid track filepaths and properties."
 	message += "\n\nPress OK to continue. (The process may take 20 seconds or longer.)"
 	
-	if BrawlAPI.ShowOKCancelPrompt(message, SCRIPT_NAME):
-		
-		SHORT_PATH = workingDir.rsplit("\\",1)[1] + "/" + OUTPUT_TEXT_FILENAME
-		DO_FILE_WRITE = BrawlAPI.ShowYesNoPrompt("Output results to /" + SHORT_PATH + "?", SCRIPT_NAME)
-		
-		# Store currently opened file
-		CURRENT_OPEN_FILE = getOpenFile()
-		
-		# Get list of TLST files in tracklist directory
-		TRACKLIST_FILES = Directory.CreateDirectory(workingDir).GetFiles()
-		TLST_FILE_COUNT = len(TRACKLIST_FILES)
-		
-		# If file writing is enabled, open text file and clear it, or create if it doesn't already exist
-		if DO_FILE_WRITE:
-			FULL_TEXT_FILE_PATH = str(workingDir) + "\\" + OUTPUT_TEXT_FILENAME
-			TEXT_FILE = open(FULL_TEXT_FILE_PATH,"w+")
-		
-		tracklistOpenedCount = 0	# Number of opened files
-		
-		# Progress bar start
-		progressBar = ProgressWindow()
-		progressBar.Begin(0,TLST_FILE_COUNT,0)
-		
-		# Iterate through all TLST files in folder
-		for file in TRACKLIST_FILES:
-		
-			if file.Name.lower().EndsWith(".tlst"):
-				tracklistOpenedCount += 1
-				currentTracklist = ""	# Clear current tracklist output string
-				tracklistSongIDs = []	# Clear current tracklist song IDs
-				
-				# Update progress bar
-				progressBar.Update(tracklistOpenedCount)
-				
-				# Open TLST file
-				BrawlAPI.OpenFile(file.FullName)
-				parentNode = BrawlAPI.RootNode
-				
-				# If file writing enabled, write header (filename and track count)
-				if DO_FILE_WRITE:
-					writeHeader(TEXT_FILE, parentNode)
+	if not BrawlAPI.ShowOKCancelPrompt(message, SCRIPT_NAME):
+		return
+	
+	SHORT_PATH = workingDir.rsplit("\\",1)[1] + "/" + OUTPUT_TEXT_FILENAME
+	DO_FILE_WRITE = BrawlAPI.ShowYesNoPrompt("Output results to /" + SHORT_PATH + "?", SCRIPT_NAME)
+	
+	# Store currently opened file
+	CURRENT_OPEN_FILE = getOpenFile()
+	
+	# Get list of TLST files in tracklist directory
+	TRACKLIST_FILES = Directory.CreateDirectory(workingDir).GetFiles()
+	
+	# If file writing is enabled, open text file and clear it, or create if it doesn't already exist
+	if DO_FILE_WRITE:
+		FULL_TEXT_FILE_PATH = str(workingDir) + "\\" + OUTPUT_TEXT_FILENAME
+		TEXT_FILE = open(FULL_TEXT_FILE_PATH,"w+")
+	
+	tracklistOpenedCount = 0	# Number of opened files
+	
+	# Progress bar start
+	progressBar = ProgressWindow()
+	progressBar.Begin(0,len(TRACKLIST_FILES),0)
+	
+	# Iterate through all TLST files in folder
+	for file in TRACKLIST_FILES:
+	
+		if file.Name.lower().EndsWith(".tlst"):
+			tracklistOpenedCount += 1
+			currentTracklist = ""	# Current tracklist output string
+			tracklistSongIDs = []	# Current tracklist song IDs
+			
+			# Progress bar
+			progressBar.Update(tracklistOpenedCount)
+			
+			# Open TLST file
+			BrawlAPI.OpenFile(file.FullName)
+			parentNode = BrawlAPI.RootNode
 
-				# Iterate through entry nodes
-				for track in parentNode.Children:
+			# Iterate through tracklist entries
+			for track in parentNode.Children:
+				
+				# Check for any duplicate song IDs
+				if track.SongID in tracklistSongIDs and parentNode.Name not in duplicateIDsTracklists:
+					duplicateIDsTracklists.append(str(parentNode.Name) + ".tlst")
 					
-					# Check for any duplicate song IDs
-					if track.SongID in tracklistSongIDs and parentNode.Name not in duplicateIDsTracklists:
-						duplicateIDsTracklists.append(str(parentNode.Name) + ".tlst")
-						
-					# If not a duplicate, add to songIDs list
-					else:
-						tracklistSongIDs.append(track.SongID)
-						
-					# Add track name and filepath to output string
-					currentTracklist += "\t" + str(track.Name) + "\n"
-					currentTracklist += "\t" + getBrstmFilePath(track) + "\n"
+				# If not a duplicate, add to songIDs list
+				else:
+					tracklistSongIDs.append(track.SongID)
 					
-					# If track is from SD card, get volume
-					if str(track.SongFileName) != "None":
-						currentTracklist += "\tVolume: " + str(track.Volume) + "\n"
-						
-					# If songSwitch is enabled, check for pinch mode brstm and print info
-					if track.SongSwitch:
-						currentTracklist += "\t" + getPinchModeStr(track) + "\n"
+				# Check track name and filepath, and store in a string (regardless of file write)
+				currentTracklist += "\t" + str(track.Name) + "\n"
+				currentTracklist += "\t" + checkBRSTMFilePath(track) + "\n"
+				
+				# If track is from SD card, get volume
+				if str(track.SongFileName) != "None":
+					currentTracklist += "\tVolume: " + str(track.Volume) + "\n"
 					
-					# Append frequency to output string
+				# If songSwitch is enabled, check for pinch mode brstm and print info
+				if track.SongSwitch:
+					currentTracklist += "\t" + getPinchModeStr(track) + "\n"
+			
+				# If file writing is enabled, check frequency and songDelay
+				if DO_FILE_WRITE:
 					currentTracklist += "\tFrequency: " + str(track.Frequency) + "\n"
-					
-					# Append song delay to string, if exists
 					if track.SongDelay != 0:
 						currentTracklist += "\tSong delay: " + str(track.SongDelay) + "\n"
-				
 					currentTracklist += "\n"
-					
-				# If file writing is enabled, output all above info to text
-				if DO_FILE_WRITE:
-					TEXT_FILE.write(currentTracklist)
-		
-		# After all TLSTs are parsed, close text file
-		if DO_FILE_WRITE:
-			TEXT_FILE.close()
-		
-		progressBar.Finish()
-		
-		# Reopen previously-opened file
-		if CURRENT_OPEN_FILE:
-			BrawlAPI.OpenFile(CURRENT_OPEN_FILE)
-		
-		# START RESULTS
-		
-		# Results: If no tracklists found
-		if tracklistOpenedCount == 0:
-			BrawlAPI.ShowError("No tlst files found in\n" + str(workingDir), "No tracklists found")
-			return
-		
-		# Determine whether any errors were found
-		isMissingTracks = len(missingTracks)
-		isDuplicateIDs = len(duplicateIDsTracklists)
-		
-		# Results: If errors found
-		if isMissingTracks or isDuplicateIDs:
-			ERROR_LIST_MAX = 10
-			missingTracklistMessage = ""
-			duplicateIDMessage = ""
 			
-			# If one or more brstm files missing in sound/strm folder, list them in an error message
-			if isMissingTracks:
-				missingTracklistMessage = str(isMissingTracks) + " brstm file(s) missing:\n"
-				
-				# Fill message with missing track names, up to ERROR_LIST_MAX
-				for i in range(0, min(isMissingTracks, ERROR_LIST_MAX), 1):
-					missingTracklistMessage += "\n" + str(missingTracks[i][0]) + ":\n"
-					missingTracklistMessage += str(missingTracks[i][1]) + "\n"
-					
-				if isMissingTracks > ERROR_LIST_MAX:
-					missingTracklistMessage += "...and " + str(ERROR_LIST_MAX - isMissingTracks) + " more."
+			if DO_FILE_WRITE:		
+				TEXT_FILE.write(getHeader(parentNode))
+				TEXT_FILE.write(currentTracklist)
+	
+	# After all TLSTs are parsed, close text file
+	if DO_FILE_WRITE:
+		TEXT_FILE.close()
+	
+	progressBar.Finish()
+	
+	# Reopen previously-opened file
+	if CURRENT_OPEN_FILE:
+		BrawlAPI.OpenFile(CURRENT_OPEN_FILE)
+	
+	# START RESULTS
+	
+	# Results: If no tracklists found
+	if tracklistOpenedCount == 0:
+		BrawlAPI.ShowError("No tlst files found in\n" + str(workingDir), "No tracklists found")
+		return
+	
+	# Determine whether any errors were found
+	isMissingTracks = len(missingTracks)
+	isDuplicateIDs = len(duplicateIDsTracklists)
+	
+	# Results
+
+	# If errors found
+	if isMissingTracks or isDuplicateIDs:
+		ERROR_LIST_MAX = 10
+		missingTracklistMessage = ""
+		duplicateIDMessage = ""
+		
+		# If one or more brstm files missing in sound/strm folder, list them in an error message
+		if isMissingTracks:
+			missingTracklistMessage = str(isMissingTracks) + " brstm file(s) missing:\n"
 			
-			# If one or more tracklists have duplicate Song ID values, list them in error message
-			if isDuplicateIDs:
-				duplicateIDMessage = str(isDuplicateIDs) + " tracklist(s) use duplicate song IDs:\n"
+			# Fill message with missing track names, up to ERROR_LIST_MAX
+			for i in range(0, min(isMissingTracks, ERROR_LIST_MAX), 1):
+				missingTracklistMessage += "\n" + str(missingTracks[i][0]) + ":\n"
+				missingTracklistMessage += str(missingTracks[i][1]) + "\n"
 				
-				# Fill message with duplicate song ID tracklists, up to ERROR_LIST_MAX
-				
-				for i in range(0, min(isDuplicateIDs, ERROR_LIST_MAX), 1):
-					duplicateIDMessage += "\n" + str(duplicateIDsTracklists[i]) + "\n"
-				
-				if isDuplicateIDs > ERROR_LIST_MAX:
-					duplicateIDMessage += "...and " + str(ERROR_LIST_MAX - isDuplicateIDs) + " more."
-			# Show error message using above logs
-			BrawlAPI.ShowError(missingTracklistMessage + "\n" + duplicateIDMessage, "Error")
+			if isMissingTracks > ERROR_LIST_MAX:
+				missingTracklistMessage += "...and " + str(ERROR_LIST_MAX - isMissingTracks) + " more."
 		
-		# Results: Success, file write enabled
-		elif DO_FILE_WRITE:
-			BrawlAPI.ShowMessage("Contents of " + str(tracklistOpenedCount) + " tracklist files exported with no errors to:\n" + str(FULL_TEXT_FILE_PATH), "Success!")
-		
-		# Results: Success, no file write
-		else:
-			BrawlAPI.ShowMessage("Contents of " + str(tracklistOpenedCount) + " tracklist files verified with no errors.", "Success!")
+		# If one or more tracklists have duplicate Song ID values, list them in error message
+		if isDuplicateIDs:
+			duplicateIDMessage = str(isDuplicateIDs) + " tracklist(s) use duplicate song IDs:\n"
+			
+			# Fill message with duplicate song ID tracklists, up to ERROR_LIST_MAX
+			
+			for i in range(0, min(isDuplicateIDs, ERROR_LIST_MAX), 1):
+				duplicateIDMessage += "\n" + str(duplicateIDsTracklists[i]) + "\n"
+			
+			if isDuplicateIDs > ERROR_LIST_MAX:
+				duplicateIDMessage += "...and " + str(ERROR_LIST_MAX - isDuplicateIDs) + " more."
+				
+		# Show error message
+		BrawlAPI.ShowError(missingTracklistMessage + "\n" + duplicateIDMessage, "Error")
+	
+	# Success, no errors, file write enabled
+	elif DO_FILE_WRITE:
+		BrawlAPI.ShowMessage("Contents of " + str(tracklistOpenedCount) + " tracklist files exported with no errors to:\n" + str(FULL_TEXT_FILE_PATH), "Success!")
+	
+	# Success, no errors, no file write
+	else:
+		BrawlAPI.ShowMessage("Contents of " + str(tracklistOpenedCount) + " tracklist files verified with no errors.", "Success!")
 
 main()
