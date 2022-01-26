@@ -39,7 +39,7 @@ def renamePAT0(pat0, oldName, newName):
 def rename_tex0_and_references(sender, event_args):
 	textureNode = BrawlAPI.SelectedNode
 	nodeNameOrig = textureNode.Name
-	
+	deleteAndMerge = False # True if texture is to be renamed/merged into another existing one
 	# Prompt for new name
 	newName = BrawlAPI.UserStringInput(SCRIPT_NAME, nodeNameOrig)
 	
@@ -48,11 +48,13 @@ def rename_tex0_and_references(sender, event_args):
 	
 	# If name already exists in the current brres textures, throw an error
 	if newName in getChildNames(textureNode.Parent):
-		BrawlAPI.ShowError("TEX0 with that name already exists.","Error")
-		return
+		deleteAndMerge = BrawlAPI.ShowYesNoPrompt("TEX0 with that name already exists.\nDelete this TEX0 and merge references?", "Duplicate texture name found")
+		if not deleteAndMerge:
+			return
 	
 	# Change TEX0 name
-	textureNode.Name = newName
+	if not deleteAndMerge:
+		textureNode.Name = newName
 	
 	# If TEX0 is inside a TextureData BRRES, rename references across the entire file
 	parentBRRES = textureNode.Parent.Parent
@@ -90,7 +92,9 @@ def rename_tex0_and_references(sender, event_args):
 								if matRef.Name == nodeNameOrig:
 									matRef.Name = newName
 									matRef.Palette = newName
-			
+	
+	if deleteAndMerge:
+		textureNode.Remove()
 
 ## End loader function
 ## Start context menu add
