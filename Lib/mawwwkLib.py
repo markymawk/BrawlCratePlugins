@@ -1,4 +1,4 @@
-﻿version = "1.2"
+﻿version = "1.3"
 # mawwwkLib
 # Common functions for use with BrawlAPI scripts
 
@@ -120,7 +120,9 @@ def getChildFromName(node, nameStr, EXACT_NEEDED=False):
 			elif str(nameStr) in child.Name:
 				return child
 	return 0	# If not found, return 0
-	
+
+# getChildWrapperFromName()
+# Given any nodeWrapper, return its child wrapper whose Resource.Name contains the given nameStr
 def getChildWrapperFromName(wrapper, nameStr, EXACT_NEEDED=False):
 	if wrapper.Nodes:
 		for child in wrapper.Nodes:
@@ -130,6 +132,8 @@ def getChildWrapperFromName(wrapper, nameStr, EXACT_NEEDED=False):
 				return child
 	return 0	# If not found, return 0
 
+# nodeListToString()
+# Return a string containing the names of nodes inside the given list, one per line
 def nodeListToString(list):
 	message = ""
 	for item in list:
@@ -137,6 +141,8 @@ def nodeListToString(list):
 	
 	return message
 
+# listToString()
+# Return a string containing the (str) items of the given list, one per line
 def listToString(list):
 	message = ""
 	for item in list:
@@ -186,6 +192,8 @@ def getChildNames(group):
 		list.append(i.Name)
 	return list
 
+# getChildNodes()
+# Return python list of child nodes, to avoid BrawlCrate ordering conflicts
 def getChildNodes(node):
 	if node.HasChildren:
 		childrenList = []
@@ -194,7 +202,9 @@ def getChildNodes(node):
 	
 		return childrenList
 	return 0
-# Return true if given node is a brres, of exactly 640 bytes, and has exactly one mdl0 node
+
+# isStaticBRRES()
+# Return true if given node is a brres, of exactly 640 bytes, and has exactly one MDL0 node
 def isStaticBRRES(node):
 	modelsGroup = getChildFromName(node,"3DModels")
 	
@@ -226,7 +236,8 @@ def getOpenFile():
 ## End file operation functions
 ## Start conversion functions
 
-# Given an array of 3 numbers, return an array of 3 ints corresponding to the RGB values
+# HSV2RGB()
+# Given an array of 3 numbers as HSV, return an array of 3 ints corresponding to the RGB values
 # Hue in [0, 359], sat in [0,1], val in [0,1]
 def HSV2RGB(colorList):
 	[HUE, SAT, VAL] = colorList
@@ -255,13 +266,14 @@ def HSV2RGB(colorList):
 	else:
 		[red, green, blue] = [cValue, 0, xValue]
 	
-	red = int((red + mValue) * 255.0)
-	green = int((green + mValue) * 255.0)
-	blue = int((blue + mValue) * 255.0)
+	red = round((red + mValue) * 255.0)
+	green = round((green + mValue) * 255.0)
+	blue = round((blue + mValue) * 255.0)
 	
 	return [red, green, blue]
 
-# Given a color entry, return an array of 3 floats corresponding to the HSV values
+# RGB2HSV()
+# Given a color node (frame), return an array of 3 floats corresponding to the HSV values
 def RGB2HSV(colorNode):
 	RED = colorNode.R / 255.0
 	BLUE = colorNode.B / 255.0
@@ -270,7 +282,7 @@ def RGB2HSV(colorNode):
 	colorMin = min(RED, BLUE, GREEN)
 	colorDiff = colorMax - colorMin
 	
-	# If hue not 0, calculate hue as value 0..359
+	# If hue not 0, calculate hue as value [0, 360)
 	if colorDiff == 0:
 		hue = 0
 	elif colorMax == RED:
@@ -293,11 +305,12 @@ def RGB2HSV(colorNode):
 	
 	return [hue, sat, val]
 
+# formatHex()
 # Given dec value, returns formatted hex value (17 -> 0x0011)
 # Uses lowercase 0x prefix with uppercase hex digits
 def formatHex(value, DIGIT_COUNT=4):
 
-	# Convert to hex, and remove weird trailing L
+	# Convert to hex, and remove Python trailing L
 	string = str(hex(value)).upper()[2:-1]
 	
 	while len(string) < DIGIT_COUNT:
