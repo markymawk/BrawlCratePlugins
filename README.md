@@ -46,7 +46,7 @@ Select the build's pf (or sound, or strm) folder. Any BRSTM files inside sound/s
 ## 2.3 Match All StgPosition Nodes 
 **Usage:** Right-click any Model Data [100] BRRES inside a stage pac
 
-Enter a substring of 1:1 reskin stage filenames to copy the given StgPosition to. For stage files with multiple StgPosition nodes, only the top-most one will be overwritten.  
+Enter a substring of 1:1 stage filenames, like "\_BF". All stage files in the current file's directory will have the selected ModelData BRRES copied to them. For stage files with multiple StgPosition nodes, only the top-most one will be overwritten.  
 This process is irreversible -- always save backups!
 
 ## 2.4 Verify ASL (stageslot) File Data
