@@ -94,20 +94,6 @@ BRAWL_MODULES = [
 ## End constants
 ## Start list functions
 
-# Given a list of nodes with the same parent, delete those nodes using RemoveChild()
-# use reverse() to avoid top-down errors
-# params:
-#	nodeList: any list of ResourceNodes which share a Parent
-def removeChildNodes(nodeList):
-	nodeList.reverse()
-	parentNode = nodeList[0].Parent
-	
-	for node in nodeList:
-		parentNode.RemoveChild(node)
-
-def removeNode(node):
-	node.Parent.RemoveChild(node)
-
 # reverseResourceList()
 # Basic impl of list.reverse() to accommodate ResourceNode lists
 # params:
@@ -161,6 +147,23 @@ def listToString(list):
 ## End list functions
 ## Start node functions
 
+# removeChildNodes()
+# Given a list of nodes with the same parent, delete those nodes using RemoveChild()
+# use reverse() to avoid top-down errors
+# params:
+#	nodeList: any list of ResourceNodes which share a Parent
+def removeChildNodes(nodeList):
+	nodeList.reverse()
+	parentNode = nodeList[0].Parent
+	
+	for node in nodeList:
+		parentNode.RemoveChild(node)
+
+# removeNode()
+# Use Parent.RemoveChild() to remove the given node
+def removeNode(node):
+	node.Parent.RemoveChild(node)
+
 # getParentArc()
 # Return the "2" ARC of stage file, or 0 if not found
 def getParentArc():
@@ -202,12 +205,19 @@ def isStaticBRRES(node):
 	else:
 		return False
 
+# getModelFromBone()
+# Given a bone node, return its parent MDL0 node
+def getMDL0FromBone(bone):
+	if isinstance(bone.Parent, MDL0Node):
+		return bone.Parent
+	else:
+		return getMDL0FromBone(bone.Parent)
+	
 ## End node functions
 ## Start file operation functions
 
 # getOpenFile()
 # If a file is currently opened, return the file path, otherwise return 0
-
 def getOpenFile():
 	if BrawlAPI.RootNode:
 		return str(BrawlAPI.RootNode.FilePath)
@@ -298,10 +308,22 @@ def formatHex(value, DIGIT_COUNT=4):
 ## End conversion functions
 ## Start misc. / debug functions
 
-# dmessage()
+# showMessage(), showMsg()
+# Easy OK/Cancel prompt
+def showMessage(msg, title="", mode=0):
+	# OK Prompt
+	if mode == 0:
+		return BrawlAPI.ShowMessage(msg, title)
+	
+	# OK Cancel Prompt
+	else:
+		return BrawlAPI.ShowOKCancelPrompt(msg, title)
+
+def showMsg(msg, title="", mode=0):
+	return showMessage(msg, title, mode)
+
+# dmessage(), dmsg()
 # Easy debug message
-# params
-#	msg: any string
 def dmessage(msg):
 	BrawlAPI.ShowMessage(str(msg), "DEBUG")
 
