@@ -31,7 +31,7 @@ Automatically exports the MenuRule_en ARC into the identical ARC inside sc_selch
 
 Exports stock textures and StockFace PAT0 animation data to the other files where stock icon data is used: STGRESULT.pac, StockFaceTex.brres, and sc_selcharacter.pac.
 
-# 2. P+ build management plug-ins
+# 2. Build management plug-ins
 
 ## 2.1 Copy Tracklist Frequencies
 **Usage:** Plugins menu
@@ -43,40 +43,47 @@ Transfer entire tracklist frequencies across build updates. Select a "source" tr
 
 Select the build's pf (or sound, or strm) folder. Any BRSTM files inside sound/strm/ that aren't used by tracklists inside sound/tracklist/ will be listed.
 
-## 2.3 Verify ASL (stageslot) File Data
+## 2.3 Match All StgPosition Nodes 
+**Usage:** Right-click any Model Data [100] BRRES inside a stage pac
+
+Enter a substring of 1:1 reskin stage filenames to copy the given StgPosition to. For stage files with multiple StgPosition nodes, only the top-most one will be overwritten.  
+This process is irreversible -- always save backups!
+
+## 2.4 Verify ASL (stageslot) File Data
 **Usage:** Plugins menu > File Checking (P+)
 
 Select the build's pf, stage, or stageslot folder. All .ASL files will be checked for valid .param file locations. Optionally, the contents can be exported to a .txt file inside the stageslot folder, listing all stage entries in each ASL file along with the corresponding button combination for each.
 
-## 2.4 Verify Param (stageinfo) File Data
+## 2.5 Verify Param (stageinfo) File Data
 **Usage:** Plugins menu > File Checking (P+)
 
 Select the build's pf, stage, or stageinfo folder. All .param files will be checked for valid stage .pac, stage module, and tracklist file locations. Optionally, the contents can be exported to a .txt file inside the stageinfo folder, including SFX/GFX banks, stage flags, and character color overlay values.
 
-## 2.5 Verify TLST (tracklist) File Data
+## 2.6 Verify TLST (tracklist) File Data
 **Usage:** Plugins menu > File Checking (P+)
 
 Select the build's pf, sound, or tracklist folder. All .TLST files will be checked for valid BRSTM file paths and song IDs, including pinch mode (SongSwitch) tracks. Optionally, the contents can be exported to a .txt file inside the tracklist folder, including frequency, volume (for custom BRSTMs), and SongDelay values.
 
-## 2.6 ASL + Param File Navigator
+## 2.7 ASL + Param File Navigator
 **Usage:** Right-click a param root node, ASL entry node, or any param substage entry.
 
 Easily open a .param file from its ASL entry, or open the stage .pac or .tlst file associated with a given .param file. Specific substage .pac files can also be opened via right-clicking their child nodes.
 
-## 2.7 TLST Add BRSTMs to Tracklist
+## 2.8 TLST Add BRSTMs to Tracklist
 **Usage:** Right-click tracklist root node
 
 Select one or more BRSTM files. New tracklist entries will be automatically generated and configured according to each BRSTM's filepath. If the BRSTM files exist outside of a strm folder, a custom prefix can be added to describe the relative path, such as `../../`
 
-## 2.8 TLST Reset Track Frequencies
+## 2.9 TLST Reset Track Frequencies
 **Usage:** Right-click tracklist root node
 
 Resets all Frequency values of track entries to their default value (40).
 
-## 2.9 TLST Check Missing Tracks
+## 2.10 TLST Check Missing Tracks
 **Usage:** Right-click tracklist root node
 
 Checks all tracklist entries for missing BRSTM file paths (and SongSwitch paths, when applicable).
+
 # 3. Stage optimization plug-ins
 
 ## 3.1 Delete Unused Animation Data
@@ -96,7 +103,12 @@ Checks materials and TEX0 nodes in the currently opened stage .pac file. Deletes
 
 Checks all models in the currently opened stage .pac file, and deletes any Normal or Vertex nodes unused by any objects. Any nodes named "Regenerated" are listed, as this is a common name for unused junk data and may appear misleading. The result should always be tested in-game, with a backup .pac file saved.
 
-## 3.4 Generate Static BRRES Redirects
+## 3.4 Delete Unused Bones
+**Usage:** Plugins menu > PAC File Optimization
+
+Checks all models in the currently opened stage .pac file, and deletes and bones unused by objects or collisions. Out of caution, this doesn't modify any models that use non-SingleBind objects (objects bound to multiple bones), and also avoids PokeTrainer and hyakunin_pos models.
+
+## 3.5 Generate Static BRRES Redirects
 **Usage:** Plugins menu > PAC File Optimization
 
 Improves readability of stage .pac files by converting "Static" BRRES nodes (nodes where the only entry is a Static model) to Redirect nodes at the end of the file. The result should always be tested in-game, with a backup .pac file saved.
@@ -138,10 +150,10 @@ Replaces all matching ColorRegister0 entries with the selected color sequence in
 
 Lists all models, materials, objects, and PAT animations using the selected texture.
 
-## 4.8 Rename TEX0 (preserve references)
+## 4.8 Rename TEX0 & Preserve References
 **Usage:** Right-click a TEX0 node within any BRRES
 
-Renames the TEX0, as well as any matRefs or PAT0 entries where the texture is used.
+Renames the TEX0, as well as any matRefs or PAT0 entries where the texture is used. If the TEX0 is renamed over an already-existing TEX0, then the existing (old) TEX0 will be deleted, and all references to the overwritten (old) texture will stay pointing to the new texture.
 For TEX0s within a MiscData or ModelData, only that BRRES is affected. If within a TextureData, the whole file will be checked.
 
 ## 4.9 Locate SCN0 LightSet/Fog Usage
