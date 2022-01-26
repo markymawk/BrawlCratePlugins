@@ -48,7 +48,7 @@ def getStagePacName(parentNode):
 			fullSubstagePacName = "STG" + substage.Name + ".pac"
 			
 			# If DualLoad substage is not in vBrawl, and not found in the pf/stage/melee folder, mark as missing
-			if not fullSubstagePacName[:-4].upper() in BRAWL_STAGE_PACS and not checkStagePacFilepath(parentStage,fullSubstagePacName):
+			if not fullSubstagePacName[:-4].upper() in BRAWL_STAGE_PACS and not checkStagePacFilepath(parentNode.Name,fullSubstagePacName):
 				fullSubstagePacName += " [PAC FILE MISSING]"
 				
 			stageStr += "\t- " + fullSubstagePacName.upper() + "\n"
@@ -72,9 +72,9 @@ def getStagePacName(parentNode):
 			else:
 				fullStagePacName = "STG" + parentStage + "_" + substageSuffix.upper() + ".pac"
 			
-			# If stage is not in vBrawl, not a default P+ Mushroom Kingdom LR stage, and not found in the pf/stage/melee folder, mark as missing
-			if "MUSHROOMKINGDOM_LR_1-1" not in fullStagePacName \
-			and not checkStagePacFilepath(parentStage, fullStagePacName):
+			# If stage is not in vBrawl, not a Mushroomy Kingdom ISO stage load, and not found in the pf/stage/melee folder, mark as missing
+			if "MUSHROOMKINGDOM_LR_1-1" not in fullStagePacName.upper() or "MARIOPAST" not in fullStagePacName.upper() \
+			and not checkStagePacFilepath(parentNode.Name, fullStagePacName):
 				fullStagePacName += " [PAC FILE MISSING]"
 			stageStr += "\t- " + fullStagePacName.upper() + "\n"
 
