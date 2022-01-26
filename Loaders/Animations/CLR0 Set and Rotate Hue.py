@@ -15,7 +15,6 @@ SET_HUE_VALUE_PROMPT = "Enter hue value to set (0 to 359)"
 ROTATE_HUE_VALUE_PROMPT = "Enter hue value to adjust by (-180 to 180)"
 
 ## Start enable check functions
-# Check to ensure the context menu item can be active
 # Wrapper: CLR0MaterialEntryWrapper
 def EnableCheckCLR0MatEntry(sender, event_args):
 	sender.Enabled = (BrawlAPI.SelectedNode is not None)
@@ -31,6 +30,7 @@ def EnableCheckCLR0(sender, event_args):
 # Wrapper: MDL0ColorWrapper
 def EnableCheckMDL0Color(sender, event_args):
 	sender.Enabled = (BrawlAPI.SelectedNode is not None)
+
 ## End enable check functions
 ## Start helper functions
 
@@ -46,13 +46,15 @@ def getHueValue(promptText, minValue, maxValue, exitValue=-1):
 	elif int(userInput) < minValue or int(userInput) > maxValue:
 		BrawlAPI.ShowError("Invalid input", "Error")
 		return exitValue
+	
+	# Otherwise, return input as an int
 	else:
 		return int(userInput)
 
 ## End helper functions
 ## Start loader functions
 
-# Initial loader functions to run rotateHueForAllFrames()
+# CLR0 loader function to run rotateHueForAllFrames()
 def rotate_hue_from_clr0(sender,event_args):
 	hue = getHueValue(ROTATE_HUE_VALUE_PROMPT, -180, 180, -999)
 	
@@ -63,6 +65,7 @@ def rotate_hue_from_clr0(sender,event_args):
 	if successCheck:
 		BrawlAPI.ShowMessage(str(len(BrawlAPI.SelectedNode.Children)) + " animations' hues rotated by hue '" + str(hue) + "'", "Success")
 
+# CLR0Material loader function to run rotateHueForAllFrames()
 def rotate_hue_from_material(sender, event_args):
 	hue = getHueValue(ROTATE_HUE_VALUE_PROMPT, -180, 180, -999)
 	
@@ -72,6 +75,7 @@ def rotate_hue_from_material(sender, event_args):
 	if successCheck:
 		BrawlAPI.ShowMessage("All color frames rotated by hue '" + str(hue) + "' inside\n" + BrawlAPI.SelectedNode.Name, "Success")
 
+# CLR0MaterialEntry loader function to run rotateHueForAllFrames()
 def rotate_hue_from_mat_entry(sender, event_args):
 	hue = getHueValue(ROTATE_HUE_VALUE_PROMPT, -180, 180, -999)
 	rotateHueForAllFrames(BrawlAPI.SelectedNode, hue)
@@ -80,7 +84,8 @@ def rotate_hue_from_mat_entry(sender, event_args):
 		entryName = BrawlAPI.SelectedNode.Name
 		materialName = BrawlAPI.SelectedNode.Parent.Name
 		BrawlAPI.ShowMessage("All color frames rotated by hue '" + str(hue) + "' inside\n" + materialName + " > " + entryName, "Success")
-		
+
+# MDL0Color loader function to run rotateHueForAllFrames()	
 def rotate_hue_from_mdl0_vertex_color(sender, event_args):
 	hue = getHueValue(ROTATE_HUE_VALUE_PROMPT, -180, 180, -999)
 	rotateHueForAllFrames(BrawlAPI.SelectedNode, hue)
@@ -90,7 +95,7 @@ def rotate_hue_from_mdl0_vertex_color(sender, event_args):
 		materialName = BrawlAPI.SelectedNode.Parent.Name
 		BrawlAPI.ShowMessage("All color frames rotated by hue '" + str(hue) + "' inside\n" + materialName + " > " + entryName, "Success")
 
-# Initial loader functions to run setHueForAllFrames()
+# CLR0 loader function to run setHueForAllFrames()
 def set_hue_from_clr0(sender, event_args):
 	hue = getHueValue(SET_HUE_VALUE_PROMPT, 0, 359)
 	
@@ -101,6 +106,7 @@ def set_hue_from_clr0(sender, event_args):
 	if successCheck:
 		BrawlAPI.ShowMessage(str(len(BrawlAPI.SelectedNode.Children)) + " animations' hues set to hue '" + str(hue) + "'", "Success")
 
+# CLR0Material loader function to run setHueForAllFrames()
 def set_hue_from_material(sender, event_args):
 	hue = getHueValue(SET_HUE_VALUE_PROMPT, 0, 359)
 	
@@ -110,6 +116,7 @@ def set_hue_from_material(sender, event_args):
 	if successCheck:
 		BrawlAPI.ShowMessage("All color frames set to hue '" + str(hue) + "' inside\n" + BrawlAPI.SelectedNode.Name, "Success")
 
+# CLR0MaterialEntry loader function to run setHueForAllFrames()
 def set_hue_from_mat_entry(sender, event_args):
 	hue = getHueValue(SET_HUE_VALUE_PROMPT, 0, 359)
 	setHueForAllFrames(BrawlAPI.SelectedNode, hue)
@@ -118,6 +125,7 @@ def set_hue_from_mat_entry(sender, event_args):
 	if successCheck:
 		BrawlAPI.ShowMessage("All color frames set to hue '" + str(hue) + "' inside\n" + node.Parent.Name + " > " + node.Name, "Success")
 
+# MDL0Color loader function to run setHueForAllFrames()
 def set_hue_from_mdl0_vertex_color(sender, event_args):
 	hue = getHueValue(SET_HUE_VALUE_PROMPT, 0, 359)
 	setHueForAllFrames(BrawlAPI.SelectedNode, hue)
