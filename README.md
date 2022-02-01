@@ -64,6 +64,8 @@ Select the build's pf, stage, or stageinfo folder. All .param files will be chec
 
 Select the build's pf, sound, or tracklist folder. All .TLST files will be checked for valid BRSTM file paths and song IDs, including pinch mode (SongSwitch) tracks. Optionally, the contents can be exported to a .txt file inside the tracklist folder, including frequency, volume (for custom BRSTMs), and SongDelay values.
 
+*Alternately, can be run per-tracklist as well, via any individual tracklist's right-click > plug-ins menu*
+
 ## 2.7 ASL + Param File Navigator
 **Usage:** Right-click a param root node, ASL entry node, or any param substage entry.
 
@@ -79,10 +81,10 @@ Select one or more BRSTM files. New tracklist entries will be automatically gene
 
 Resets all Frequency values of track entries to their default value (40).
 
-## 2.10 TLST Check Missing Tracks
-**Usage:** Right-click tracklist root node
+## 2.10 TLST Rename in All Tracklists
+**Usage:** Right-click any track node that uses a custom BRSTM path
 
-Checks all tracklist entries for missing BRSTM file paths (and SongSwitch paths, when applicable).
+Renames all occurrences of the selected track across every TLST file in the corresponding (parent) directory, listing each occurrence in an output dialog box. After using, leave the tracklist directory open for quick repeat use.
 
 # 3. Stage optimization plug-ins
 
@@ -91,7 +93,7 @@ Checks all tracklist entries for missing BRSTM file paths (and SongSwitch paths,
 
 Checks CHR0, VIS0, SRT0, CLR0, and PAT0 animations in the currently opened stage .pac file, then detects any unused entries and deletes them from the animation. Only recommended for FD, BF, or Palutena-based stages. The result should always be tested in-game, with a backup .pac file saved.
 
-*Alternate: can be run per-animation as well, via any individual animation's right-click > plug-ins menu*
+*Alternately can be run per-animation as well, via any individual animation's right-click > plug-ins menu*
 
 ## 3.2 Delete Unused Stage Textures
 **Usage:** Plugins menu > PAC File Optimization
