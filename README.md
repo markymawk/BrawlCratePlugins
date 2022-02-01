@@ -115,7 +115,7 @@ Checks all models in the currently opened stage .pac file, and deletes and bones
 
 Improves readability of stage .pac files by converting "Static" BRRES nodes (nodes where the only entry is a Static model) to Redirect nodes at the end of the file. The result should always be tested in-game, with a backup .pac file saved.
 
-# 4. Model, animation, & texture shortcuts
+# 4. Misc. / MDL0, TEX0, animation shortcuts
 
 ## 4.1 CLR0 Set and Rotate Hue
 **Usage:** Right-click a MDL0 Color node, CLR0 animation node, CLR0 material, CLR0 material entry
@@ -162,3 +162,8 @@ For TEX0s within a MiscData or ModelData, only that BRRES is affected. If within
 **Usage:** Right-click a LightSet or Fog node
 
 Lists all materials to which the selected LightSet or Fog is assigned
+
+## 4.10 MD5 of Selected Node
+**Usage:** Plugins menu
+
+Outputs the MD5 checksum of the selected node, for comparisons between files or other quick checks.
