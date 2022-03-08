@@ -1,9 +1,10 @@
 __author__ = "mawwwk"
-__version__ = "2.0"
+__version__ = "3.0"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
 from BrawlLib.SSBB.ResourceNodes.ProjectPlus import *
+from BrawlCrate.API.BrawlAPI import AppPath
 from BrawlCrate.UI import MainForm
 from BrawlLib.Internal import *
 from System.IO import *
@@ -96,42 +97,43 @@ def main():
 		return
 	
 	if str(workingDir).endswith("\\pf"):
-		workingDir += "\\sound\\tracklist"
+		workingDir += "\\sound\\tracklist\\"
 	elif str(workingDir).endswith("\\pf\\sound"):
-		workingDir += "\\tracklist"
+		workingDir += "\\tracklist\\"
+	else:
+		workingDir += "\\"
 	
 	# Confirm dialog box
-	message = "Contents of all tracklists in the folder:\n" + str(workingDir) + "\\"
+	message = "Contents of all tracklists in the folder:\n" + str(workingDir)
 	message += "\nwill be checked for valid track filepaths and properties."
-	message += "\n\nPress OK to continue. (The process may take 20 seconds or longer.)"
+	message += "\n\nPress OK to continue."
 	
 	if not BrawlAPI.ShowOKCancelPrompt(message, SCRIPT_NAME):
 		return
-	
-	SHORT_PATH = workingDir.rsplit("\\",1)[1] + "/" + OUTPUT_TEXT_FILENAME
+		
+	# File output prompt
+	SHORT_PATH = workingDir.rsplit("\\",2)[1] + "/" + OUTPUT_TEXT_FILENAME
 	DO_FILE_WRITE = BrawlAPI.ShowYesNoPrompt("Output results to /" + SHORT_PATH + "?", SCRIPT_NAME)
 	
-	# Store currently opened file
-	CURRENT_OPEN_FILE = getOpenFile()
-	
-	# Get list of TLST files in tracklist directory
-	TRACKLIST_FILES = Directory.CreateDirectory(workingDir).GetFiles()
-	
-	# If file writing is enabled, open text file and clear it, or create if it doesn't already exist
+	# If file writing is enabled, open AppPath temp text file
 	if DO_FILE_WRITE:
-		FULL_TEXT_FILE_PATH = str(workingDir) + "\\" + OUTPUT_TEXT_FILENAME
-		TEXT_FILE = open(FULL_TEXT_FILE_PATH,"w+")
+		TEMP_TEXT_FILE_PATH = AppPath + OUTPUT_TEXT_FILENAME
+		FULL_TEXT_FILE_PATH = str(workingDir) + OUTPUT_TEXT_FILENAME
+		TEXT_FILE = open(TEMP_TEXT_FILE_PATH,"w+")
 	
-	tracklistOpenedCount = 0	# Number of opened files
+	# Open whole tracklist folder in BrawlCrate
+	if BrawlAPI.RootNode == None or BrawlAPI.RootNode.FilePath != workingDir:
+		BrawlAPI.OpenFile(workingDir)
 	
 	# Progress bar start
 	progressBar = ProgressWindow()
-	progressBar.Begin(0,len(TRACKLIST_FILES),0)
+	progressBar.Begin(0,len(BrawlAPI.RootNode.Children),0)
+	
+	tracklistOpenedCount = 0	# Number of opened files
 	
 	# Iterate through all TLST files in folder
-	for file in TRACKLIST_FILES:
-	
-		if file.Name.lower().EndsWith(".tlst"):
+	for node in BrawlAPI.RootNode.Children:
+		if isinstance(node, TLSTNode):
 			tracklistOpenedCount += 1
 			currentTracklist = ""	# Current tracklist output string
 			tracklistSongIDs = []	# Current tracklist song IDs
@@ -139,16 +141,12 @@ def main():
 			# Progress bar
 			progressBar.Update(tracklistOpenedCount)
 			
-			# Open TLST file
-			BrawlAPI.OpenFile(file.FullName)
-			parentNode = BrawlAPI.RootNode
-
 			# Iterate through tracklist entries
-			for track in parentNode.Children:
+			for track in node.Children:
 				
 				# Check for any duplicate song IDs
-				if track.SongID in tracklistSongIDs and parentNode.Name not in duplicateIDsTracklists:
-					duplicateIDsTracklists.append(str(parentNode.Name) + ".tlst")
+				if track.SongID in tracklistSongIDs and node.Name not in duplicateIDsTracklists:
+					duplicateIDsTracklists.append(str(node.Name) + ".tlst")
 					
 				# If not a duplicate, add to songIDs list
 				else:
@@ -173,21 +171,19 @@ def main():
 						currentTracklist += "\tSong delay: " + str(track.SongDelay) + "\n"
 					currentTracklist += "\n"
 			
-			if DO_FILE_WRITE:		
-				TEXT_FILE.write(getHeader(parentNode))
+			if DO_FILE_WRITE:
+				TEXT_FILE.write(getHeader(node))
 				TEXT_FILE.write(currentTracklist)
 	
-	# After all TLSTs are parsed, close text file
+	# After all TLSTs are parsed, close text file, and copy from temp folder to tracklist folder
 	if DO_FILE_WRITE:
 		TEXT_FILE.close()
-	
+		File.Copy(TEMP_TEXT_FILE_PATH, FULL_TEXT_FILE_PATH, True)
+		File.Delete(TEMP_TEXT_FILE_PATH) # File.Move() doesn't work?
+		
 	progressBar.Finish()
 	
-	# Reopen previously-opened file
-	if CURRENT_OPEN_FILE:
-		BrawlAPI.OpenFile(CURRENT_OPEN_FILE)
-	
-	# START RESULTS
+	# RESULTS
 	
 	# Results: If no tracklists found
 	if tracklistOpenedCount == 0:
