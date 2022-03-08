@@ -77,12 +77,12 @@ def main():
 	# Derive strm and tracklist folder paths
 	[STRM_DIR, TRACKLIST_DIR] = [0,0]
 	if workingDir[-3:] == "\\pf":
-		STRM_DIR = workingDir + "\\sound\\strm"
-		TRACKLIST_DIR = workingDir + "\\sound\\tracklist"
-	elif workingDir[-9:] == "\\pf\\sound":
-		STRM_DIR = workingDir + "\\strm"
-		TRACKLIST_DIR = workingDir + "\\tracklist"
-	elif workingDir [-5:] == "\\strm":
+		STRM_DIR = workingDir + "\\sound\\strm\\"
+		TRACKLIST_DIR = workingDir + "\\sound\\tracklist\\"
+	elif workingDir[-9:] == "\\pf\\sound\\":
+		STRM_DIR = workingDir + "\\strm\\"
+		TRACKLIST_DIR = workingDir + "\\tracklist\\"
+	elif workingDir [-5:] == "\\strm\\":
 		STRM_DIR = workingDir
 		TRACKLIST_DIR = workingDir.replace("\\strm", "\\tracklist")
 
@@ -95,31 +95,29 @@ def main():
 	# Save currently opened file, if any
 	CURRENT_OPEN_FILE = getOpenFile()
 	
-	# Initialize list of tracklist files to scan
-	TRACKLIST_FILES = Directory.CreateDirectory(TRACKLIST_DIR).GetFiles()
-	filesOpenedCount = 0	# Number of opened files
-	
 	# Get list of brstm file names in sound/strm directory, and store in brstmFiles[]
 	populateBrstmFilesList(STRM_DIR)
 	BRSTM_FILE_COUNT = len(brstmFiles)
 	
+	# Open tracklist folder in BrawlCrate
+	BrawlAPI.OpenFile(TRACKLIST_DIR)
+	
 	# Progress bar start
 	progressBar = ProgressWindow()
-	progressBar.Begin(0,len(TRACKLIST_FILES),0)
+	progressBar.Begin(0,len(BrawlAPI.RootNode.Children),0)
+	
+	filesOpenedCount = 0	# Number of opened files
 	
 	# Iterate through all files in tracklist folder
-	for file in TRACKLIST_FILES:
+	for node in BrawlAPI.RootNode.Children:
+		if isinstance(node,TLSTNode):
 		
-		# Update progress bar
-		filesOpenedCount += 1
-		progressBar.Update(filesOpenedCount)
-		
-		# Open tracklist file
-		if file.Name.lower().EndsWith(".tlst"):
-			BrawlAPI.OpenFile(file.FullName)
+			# Update progress bar
+			filesOpenedCount += 1
+			progressBar.Update(filesOpenedCount)
 			
 			# Iterate through entries in tracklist
-			for track in BrawlAPI.RootNode.Children:
+			for track in node.Children:
 				trackName = str(track.SongFileName)
 				
 				# If file exists, get its index and delete it from brstmFiles[]
@@ -131,8 +129,7 @@ def main():
 						pinchIndex = getPinchTrackIndex(track)
 						if pinchIndex >= 0:
 							del brstmFiles[getPinchTrackIndex(track)]
-				
-			
+		
 		# Stop the loop if all brstm files are used
 		if len(brstmFiles) == 0:
 			break
