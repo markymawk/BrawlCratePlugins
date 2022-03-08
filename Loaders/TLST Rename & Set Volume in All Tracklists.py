@@ -37,6 +37,8 @@ def rename_in_all_tracklists(sender, event_args):
 	
 	# Prompt for new track name
 	newTrackName = BrawlAPI.UserStringInput("Enter new track name", selNode.Name)
+	if newTrackName == "":
+		return
 	
 	# If tracklist folder isn't already open from a previous use, open it. Otherwise, prompt to continue within opened folder
 	if BrawlAPI.RootNode.FilePath != tracklistDirPath or not (BrawlAPI.ShowYesNoPrompt("Use currently opened tracklist folder?", SCRIPT_NAME)):
@@ -44,7 +46,11 @@ def rename_in_all_tracklists(sender, event_args):
 	
 	# Loop through all track nodes in opened tracklist folder
 	for track in BrawlAPI.NodeListOfType[TLSTEntryNode]():
-	
+		
+		# If tracklist is Credits or Results, ignore song titles
+		if track.Parent.Name in ["Credits", "Results"]:
+			continue
+		
 		# If file path matches the original track's, check the name
 		if str(track.SongFileName).lower() != "none" and track.SongFileName.lower() == originalTrackPath:
 			tracklistFileName = track.Parent.Name + ".tlst"
@@ -78,8 +84,68 @@ def rename_in_all_tracklists(sender, event_args):
 	
 	showMsg(msg, SCRIPT_NAME)
 
+def match_volume_in_all_tracklists(sender, event_args):
+	selNode = BrawlAPI.SelectedNode
+	tracklistsUsedSameVolume = []
+	tracklistsUsedDiffVolume = []
+	originalTrackPath = str(selNode.SongFileName).lower()
+	
+	# Derive tracklist directory path from selected TLST Entry Node
+	tracklistDirPath = getParentFolderPath(selNode.Parent.FilePath)
+	
+	# Prompt for new track volume
+	newVolume = BrawlAPI.UserStringInput("Set track volume", str(selNode.Volume))
+	if newVolume == "":
+		return
+	newVolume = int(newVolume)
+	
+	# If tracklist folder isn't already open from a previous use, open it. Otherwise, prompt to continue within opened folder
+	if BrawlAPI.RootNode.FilePath != tracklistDirPath or not (BrawlAPI.ShowYesNoPrompt("Use currently opened tracklist folder?", SCRIPT_NAME)):
+		BrawlAPI.OpenFile(tracklistDirPath)
+	
+	# Loop through all track nodes in opened tracklist folder
+	for track in BrawlAPI.NodeListOfType[TLSTEntryNode]():
+	
+		# If file path matches the original track's, check the name
+		if str(track.SongFileName).lower() != "none" and track.SongFileName.lower() == originalTrackPath:
+			tracklistFileName = track.Parent.Name + ".tlst"
+			
+			# If name is the same, add tracklist to tracklistsUsedSameVolume[]
+			if track.Volume == newVolume:
+				tracklistsUsedSameVolume.append(tracklistFileName)
+			
+			# If track name is different, add to tracklistsUsedDiffVolume[], and rename track node
+			else:
+				track.Volume = newVolume
+				tracklistsUsedDiffVolume.append(tracklistFileName)
+	
+	# Results
+	
+	# If no other uses (total track uses == 1)
+	if len(tracklistsUsedSameVolume + tracklistsUsedDiffVolume) == 1:
+		msg = "No other track uses found"
+	else:
+		msg = ""
+		
+		# List tracklists that already used the set volume
+		if len(tracklistsUsedSameVolume):
+			msg += str(len(tracklistsUsedSameVolume)) + " entries already use this volume:\n" + listToString(tracklistsUsedSameVolume) + "\n\n"
+		
+		# List tracks that were renamed
+		if len(tracklistsUsedDiffVolume):
+			msg += str(len(tracklistsUsedDiffVolume)) + " track(s) volume have been set in:\n" + listToString(tracklistsUsedDiffVolume) + "\n\n"
+		
+		msg = msg[:-1] # Cut off a line break
+	
+	showMsg(msg, SCRIPT_NAME)
+
 ## End loader functions
 ## Start context menu add
 
 # Wrapper: GenericWrapper (no TLSTEntryNodeWrapper)
+# Rename across all tracklists
 BrawlAPI.AddContextMenuItem(GenericWrapper, "", "Rename all occurrences of this song in every TLST file", EnableCheckTLSTEntryNode, ToolStripMenuItem("Rename across all tracklists", None, rename_in_all_tracklists))
+
+# Wrapper: GenericWrapper (no TLSTEntryNodeWrapper)
+# Set volume across all tracklists
+BrawlAPI.AddContextMenuItem(GenericWrapper, "", "Match volume of all occurrences of this song in every TLST file", EnableCheckTLSTEntryNode, ToolStripMenuItem("Match volume across all tracklists", None, match_volume_in_all_tracklists))
