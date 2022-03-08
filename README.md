@@ -81,10 +81,10 @@ Select one or more BRSTM files. New tracklist entries will be automatically gene
 
 Resets all Frequency values of track entries to their default value (40).
 
-## 2.10 TLST Rename in All Tracklists
+## 2.10 TLST Rename & Set Volume in All Tracklists
 **Usage:** Right-click any track node that uses a custom BRSTM path
 
-Renames all occurrences of the selected track across every TLST file in the corresponding (parent) directory, listing each occurrence in an output dialog box. After using, leave the tracklist directory open for quick repeat use.
+Rename or set volume of all occurrences of the selected track across every TLST file in the corresponding (parent) directory, listing each occurrence in an output dialog box. For quick repeat usage, leave the tracklist directory open in BrawlCrate.
 
 # 3. Stage optimization plug-ins
 
