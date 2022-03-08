@@ -40,11 +40,12 @@ def populateBrstmFilesList(dir, parentFolder=""):
 def checkTrackName(track):
 	trackName = str(track.SongFileName)
 	if trackName != "None":
+	
 		# Compare lower-case for case-insensitivity
 		trackName = trackName.lower() + ".brstm"
+		
 		# Swap backslash (\) with forward slash (/) for consistency
 		trackName = trackName.replace("\\", "/")
-	#	dmessage(trackName)
 		
 		# If track is found, return index of the track
 		for i in range(0, len(brstmFiles), 1):
@@ -68,26 +69,29 @@ def getPinchTrackIndex(track):
 ## End helper methods
 ## Start of main script
 
-# Prompt for directory
-workingDir = BrawlAPI.OpenFolderDialog("Open pf, sound, or strm folder")
-workingDir = str(workingDir)
+def main():
+	# Prompt for directory
+	workingDir = BrawlAPI.OpenFolderDialog("Open pf, sound, or strm folder")
+	workingDir = str(workingDir)
 
-# Derive strm and tracklist folder paths
-[STRM_DIR, TRACKLIST_DIR] = [0,0]
-if workingDir[-3:] == "\\pf":
-	STRM_DIR = workingDir + "\\sound\\strm"
-	TRACKLIST_DIR = workingDir + "\\sound\\tracklist"
-elif workingDir[-9:] == "\\pf\\sound":
-	STRM_DIR = workingDir + "\\strm"
-	TRACKLIST_DIR = workingDir + "\\tracklist"
-elif workingDir [-5:] == "\\strm":
-	STRM_DIR = workingDir
-	TRACKLIST_DIR = workingDir.replace("\\strm", "\\tracklist")
+	# Derive strm and tracklist folder paths
+	[STRM_DIR, TRACKLIST_DIR] = [0,0]
+	if workingDir[-3:] == "\\pf":
+		STRM_DIR = workingDir + "\\sound\\strm"
+		TRACKLIST_DIR = workingDir + "\\sound\\tracklist"
+	elif workingDir[-9:] == "\\pf\\sound":
+		STRM_DIR = workingDir + "\\strm"
+		TRACKLIST_DIR = workingDir + "\\tracklist"
+	elif workingDir [-5:] == "\\strm":
+		STRM_DIR = workingDir
+		TRACKLIST_DIR = workingDir.replace("\\strm", "\\tracklist")
 
-if workingDir and not STRM_DIR:
-	BrawlAPI.ShowError("Invalid directory", "Error")
-
-elif workingDir:
+	if workingDir and not STRM_DIR:
+		BrawlAPI.ShowError("Invalid directory", "Error")
+		return
+	elif not workingDir:
+		return
+	
 	# Save currently opened file, if any
 	CURRENT_OPEN_FILE = getOpenFile()
 	
@@ -185,3 +189,5 @@ elif workingDir:
 			message += "...and " + str((len(brstmFiles) - MAX_CUSTOM_LIST)) + " more\n"
 		
 		BrawlAPI.ShowError(message, SCRIPT_NAME)
+
+main()
