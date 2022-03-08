@@ -1,9 +1,8 @@
 __author__ = "mawwwk"
-__version__ = "1.2"
+__version__ = "1.2.1"
 
 from BrawlCrate.API import *
-from BrawlCrate.NodeWrappers import GenericWrapper
-from BrawlCrate.NodeWrappers import STEXWrapper
+from BrawlCrate.NodeWrappers import * # GenericWrapper, STEXWrapper
 from BrawlLib.SSBB.ResourceNodes import *
 from BrawlLib.SSBB.ResourceNodes.ProjectPlus import STEXNode
 from System.Windows.Forms import ToolStripMenuItem
@@ -13,7 +12,7 @@ from System.IO import File
 # Single PAC enable check: if StageName is not empty && no children exist
 # Wrapper: STEXWrapper
 def EnableCheckPAC(sender, event_args):
-	param = BrawlAPI.RootNode
+	param = BrawlAPI.SelectedNode
 	sender.Enabled = (param is not None and param.StageName is not "" and str(param.SubstageVarianceType) == "None")
 
 # Substage PACs enable check: if parent is a STEX Node
@@ -25,7 +24,7 @@ def EnableCheckSubstagePAC(sender, event_args):
 # TLST enable check: if TrackList is not empty
 # Wrapper: STEXWrapper
 def EnableCheckTLST(sender, event_args):
-	param = BrawlAPI.RootNode
+	param = BrawlAPI.SelectedNode
 	sender.Enabled = (param is not None and param.TrackList is not "")
 
 # ASL Entry enable check: SelectedNode is an ASLSEntryNode
@@ -49,25 +48,26 @@ def open_stage_pac(sender, event_args):
 def open_substage_pac(sender, event_args):
 	STAGE_MELEE_DIR_PATH = str(BrawlAPI.RootNode.FilePath).split("\stageinfo\\")[0] + "\melee\\"
 	
-	# First, try combining (stage)_(substage) with an underscore
+	# Attempt 1: try combining (stage)_(substage) with an underscore
 	PAC_FILE_PATH = STAGE_MELEE_DIR_PATH + "STG" + BrawlAPI.RootNode.StageName + "_" + BrawlAPI.SelectedNode.Name + ".pac"
-	
 	if File.Exists(PAC_FILE_PATH):
 		BrawlAPI.OpenFile(PAC_FILE_PATH)
-	else:
-	# As a backup, try (stage)(substage) with no underscore (i.e. Smashville substages)
-		PAC_FILE_PATH = STAGE_MELEE_DIR_PATH + "STG" + BrawlAPI.RootNode.StageName + BrawlAPI.SelectedNode.Name + ".pac"
+		return
+	
+	# Attempt 2: try (stage)(substage) with no underscore (i.e. Smashville substages)
+	PAC_FILE_PATH = STAGE_MELEE_DIR_PATH + "STG" + BrawlAPI.RootNode.StageName + BrawlAPI.SelectedNode.Name + ".pac"
+	if File.Exists(PAC_FILE_PATH):
+		BrawlAPI.OpenFile(PAC_FILE_PATH)
+		return
 		
-		if File.Exists(PAC_FILE_PATH):
-			BrawlAPI.OpenFile(PAC_FILE_PATH)
-		else:
-	# As another backup, try just the substage name (DualLoad i.e. Castle Siege)
-			PAC_FILE_PATH = STAGE_MELEE_DIR_PATH + "STG" + BrawlAPI.SelectedNode.Name + ".pac"
-			
-			if File.Exists(PAC_FILE_PATH):
-				BrawlAPI.OpenFile(PAC_FILE_PATH)
-			else:
-				BrawlAPI.ShowError("Substage .pac not found.", "Error")
+	# Attempt 3: try just the substage name (DualLoad i.e. Castle Siege)
+	PAC_FILE_PATH = STAGE_MELEE_DIR_PATH + "STG" + BrawlAPI.SelectedNode.Name + ".pac"
+	if File.Exists(PAC_FILE_PATH):
+		BrawlAPI.OpenFile(PAC_FILE_PATH)
+	
+	# If no attempts have worked, show error
+	else:
+		BrawlAPI.ShowError("Substage .pac not found.", "Error")
 
 # Function to open stage TLST file
 def open_stage_tlst(sender, event_args):
