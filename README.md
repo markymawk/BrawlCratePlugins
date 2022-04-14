@@ -115,60 +115,62 @@ Delete any bones unused by objects or collisions. Out of caution, this doesn't a
 
 Improve readability of stage .pac files by converting "Static" BRRES nodes (nodes where the only entry is a Static model) to Redirect nodes at the end of the file. The result should always be tested in-game, with a backup .pac file saved.
 
-# 4. Misc. / MDL0, TEX0, animation shortcuts
+# 4. MDL0, TEX0, animation shortcuts
 
 ## 4.1 CLR0 Set and Rotate Hue, Adjust Saturation, Adjust Brightness
 **Usage:** Right-click a MDL0 Color node, CLR0 animation node, CLR0 material, CLR0 material entry
 
 Modify all color entries of the selected item at once. **Set Hue** changes all colors to the same hue (0 to 359 valid). **Rotate Hue** adds a given value to all colors' hue values, rotating them along the color wheel (-180 to 180 valid). **Adjust Saturation** and **Adjust Brightness** change the value of the color's respective saturation or brightness by the entered value (-100 to 100 valid).
 
-## 4.2 Output Nodes to Text
-**Usage:** Plugins menu
-
-Output a .txt file containing info of the selected node and all child nodes, including name, MD5 checksum, node size, and specialized info for certain node types. Ideal for comparing files or as a form of version control.
-
-## 4.3 MDL0 Copy Fighter Model
+## 4.2 MDL0 Copy Fighter Model
 **Usage:** Right-click a MDL0 node inside a costume .pac file
 
 Export the selected fighter MDL0 to all identically-named MDL0 nodes in the fighter's directory. Useful for optimizing or iterating on several recolors at once.
 
-## 4.4 MDL0 Import Material Settings
+## 4.3 MDL0 Import Material Settings
 **Usage:** Right-click any MDL0 node
 
 Import materials and shaders from an external .MDL0 file, along with object DrawPass settings. Objects still must be re-assigned to materials manually.
 
-## 4.5 MDL0 Set All FogIndex & LightSet
+## 4.4 MDL0 Set All FogIndex & LightSet
 **Usage:** Right-click any MDL0 node with materials
 
 Set all of the model's materials' FogIndex or LightSetIndex values to the given value (-1 to 20).
 
-## 4.6 PAT0 Set Palettes to Texture Name
+## 4.5 PAT0 Set Palettes to Texture Name
 **Usage:** Right-click any PAT0, PAT0 texture entry, or PAT0 material entry  
 
 Set each palette within a PAT0 frame to match the name of the texture.
 
-## 4.7 Set All Game & Watch Colors
+## 4.6 Set All Game & Watch Colors
 **Usage:** Right-click a CLR0 animation inside FitGameWatch00.pac, or the corresponding ColorRegister0 entry
 
 Replace all matching ColorRegister0 entries with the selected color sequence inside the FitGamewatch00 file. Must be ran separately for fill and border entries.
 
-## 4.8 Locate Texture Usage
+## 4.7 Locate Texture Usage
 **Usage:** Right-click a TEX0 node inside a stage .pac file
 
 List all models, materials, objects, and PAT animations using the selected texture.
 
-## 4.9 Rename TEX0 & Preserve References
+## 4.8 Rename TEX0 & Preserve References
 **Usage:** Right-click a TEX0 node within any BRRES
 
 Rename the texture, as well as any material references and PAT0 entries where the texture is used. If the TEX0 is renamed over an already-existing TEX0, then the existing (old) TEX0 will be deleted, and all references to the overwritten (old) texture will reference to the new texture.
 For TEX0s within a MiscData or ModelData, only that BRRES is affected. If within a TextureData, the whole file will be checked.
 
-## 4.10 Locate SCN0 LightSet/Fog Usage
+## 4.9 Locate SCN0 LightSet/Fog Usage
 **Usage:** Right-click a LightSet or Fog node
 
 List all materials to which the selected LightSet index or Fog index is assigned.
 
-## 4.11 MD5 of Selected Node
+# 5. General node operations
+
+## 5.1 Output Nodes to Text
+**Usage:** Plugins menu
+
+Output a .txt file containing info of the selected node and all child nodes, including name, MD5 checksum, node size, and specialized info for certain node types. Ideal for comparing files or as a form of version control.
+
+## 5.2 MD5 of Selected Node
 **Usage:** Plugins menu
 
 Display a message with the MD5 checksum of the selected node, for quick checks or comparisons.
