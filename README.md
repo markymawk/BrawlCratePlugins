@@ -122,53 +122,53 @@ Improves readability of stage .pac files by converting "Static" BRRES nodes (nod
 
 Modifies all color entries of the selected item at once. **Set Hue** changes all colors to the same hue (0 to 359 valid). **Rotate Hue** adds a given value to all colors' hue values, rotating them along the color wheel (-180 to 180 valid). **Adjust Saturation** and **Adjust Brightness** add the entered value to the color's respective saturation or brightness value (-100 to 100 valid).
 
-## 4.2 MDL0 Copy Fighter Model
+## 4.2 Output Nodes to Text
+**Usage:** Plugins menu
+
+Outputs info of the selected node and all child nodes, including name, MD5 checksum, node size, and specialized info for certain node types, all to a .txt file. Ideal for comparing files or as a form of version control.
+
+## 4.3 MDL0 Copy Fighter Model
 **Usage:** Right-click a MDL0 node inside a costume .pac file
 
 Replaces all identically-named MDL0 nodes in the fighter's directory with the selected MDL0. Useful for optimizing or iterating on several recolors at once.
 
-## 4.3 MDL0 Import Material Settings
+## 4.4 MDL0 Import Material Settings
 **Usage:** Right-click any MDL0 node
 
 Imports materials and shaders from an external .MDL0 file, replacing all settings at once. Objects still must be re-assigned to materials manually.
 
-## 4.4 MDL0 Set All FogIndex & LightSet
+## 4.5 MDL0 Set All FogIndex & LightSet
 **Usage:** Right-click any MDL0 node with materials
 
 Set all of the model's materials' FogIndex or LightSetIndex values to the given integer (-1 to 20).
 
-## 4.5 PAT0 Set Palettes to Texture Name
+## 4.6 PAT0 Set Palettes to Texture Name
 **Usage:** Right-click any PAT0, PAT0 texture entry, or PAT0 material entry  
 
 Set all PAT0 frames' palettes to match the texture. Shows an error message if HasPalette is set to False.
 
-## 4.6 Set All Game & Watch Colors
+## 4.7 Set All Game & Watch Colors
 **Usage:** Right-click a CLR0 animation inside FitGameWatch00.pac, or the corresponding ColorRegister0 entry
 
 Replaces all matching ColorRegister0 entries with the selected color sequence inside the FitGamewatch00 file. Must be ran separately for fill and border entries.
 
-## 4.7 Locate Texture Usage
+## 4.8 Locate Texture Usage
 **Usage:** Right-click a TEX0 node inside a stage .pac file
 
 Lists all models, materials, objects, and PAT animations using the selected texture.
 
-## 4.8 Rename TEX0 & Preserve References
+## 4.9 Rename TEX0 & Preserve References
 **Usage:** Right-click a TEX0 node within any BRRES
 
 Renames the TEX0, as well as any matRefs or PAT0 entries where the texture is used. If the TEX0 is renamed over an already-existing TEX0, then the existing (old) TEX0 will be deleted, and all references to the overwritten (old) texture will stay pointing to the new texture.
 For TEX0s within a MiscData or ModelData, only that BRRES is affected. If within a TextureData, the whole file will be checked.
 
-## 4.9 Locate SCN0 LightSet/Fog Usage
+## 4.10 Locate SCN0 LightSet/Fog Usage
 **Usage:** Right-click a LightSet or Fog node
 
-Lists all materials to which the selected LightSet or Fog is assigned
+Lists all materials to which the selected LightSet index or Fog index is assigned.
 
-## 4.10 MD5 of Selected Node
+## 4.11 MD5 of Selected Node
 **Usage:** Plugins menu
 
-Outputs the MD5 checksum of the selected node, for comparisons between files or other quick checks.
-
-## 4.11 Output Nodes to Text
-**Usage:** Plugins menu
-
-Outputs info of the selected node and all child nodes, including name, MD5, file size, and specialized info for certain node types. Ideal for comparing files or version control.
+Displays a message with the MD5 checksum of the selected node, for quick checks or comparisons.
