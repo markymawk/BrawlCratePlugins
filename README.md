@@ -120,7 +120,7 @@ Improves readability of stage .pac files by converting "Static" BRRES nodes (nod
 ## 4.1 CLR0 Set and Rotate Hue, Adjust Saturation, Adjust Brightness
 **Usage:** Right-click a MDL0 Color node, CLR0 animation node, CLR0 material, CLR0 material entry
 
-Modifies all color entries of the selected item at once. **Set Hue** changes all colors to the same hue (0 to 359 valid). **Rotate Hue** adds a given value to all colors' hue values, rotating them along the color wheel (-180 to 180 valid). **Adjust Saturation** and **Adjust Brightness** add the entered value to the color's respective saturation or brightness value (-100 to 100 valid).
+Modifies all color entries of the selected item at once. **Set Hue** changes all colors to the same hue (0 to 359 valid). **Rotate Hue** adds a given value to all colors' hue values, rotating them along the color wheel (-180 to 180 valid). **Adjust Saturation** and **Adjust Brightness** change the value of the color's respective saturation or brightness by the entered value (-100 to 100 valid).
 
 ## 4.2 Output Nodes to Text
 **Usage:** Plugins menu
