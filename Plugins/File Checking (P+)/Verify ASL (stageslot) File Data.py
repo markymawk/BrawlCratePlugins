@@ -86,7 +86,7 @@ def main():
 		workingDir += "\\"
 	
 	# Confirm dialog box
-	message = "Contents of all .asl files in the folder:\n" + str(workingDir) + "\\"
+	message = "Contents of all .asl files in the folder:\n" + str(workingDir)
 	message += "\nwill be checked for valid stage param file locations."
 	message += "\n\nPress OK to continue."
 	
@@ -105,7 +105,6 @@ def main():
 	
 	# Derive param folder
 	PARAM_DIR_PATH = str(workingDir).rsplit("\\",2)[0] + "\\stageinfo"
-	dmsg(PARAM_DIR_PATH)
 	
 	# Open whole stageslot folder in BrawlCrate
 	if BrawlAPI.RootNode == None or BrawlAPI.RootNode.FilePath != workingDir:

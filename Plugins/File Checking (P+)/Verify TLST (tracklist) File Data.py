@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "3.0"
+__version__ = "3.0.1"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
@@ -133,6 +133,8 @@ def main():
 	
 	# Iterate through all TLST files in folder
 	for node in BrawlAPI.RootNode.Children:
+	
+		# If file is not a tlst, ignore
 		if isinstance(node, TLSTNode):
 			tracklistOpenedCount += 1
 			currentTracklist = ""	# Current tracklist output string
@@ -143,7 +145,7 @@ def main():
 			
 			# Iterate through tracklist entries
 			for track in node.Children:
-				
+			
 				# Check for any duplicate song IDs
 				if track.SongID in tracklistSongIDs and node.Name not in duplicateIDsTracklists:
 					duplicateIDsTracklists.append(str(node.Name) + ".tlst")
