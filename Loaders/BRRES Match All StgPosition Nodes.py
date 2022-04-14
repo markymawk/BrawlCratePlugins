@@ -18,12 +18,35 @@ TEMP_MODELDATA_PATH = AppPath + "\ModelData100.brres"
 # Wrapper: BRESWrapper
 def EnableCheckBRES(sender, event_args):
 	node = BrawlAPI.SelectedNode
-	sender.Enabled = (node is not None and node.Name == MODELDATA_BRRES_NAME and node.Parent and node.Parent.Name == "2")
+	sender.Enabled = (node is not None and node.Name == MODELDATA_BRRES_NAME \
+	and node.Parent and node.Parent.Name == "2")
+	
+# Check to ensure that the BRES is a ModelData 100 within a stage pac
+# Wrapper: MDL0Wrapper
+def EnableCheckMDL0(sender, event_args):
+	node = BrawlAPI.SelectedNode
+	sender.Enabled = (node is not None and node.IsStagePosition and node.Parent \
+	and node.Parent.Parent and node.Parent.Parent.Name == MODELDATA_BRRES_NAME \
+	and node.Parent.Parent.Parent.Name == "2")
 
 ## End enable check function
 ## Start loader function
 
-def export_stgposition(sender, event_args):
+# Loader function from BRRES (Model Data 100)
+def export_stgposition_brres(sender, event_args):
+	main(BrawlAPI.SelectedNode)
+
+def export_stgposition_mdl0(sender, event_args):
+	selNode = BrawlAPI.SelectedNode
+	
+	if selNode.Parent and selNode.Parent.Parent and isinstance(selNode.Parent.Parent,BRRESNode):
+		main(selNode.Parent.Parent)
+	else:
+		BrawlAPI.ShowError("Error exporting parent BRRES", "Error")
+	
+## End loader function
+## Start main function
+def main(brresNode):
 	# Prompt for filename substring to check for
 	stageString = BrawlAPI.UserStringInput("Enter stage substring (e.g. \"_DP\")")
 	if stageString == "" or stageString == None:
@@ -32,16 +55,14 @@ def export_stgposition(sender, event_args):
 	# Save currently opened file path
 	SOURCE_FILE = str(BrawlAPI.RootNode.FilePath)
 	
-	# Save currently selected node as a temp brres
-	node = BrawlAPI.SelectedNode
-	node.ExportUncompressed(TEMP_MODELDATA_PATH)
+	brresNode.ExportUncompressed(TEMP_MODELDATA_PATH)
 	
 	# Get list of stage pacs in the same folder as the opened file
 	STAGE_MELEE_PATH = str(BrawlAPI.RootNode.FilePath).rsplit("\\", 1)[0]
 	STAGE_FILES = Directory.CreateDirectory(STAGE_MELEE_PATH).GetFiles()
 	
 	# Get hash of selected node, to compare with new nodes
-	originalHash = node.MD5Str()
+	originalHash = brresNode.MD5Str()
 	
 	# List of files found with the given substring
 	filesFound = []
@@ -50,7 +71,7 @@ def export_stgposition(sender, event_args):
 	
 	# Check each pac file in stage/melee for the given substring
 	for file in STAGE_FILES:
-		if stageString in file.Name:
+		if stageString in file.Name and file.FullName != SOURCE_FILE:
 			filesFound.append(file.Name)
 			
 			# Find Model Data 100 node
@@ -69,9 +90,9 @@ def export_stgposition(sender, event_args):
 	# Delete temp brres file
 	File.Delete(TEMP_MODELDATA_PATH)
 	
-	# If any files modified, list them
 	msg = str(len(filesFound)) + " stage file(s) found with substring \"" + stageString + "\"\n"
 	
+	# If any files modified, list them
 	if len(filesModified):
 		msg += str(len(filesModified)) + " file(s) edited:\n\n"
 		
@@ -82,9 +103,11 @@ def export_stgposition(sender, event_args):
 	# Otherwise, no mismatches found
 	elif len(filesFound):
 		BrawlAPI.ShowMessage(msg + "\nNo mismatching " + MODELDATA_BRRES_NAME + " nodes found", "Complete")
-
 ## End main function
 ## Start context menu add
 
 # From parent BRRES
-BrawlAPI.AddContextMenuItem(BRESWrapper, "", "Export ModelData 100 BRRES to other stages", EnableCheckBRES, ToolStripMenuItem("Export StgPosition to 1:1 stages", None, export_stgposition))
+BrawlAPI.AddContextMenuItem(BRESWrapper, "", "Export ModelData 100 BRRES to other stages", EnableCheckBRES, ToolStripMenuItem("Export StgPosition to 1:1 stages", None, export_stgposition_brres))
+
+# From stgPosition MDL0 (export BRRES)
+BrawlAPI.AddContextMenuItem(MDL0Wrapper, "", "Export ModelData 100 BRRES to other stages", EnableCheckMDL0, ToolStripMenuItem("Export StgPosition to 1:1 stages", None, export_stgposition_mdl0))
