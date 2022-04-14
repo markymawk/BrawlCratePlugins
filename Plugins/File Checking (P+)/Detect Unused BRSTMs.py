@@ -65,7 +65,18 @@ def getPinchTrackIndex(track):
 		fileName = brstmFiles[i].lower()
 		if trackName == fileName.lower():
 			return i
+
+# Given a list of relative filepaths, delete brstm files that aren't used
+def deleteUnusedFiles(parentDir, fileNameList):
+	# "Are you sure?" prompt
+	if not (BrawlAPI.ShowOKCancelWarning("Deleting these BRSTM files is irreversible. They will be not be moved to the Recycle Bin, but be erased from your hard drive.\nAre you sure you want to continue?", SCRIPT_NAME)):
+		return
 	
+	for fileName in fileNameList:
+		File.Delete(parentDir + fileName)
+	
+	BrawlAPI.ShowMessage(str(len(fileNameList)) + " unused BRSTM files deleted.", SCRIPT_NAME)
+
 ## End helper methods
 ## Start of main script
 
@@ -100,7 +111,8 @@ def main():
 	BRSTM_FILE_COUNT = len(brstmFiles)
 	
 	# Open tracklist folder in BrawlCrate
-	BrawlAPI.OpenFile(TRACKLIST_DIR)
+	if BrawlAPI.RootNode == None or BrawlAPI.RootNode.FilePath != TRACKLIST_DIR:
+		BrawlAPI.OpenFile(TRACKLIST_DIR)
 	
 	# Progress bar start
 	progressBar = ProgressWindow()
@@ -185,6 +197,13 @@ def main():
 		if MAX_CUSTOM_LIST < len(brstmFiles):
 			message += "...and " + str((len(brstmFiles) - MAX_CUSTOM_LIST)) + " more\n"
 		
-		BrawlAPI.ShowError(message, SCRIPT_NAME)
+		# Prompt to delete unused files
+		message += "\n\nDelete these BRSTM files?"
+		if brawlListPrintedCount:
+			message += " (Files with Brawl song IDs will be skipped)"
+		if not BrawlAPI.ShowOKCancelWarning(message, SCRIPT_NAME):
+			return
+		
+		deleteUnusedFiles(STRM_DIR, brstmFiles)
 
 main()
