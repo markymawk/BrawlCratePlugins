@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0"
+__version__ = "1.1"
 
 from BrawlCrate.API import *
 from BrawlCrate.API.BrawlAPI import AppPath
@@ -10,6 +10,7 @@ from System.IO import *
 from mawwwkLib import *
 
 TEMP_MDL0_PATH = AppPath + "\MDL0_EXPORT_temp.mdl0"
+SCRIPT_NAME = "Copy Fighter Model"
 
 ## Start enable check function
 # Check that mdl0 and file path contain "Fit" and ".pac"
@@ -19,7 +20,6 @@ def EnableCheckMDL0(sender, event_args):
 	
 	sender.Enabled = (node is not None \
 	and "Fit" in node.Name \
-	and "Fit" in BrawlAPI.RootNode.FilePath \
 	and BrawlAPI.RootNode.FilePath.endswith(".pac"))
 
 ## End enable check function
@@ -39,6 +39,9 @@ def getParentDir(filepath):
 ## Start loader functions
 
 def copy_fighter_model(sender, event_args):
+	if not BrawlAPI.ShowOKCancelPrompt("Copy the selected fighter MDL0 to identically-named MDL0s in .pac files inside this folder.\n\nPress OK to continue.", SCRIPT_NAME):
+		return
+	
 	SELECTED_MDL0_NAME = BrawlAPI.SelectedNode.Name
 	PARENT_BRRES_INDEX = BrawlAPI.SelectedNode.Parent.Parent.AbsoluteIndex
 	PARENT_BRRES_NAME = BrawlAPI.SelectedNode.Parent.Parent.Name
@@ -85,7 +88,7 @@ def copy_fighter_model(sender, event_args):
 	
 	# If no files edited, show help/error
 	if len(filesEdited) == 0:
-		BrawlAPI.ShowError("No files updated.\n\n(If this is unexpected, verify the MDL0 names and locations are identical among files you want to update.)")
+		BrawlAPI.ShowWarning("No files updated.\n\n(If this is unexpected, verify the MDL0 names and locations are identical among files you want to update.)", SCRIPT_NAME)
 	# If any files are modified, list changed file names
 	else:
 		msg = str(len(filesEdited)) + " files updated!\n\n"
