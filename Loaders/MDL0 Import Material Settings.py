@@ -25,6 +25,7 @@ def import_model_settings(sender, event_args):
 	PARENT_MODELS_GROUP = BrawlAPI.SelectedNode.Parent
 	DEST_MODEL_MAT_GROUP = getChildFromName(DEST_MODEL, "Materials")
 	DEST_MODEL_SHADERS = getChildFromName(DEST_MODEL, "Shaders").Children
+	DEST_MODEL_OBJ_GROUP = getChildFromName(DEST_MODEL, "Objects")
 	
 	# Count number of models to later determine if one should be deleted
 	ORIGINAL_MODEL_COUNT = len(DEST_MODEL.Parent.Children)
@@ -37,29 +38,13 @@ def import_model_settings(sender, event_args):
 	SOURCE_MODEL = DEST_MODEL.Parent.Children[SOURCE_MODEL_INDEX]
 	SOURCE_MODEL_MAT_GROUP = getChildFromName(SOURCE_MODEL, "Materials")
 	SOURCE_MODEL_SHADERS = getChildFromName(SOURCE_MODEL, "Shaders").Children
+	SOURCE_MODEL_OBJ_GROUP = getChildFromName(SOURCE_MODEL, "Objects")
 	
 	# If a model wasn't imported (i.e. window closed), terminate the script
 	if (ORIGINAL_MODEL_COUNT == len(DEST_MODEL.Parent.Children)):
 		return
 	
-	sourceMatsList = getChildNodes(SOURCE_MODEL_MAT_GROUP)
-	
-	# Replace materials that share names
-	for destMat in DEST_MODEL_MAT_GROUP.Children:
-		sourceMat = getChildFromName(SOURCE_MODEL_MAT_GROUP, destMat.Name)
-		
-		# If material exists in source model, assign it to dest model
-		if sourceMat:
-			destMat.Replace(sourceMat)
-			sourceMatsList.remove(sourceMat)
-	
-	# Copy any remaining materials (those that don't share names)
-	for sourceMat in sourceMatsList:
-		newMat = DEST_MODEL_WRAPPER.NewMaterial()
-		newMat.Replace(sourceMat)
-		newMat.Name = sourceMat.Name
-	
-	# Start shader stuff
+	# Start shader import
 	# If dest model has fewer shaders than source model, add more to dest model until the amount of shaders in each mdl0 is equal
 	DEST_SHADER_COUNT = len(DEST_MODEL_SHADERS)
 	SOURCE_SHADER_COUNT = len(SOURCE_MODEL_SHADERS)
@@ -74,6 +59,37 @@ def import_model_settings(sender, event_args):
 		destShader = DEST_MODEL_SHADERS[i]
 		
 		destShader.Replace(sourceShader)
+	
+	# End shader import
+	# Begin material import
+	
+	sourceMatsList = getChildNodes(SOURCE_MODEL_MAT_GROUP)
+	
+	# Replace materials that share names
+	for destMat in DEST_MODEL_MAT_GROUP.Children:
+		sourceMat = getChildFromName(SOURCE_MODEL_MAT_GROUP, destMat.Name)
+		
+		# If material exists in source model, assign it to dest model
+		if sourceMat:
+			destMat.Replace(sourceMat)
+			sourceMatsList.remove(sourceMat)
+			destMat.Shader = sourceMat.Shader
+	
+	# Copy any remaining materials (those that don't share names)
+	for sourceMat in sourceMatsList:
+		newMat = DEST_MODEL_WRAPPER.NewMaterial()
+		newMat.Replace(sourceMat)
+		newMat.Name = sourceMat.Name
+	
+	# End material import
+	# Begin object transparency settings
+	
+	for destObj in DEST_MODEL_OBJ_GROUP.Children:
+		sourceObj = getChildFromName(SOURCE_MODEL_OBJ_GROUP, destObj.Name)
+		
+		# Copy draw pass settings (XLU/OBJ) to each object
+		if sourceObj:
+			destObj._drawCalls[0].DrawPass = sourceObj._drawCalls[0].DrawPass
 	
 	# Delete temp mdl0 
 	removeNode(SOURCE_MODEL)
