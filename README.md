@@ -41,10 +41,10 @@ Transfer entire tracklist frequencies across build updates. Select a "source" tr
 ## 2.2 Detect Unused BRSTMs (P+)
 **Usage:** Plugins menu > File Checking (P+)
 
-Select the build's pf (or sound, or strm) folder. Any BRSTM files inside sound/strm/ that aren't used by tracklists inside sound/tracklist/ will be listed.
+Select the build's pf (or sound, or strm) folder. Any BRSTM files inside sound/strm/ that aren't used by tracklists inside sound/tracklist/ will be listed, with the option to delete them.
 
 ## 2.3 Match All StgPosition Nodes 
-**Usage:** Right-click any Model Data [100] BRRES inside a stage pac
+**Usage:** Right-click any StgPosition model or its parent Model Data [100] BRRES inside a stage pac
 
 Enter a substring of 1:1 stage filenames, like "\_BF". All stage files in the current file's directory will have the selected ModelData BRRES copied to them. For stage files with multiple StgPosition nodes, only the top-most one will be overwritten.  
 This process is irreversible -- always save backups!
@@ -117,13 +117,13 @@ Improves readability of stage .pac files by converting "Static" BRRES nodes (nod
 
 # 4. Misc. / MDL0, TEX0, animation shortcuts
 
-## 4.1 CLR0 Set and Rotate Hue
+## 4.1 CLR0 Set and Rotate Hue, Adjust Saturation, Adjust Brightness
 **Usage:** Right-click a MDL0 Color node, CLR0 animation node, CLR0 material, CLR0 material entry
 
-Modifies all color entries of the selected item at once. **Set Hue** changes all colors to the same hue (0 to 359 valid). **Rotate Hue** adds a given value to all colors' hue values, rotating them along the color wheel (-180 to 180 valid).
+Modifies all color entries of the selected item at once. **Set Hue** changes all colors to the same hue (0 to 359 valid). **Rotate Hue** adds a given value to all colors' hue values, rotating them along the color wheel (-180 to 180 valid). **Adjust Saturation** and **Adjust Brightness** add the entered value to the color's respective saturation or brightness value (-100 to 100 valid).
 
 ## 4.2 MDL0 Copy Fighter Model
-**Usage:** Right-click a MDL0 node inside any costume .pac file
+**Usage:** Right-click a MDL0 node inside a costume .pac file
 
 Replaces all identically-named MDL0 nodes in the fighter's directory with the selected MDL0. Useful for optimizing or iterating on several recolors at once.
 
@@ -167,3 +167,8 @@ Lists all materials to which the selected LightSet or Fog is assigned
 **Usage:** Plugins menu
 
 Outputs the MD5 checksum of the selected node, for comparisons between files or other quick checks.
+
+## 4.11 Output Nodes to Text
+**Usage:** Plugins menu
+
+Outputs info of the selected node and all child nodes, including name, MD5, file size, and specialized info for certain node types. Ideal for comparing files or version control.
