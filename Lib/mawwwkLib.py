@@ -1,4 +1,4 @@
-﻿version = "1.3"
+﻿version = "1.3.1"
 # mawwwkLib
 # Common functions for use with BrawlAPI scripts
 
@@ -237,22 +237,25 @@ def getOpenFile():
 ## Start conversion functions
 
 # HSV2RGB()
-# Given an array of 3 numbers as HSV, return an array of 3 ints corresponding to the RGB values
-# Hue in [0, 359], sat in [0,1], val in [0,1]
+# Given a list of 3 numbers as HSV, return a list of 3 ints corresponding to the RGB values
+# Hue in [0, 359], sat in [0,100], val in [0,100]
 def HSV2RGB(colorList):
 	[HUE, SAT, VAL] = colorList
 	
+	# Keep brightness and sat values in [0, 100 range]
+
+	SAT = min(max(SAT, 0), 100)
+	VAL = min(max(VAL, 0), 100)
+	
 	# Some formula calcs
-	cValue = float(VAL * SAT)
+	cValue = float(VAL * SAT) / 10000.0
 	xValue = cValue * (1.0 - abs((HUE / 60.0) % 2 - 1.0))
-	mValue = VAL - cValue
+	mValue = VAL/100.0 - cValue
 	
 	# Keep hue value in [0, 359] range
 	while HUE < 0:
 		HUE = HUE + 360
-	while HUE > 360:
-		HUE = HUE - 360
-	
+	HUE = HUE % 360
 	if HUE >= 0 and HUE < 60:
 		[red, green, blue] = [cValue, xValue, 0]
 	elif HUE >= 60 and HUE < 120:
@@ -294,14 +297,14 @@ def RGB2HSV(colorNode):
 
 	hue = (hue * 60.0) % 360
 	
-	# Calculate saturation as [0,1]
+	# Calculate saturation as [0,100]
 	if colorMax > 0:
-		sat = colorDiff / colorMax
+		sat = colorDiff / colorMax * 100
 	else:
 		sat = 0
 		
-	# Calculate value (highest color) as [0,1]
-	val = colorMax
+	# Calculate value (highest color) as [0,100]
+	val = colorMax * 100
 	
 	return [hue, sat, val]
 
