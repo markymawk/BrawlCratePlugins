@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0"
+__version__ = "1.1"
 
 from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *

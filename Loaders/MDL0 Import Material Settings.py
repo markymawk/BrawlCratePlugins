@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.2"
+__version__ = "1.3"
 
 from System.Windows.Forms import ToolStripMenuItem # Needed for all loaders
 from BrawlCrate.API import *
