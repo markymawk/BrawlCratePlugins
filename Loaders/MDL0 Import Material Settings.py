@@ -67,7 +67,7 @@ def import_model_settings(sender, event_args):
 	
 	# Replace materials that share names
 	for destMat in DEST_MODEL_MAT_GROUP.Children:
-		sourceMat = getChildFromName(SOURCE_MODEL_MAT_GROUP, destMat.Name)
+		sourceMat = getChildFromName(SOURCE_MODEL_MAT_GROUP, destMat.Name, True)
 		
 		# If material exists in source model, assign it to dest model
 		if sourceMat:

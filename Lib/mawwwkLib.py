@@ -117,7 +117,7 @@ def getChildFromName(node, nameStr, EXACT_NEEDED=False):
 		for child in node.Children:
 			if EXACT_NEEDED and child.Name == str(nameStr):
 				return child
-			elif str(nameStr) in child.Name:
+			elif not EXACT_NEEDED and str(nameStr) in child.Name:
 				return child
 	return 0	# If not found, return 0
 
