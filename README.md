@@ -1,11 +1,10 @@
-Plug-ins for BrawlCrate using BrawlAPI. Includes scripts for file optimization, custom build management, and other helpful shortcuts.
+# Installation
+*Python 3.9.x required to run. Set the Python install path inside Tools > Settings > BrawlAPI tab.*  
+*BrawlCrate v0.37 or newer required for installation & auto-updates.*  
 
-To install:  
 In BrawlCrate, navigate to Tools > Settings > Updater tab, and click the Manage Subscriptions button.  
 Click add, then paste the link to this Github repo: https://github.com/markymawk/BrawlCratePlugins  
 Then, these plug-ins will download and update automatically!  
-*BrawlCrate v0.37 or newer required for installation & auto-updates.*  
-*Python 3.9.x required to run. Set the Python install path inside Tools > Settings > BrawlAPI tab.*
 
 Feedback welcome @ mawwwk#1068
 
@@ -29,40 +28,40 @@ Export the MenuRule_en ARC into the identical ARC inside sc_selcharacter2.pac wi
 ## 1.4 info.pac Stock Icon Exporter
 **Usage:** info.pac > Right-click BRRES Misc Data 30 (or parent ARC)
 
-Export stock textures and StockFace PAT0 animation data to the other files where stock icon data is used: STGRESULT.pac, StockFaceTex.brres, and sc_selcharacter.pac.
+Export stock textures and StockFace PAT0 animation data to the other files where stock icon data is used: `STGRESULT.pac`, `StockFaceTex.brres`, and `sc_selcharacter.pac`.
 
 # 2. Build management plug-ins
 
 ## 2.1 Copy Tracklist Frequencies
 **Usage:** Plugins menu
 
-Transfer entire tracklist frequencies across build updates. Select a "source" tracklist folder (typically Project+/pf/sound/tracklist) and a "destination" tracklist folder. Song frequency values will be copied from the source to the destination tracklists, based on song name or filename.
+Transfer entire tracklist frequencies across build updates. Select a "source" tracklist folder (typically `Project+/pf/sound/tracklist`) and a "destination" tracklist folder. Song frequency values will be copied from the source to the destination tracklists, based on song name or filename.
 
 ## 2.2 Detect Unused BRSTMs (P+)
 **Usage:** Plugins menu > File Checking (P+)
 
-Scan a `strm` folder for any BRSTM files that aren't used by tracklists inside sound/tracklist/. Unused files will be listed, with the option to delete them all at once.
+Scan a `strm` folder for any BRSTM files that aren't used by tracklist files inside `sound/tracklist/`. Unused files will be listed, with the option to delete them all at once.
 
 ## 2.3 Match All StgPosition Nodes 
 **Usage:** Right-click any StgPosition model or its parent Model Data [100] BRRES inside a stage pac
 
-Copy stageposition data (blastzones, respawn points) to all other stage files that contain a given substring. For stage files with multiple StgPosition nodes, only the top-most one will be overwritten.  
+Copy stageposition data (blastzones, respawn points) to all other stage .pac files that contain a given substring. For stage files with multiple StgPosition nodes, only the top-most one will be overwritten.  
 This process is irreversible -- always save backups!
 
 ## 2.4 Verify ASL (stageslot) File Data
 **Usage:** Plugins menu > File Checking (P+)
 
-All .ASL files inside the given stageslot folder will be checked for valid .param file locations. Optionally, the contents can be exported to a .txt file inside the stageslot folder, listing all stage entries in each ASL file along with the corresponding button combination for each.
+All .ASL files inside the given `stageslot` folder (or parent `pf` folder) will be checked for valid .param file locations. Optionally, the contents can be exported to a .txt file inside the stageslot folder, listing all stage entries in each ASL file along with the corresponding button combination for each.
 
 ## 2.5 Verify Param (stageinfo) File Data
 **Usage:** Plugins menu > File Checking (P+)
 
-All .param files inside the given stageinfo folder will be checked for valid stage .pac, stage module, and tracklist file locations. Optionally, the contents can be exported to a .txt file inside the stageinfo folder, including SFX/GFX banks, stage flags, and character color overlay values.
+All .param files inside the given `stageinfo` folder (or parent `pf` folder) will be checked for valid stage .pac, stage module, and tracklist file locations. Optionally, the contents can be exported to a .txt file inside the stageinfo folder, including SFX/GFX banks, stage flags, and character color overlay values.
 
 ## 2.6 Verify TLST (tracklist) File Data
 **Usage:** Plugins menu > File Checking (P+)
 
-All .TLST files inside the given tracklist folder will be checked for valid BRSTM file paths and song IDs, including pinch mode (SongSwitch) tracks. Optionally, the contents can be exported to a .txt file inside the tracklist folder, including frequency, volume (for custom BRSTMs), and SongDelay values.
+All .TLST files inside the given `tracklist` folder (or parent `pf` folder) will be checked for valid BRSTM file paths and song IDs, including pinch mode (SongSwitch) tracks. Optionally, the contents can be exported to a .txt file inside the tracklist folder, including frequency, volume (for custom BRSTMs), and SongDelay values.
 
 *Alternately, can be run per-tracklist as well, via any individual tracklist's right-click > plug-ins menu*
 
@@ -155,8 +154,8 @@ List all models, materials, objects, and PAT animations using the selected textu
 ## 4.8 Rename TEX0 & Preserve References
 **Usage:** Right-click a TEX0 node within any BRRES
 
-Rename the texture, as well as any material references and PAT0 entries where the texture is used. If the TEX0 is renamed over an already-existing TEX0, then the existing (old) TEX0 will be deleted, and all references to the overwritten (old) texture will reference to the new texture.
-For TEX0s within a MiscData or ModelData, only that BRRES is affected. If within a TextureData, the whole file will be checked.
+Rename the selected texture and any material references and PAT0 entries where the texture is used. If the selected TEX0 is renamed over an already-existing TEX0, then the selected TEX0 will be deleted, and all references to the selected texture will instead direct to the new texture.
+For TEX0s within a MiscData or ModelData, only that BRRES will be affected. For TEX0s within a TextureData, references within the whole file will be checked.
 
 ## 4.9 Locate SCN0 LightSet/Fog Usage
 **Usage:** Right-click a LightSet or Fog node
