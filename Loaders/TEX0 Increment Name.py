@@ -28,7 +28,7 @@ def increment_tex0_name(sender, event_args):
 		return
 	
 	# Get amount of textures to rename
-	texturesToRenameCount = int(BrawlAPI.UserStringInput("Texture count including selected (Enter -1 for all above)"))
+	texturesToRenameCount = int(BrawlAPI.UserStringInput("Texture count (Enter -1 for all)"))
 	
 	# If input is -1, do all textures (set count to a big number)
 	if texturesToRenameCount == -1:
