@@ -48,7 +48,6 @@ def increment_tex0_name(sender, event_args):
 		
 		# Otherwise, store the ending digits of the texture name and remove them from the name
 		while nodeToRename.Name[-1].isdigit():
-			dmsg(nodeToRename.Name[-1])
 			oldDigitSuffix = str(nodeToRename.Name[-1]) + "" + str(oldDigitSuffix) 
 			nodeToRename.Name = nodeToRename.Name[:-1]
 		
