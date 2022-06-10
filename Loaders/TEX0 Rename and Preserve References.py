@@ -68,7 +68,7 @@ def rename_tex0_and_references(sender, event_args):
 		# Rename mat references 
 		for matRef in BrawlAPI.NodeListOfType[MDL0MaterialRefNode]():
 			if matRef.Name == nodeNameOrig:
-				matRef.Name = newName
+				matRef.Texture = newName
 				matRef.Palette = newName
 	
 	# If TEX0 is inside a ModelData or MiscData brres, rename only within that BRRES
