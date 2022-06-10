@@ -60,4 +60,4 @@ def increment_tex0_name(sender, event_args):
 ## End loader function
 ## Start context menu add
 
-BrawlAPI.AddContextMenuItem(TEX0Wrapper, "", "Rename TEX0 and multiple other textures by incrementing 1", EnableCheckTEX0Number, ToolStripMenuItem("Increment  texture names...", None, increment_tex0_name))
+BrawlAPI.AddContextMenuItem(TEX0Wrapper, "", "Rename TEX0 and multiple other textures by incrementing 1", EnableCheckTEX0Number, ToolStripMenuItem("Increment texture names...", None, increment_tex0_name))
