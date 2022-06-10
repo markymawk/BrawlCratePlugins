@@ -157,7 +157,12 @@ List all models, materials, objects, and PAT animations using the selected textu
 Rename the selected texture and any material references and PAT0 entries where the texture is used. If the selected TEX0 is renamed over an already-existing TEX0, then the selected TEX0 will be deleted, and all references to the selected texture will instead direct to the new texture.
 For TEX0s within a MiscData or ModelData, only that BRRES will be affected. For TEX0s within a TextureData, references within the whole file will be checked.
 
-## 4.9 Locate SCN0 LightSet/Fog Usage
+## 4.9 Increment TEX0 Names
+**Usage**: Right-click a TEX0 whose name ends in a digit
+
+Rename the selected texture, along with a given number of TEX0 nodes above it, by automatically incrementing a numbered suffix by 1. Helpful for adding cosmetics in the middle of a set.
+
+## 4.10 Locate SCN0 LightSet/Fog Usage
 **Usage:** Right-click a LightSet or Fog node
 
 List all materials to which the selected LightSet index or Fog index is assigned.
