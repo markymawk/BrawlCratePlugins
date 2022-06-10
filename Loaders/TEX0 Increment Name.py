@@ -28,7 +28,10 @@ def increment_tex0_name(sender, event_args):
 		return
 	
 	# Get amount of textures to rename
-	texturesToRenameCount = int(BrawlAPI.UserStringInput("Texture count (Enter -1 for all)"))
+	texturesToRenameCount = BrawlAPI.UserStringInput("Texture count (Enter -1 for all)")
+	if texturesToRenameCount == "None":
+		return
+	texturesToRenameCount = int(texturesToRenameCount)
 	
 	# If input is -1, do all textures (set count to a big number)
 	if texturesToRenameCount == -1:
@@ -45,12 +48,18 @@ def increment_tex0_name(sender, event_args):
 		
 		# Otherwise, store the ending digits of the texture name and remove them from the name
 		while nodeToRename.Name[-1].isdigit():
+			dmsg(nodeToRename.Name[-1])
 			oldDigitSuffix = str(nodeToRename.Name[-1]) + "" + str(oldDigitSuffix) 
 			nodeToRename.Name = nodeToRename.Name[:-1]
 		
-		# Calculate new ending digits and append
-		newDigitSuffix = int(oldDigitSuffix) + 1
-		nodeToRename.Name = nodeToRename.Name + "" + str(newDigitSuffix)
+		# Calculate new ending digit
+		newDigitSuffix = str(int(oldDigitSuffix) + 1)
+		
+		# Add leading zeroes
+		while len(newDigitSuffix) < len(oldDigitSuffix):
+			newDigitSuffix = '0' + newDigitSuffix
+		
+		nodeToRename.Name = nodeToRename.Name + "" + newDigitSuffix
 		
 		# If above node exists, use it in the next loop run
 		nodeToRename = nodeToRename.PrevSibling()
