@@ -48,7 +48,7 @@ def rename_tex0_and_references(sender, event_args):
 	
 	# If name already exists in the current brres textures, throw an error
 	if newName in getChildNames(textureNode.Parent):
-		deleteAndMerge = BrawlAPI.ShowOKCancelWarning("TEX0 with name \"" + newName + "\" already exists.\nDelete this TEX0 and merge references?", "Duplicate texture name found")
+		deleteAndMerge = BrawlAPI.ShowOKCancelWarning("TEX0 with name \"" + newName + "\" already exists.\nDelete the currently-selected TEX0 and merge references?", "Duplicate texture name found")
 		if not deleteAndMerge:
 			return
 	
