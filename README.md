@@ -97,7 +97,7 @@ Check CHR0, VIS0, SRT0, CLR0, and PAT0 animations in the currently opened stage 
 ## 3.2 Delete Unused Stage Textures
 **Usage:** Plugins menu > PAC File Optimization
 
-Check materials and TEX0 nodes in the currently opened stage .pac file. Any materials that are unused by objects, PAT0 animations, or SRT0 animations, along with any textures unused by materials or PAT0 animations, will all be deleted. Any Cull_All materials, and unused Normals or Vertex nodes are also listed, but not deleted. **WILL break Hanenbow-based stages**, and may have untested, undesired effects on others (be wary of Star Fox or Shadow Moses-based stages). The result should always be tested in-game, with a backup .pac file saved.
+Check materials and TEX0 nodes in the currently opened stage .pac file. Any materials that are unused by objects, PAT0 animations, or SRT0 animations, along with any textures unused by materials or PAT0 animations, will all be deleted. Any Cull_All materials, unused Normals, and unused Vertex nodes are also listed, but not deleted. **WILL break Hanenbow-based stages**, and may have untested, undesired effects on others (be wary of Star Fox or Shadow Moses-based stages). The result should always be tested in-game, with a backup .pac file saved.
 
 ## 3.3 Delete Unused Vertices and Normals
 **Usage:** Plugins menu > PAC File Optimization
