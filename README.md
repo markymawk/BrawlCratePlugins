@@ -20,10 +20,10 @@ Bulk export PNG files as InfFace BRRES files, given a starting index value. Supp
 
 Sort textures alphabetically, while keeping colorsmash groups in-tact. Includes auto-save functionality for backups during longer sorts.
 
-## 1.3 Export MenuRule as selcharacter2
-**Usage:** mu_menumain.pac > Right-click ARC MenuRule_en
+## 1.3 Export MenuRule ARC
+**Usage:** Right-click the MenuRule_en ARC within a menumain or selcharacter2 pac
 
-Export the MenuRule_en ARC into the identical ARC inside sc_selcharacter2.pac within the same folder.
+Export the MenuRule ARC between menumain & selchar2 files.
 
 ## 1.4 info.pac Stock Icon Exporter
 **Usage:** info.pac > Right-click BRRES Misc Data 30 (or parent ARC)
