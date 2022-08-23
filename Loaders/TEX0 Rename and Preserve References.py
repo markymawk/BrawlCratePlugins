@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.1"
+__version__ = "1.2"
 
 from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
@@ -69,6 +69,7 @@ def rename_tex0_and_references(sender, event_args):
 		for matRef in BrawlAPI.NodeListOfType[MDL0MaterialRefNode]():
 			if matRef.Name == nodeNameOrig:
 				matRef.Texture = newName
+			if matRef.Palette.Name == nodeNameOrig:
 				matRef.Palette = newName
 	
 	# If TEX0 is inside a ModelData or MiscData brres, rename only within that BRRES
