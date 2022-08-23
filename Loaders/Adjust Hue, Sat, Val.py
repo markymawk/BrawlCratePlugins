@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0"
+__version__ = "1.1"
 
 from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
@@ -223,20 +223,21 @@ def adjust_sat_mdl0_vertex_color(sender, event_args):
 def rotateHueForAllFrames(node, hueToAdd):
 	global successCheck
 	successCheck = False
-
+	
 	if hueToAdd >= -180:
-		for i in range (0, node.ColorCount(1),1):
-			frame = node.Colors[i]
+		for i in range(0, node.ColorCount(1),1): #was ColorCount(1)
+			
+			frame = node.Colors[0]
 			
 			# Get color as HSV value
 			HSV_as_List = RGB2HSV(frame)
 			
 			# Set hue to new
 			HSV_as_List[0] += hueToAdd
-			
+
 			# Convert back to RGB
 			new_RGB = HSV2RGB(HSV_as_List)
-			
+
 			# Set frame color to new RGB
 			newColor = ARGBPixel(frame.A, new_RGB[0], new_RGB[1], new_RGB[2])
 			node.SetColor(i, i, newColor)	# i: index
