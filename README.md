@@ -8,28 +8,32 @@ Then, these plug-ins will download and update automatically!
 
 Feedback welcome @ mawwwk#1068
 
-# 1. Cosmetics plug-ins
+# 1. Cosmetics shortcut plug-ins
 
 ## 1.1 Convert PNGs to Battle Portraits
 **Usage:** Plugins menu
 
 Bulk export PNG files as InfFace BRRES files, given a starting index value. Supports 3-digit (vBrawl) and 4-digit (50CC) indices.
 
-## 1.2 Colorsmash-safe Texture Sort
-**Usage:** Right-click any "Textures" group, or parent BRRES
-
-Sort textures alphabetically, while keeping colorsmash groups in-tact. Includes auto-save functionality for backups during longer sorts.
-
-## 1.3 Export MenuRule ARC
-**Usage:** Right-click the MenuRule_en ARC within a menumain or selcharacter2 pac
-
-Export the MenuRule ARC between menumain & selchar2 files.
-
-## 1.4 info.pac Stock Icon Exporter
+## 1.2 info.pac Stock Icon Exporter
 **Usage:** info.pac > Right-click BRRES Misc Data 30 (or parent ARC)
 
 Export stock textures and StockFace PAT0 animation data to the other files where stock icon data is used: `STGRESULT.pac`, `StockFaceTex.brres`, and `sc_selcharacter.pac`.
 
+## 1.3 Copy MenuRule CLRs
+**Usage:** Right-click a MenMainIcon CLR animation inside a MenuRule arc within menumain or selcharacter2
+
+Copy the selected CLR0 to its matching counterparts (those that end in the same digit). Recommended to be run once each for 0 through 5.
+
+## 1.4 Export MenuRule ARC
+**Usage:** Right-click the MenuRule_en ARC within a menumain or selcharacter2 pac
+
+Export the MenuRule ARC between menumain & selchar2 files.
+
+## 1.5 Colorsmash-safe Texture Sort
+**Usage:** Right-click any "Textures" group, or parent BRRES
+
+Sort textures alphabetically, while keeping colorsmash groups in-tact. Includes auto-save functionality for backups during longer sorts.
 # 2. Build management plug-ins
 
 ## 2.1 Copy Tracklist Frequencies
