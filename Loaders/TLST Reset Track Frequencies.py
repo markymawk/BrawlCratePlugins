@@ -27,4 +27,5 @@ def reset_frequency(sender, event_args):
 ## End loader functions
 ## Start context menu add
 
+# Reset frequency
 BrawlAPI.AddContextMenuItem(TLSTWrapper, "", "Reset all track frequencies to 40", EnableCheckTLST, ToolStripMenuItem("Reset track frequency values", None, reset_frequency))

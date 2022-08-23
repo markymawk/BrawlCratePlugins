@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "3.0"
+__version__ = "3.0.1"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
@@ -155,7 +155,7 @@ def getColorOverlay (parentNode):
 	else:
 		return overlay
 	
-# Returns string containing all flags set in param file
+# Returns string containing all flags set in param file (assuming 1 or more flags set)
 def getStageFlags(parentNode):
 	thisStageFlags = []
 	strFlags = ""
@@ -207,9 +207,9 @@ def main():
 		workingDir += "\\"
 	
 	# Confirm dialog box
-	message = "Contents of all .param files in the folder:\n" + str(workingDir)
-	message += "\nwill be checked for valid stage, module, and tracklist files."
-	message += "\n\nPress OK to continue."
+	message = "Contents of all .param files in the folder:\n" + str(workingDir) + \
+	 "\nwill be checked for valid stage, module, and tracklist files." + \
+	 "\n\nPress OK to continue."
 
 	if not BrawlAPI.ShowOKCancelPrompt(message, SCRIPT_NAME):
 		return
@@ -222,14 +222,13 @@ def main():
 	if DO_FILE_WRITE:
 		TEMP_TEXT_FILE_PATH = AppPath + OUTPUT_TEXT_FILENAME
 		FULL_TEXT_FILE_PATH = str(workingDir) + OUTPUT_TEXT_FILENAME
-		TEXT_FILE = open(TEMP_TEXT_FILE_PATH,"w+")
+		TEXT_FILE = open(TEMP_TEXT_FILE_PATH, "w+")
 	
 	# Derive module, tracklist, and stage/melee folders
 	PF_PATH = str(workingDir).rsplit("\\",3)[0] + "\\"
 	STAGE_MELEE_DIR_PATH = PF_PATH + "stage\\melee"
 	MODULE_DIR_PATH = PF_PATH + "module"
 	TRACKLIST_DIR_PATH = PF_PATH + "sound\\tracklist"
-	
 	
 	# Open whole stageinfo folder in BrawlCrate
 	if BrawlAPI.RootNode == None or BrawlAPI.RootNode.FilePath != workingDir:
@@ -245,23 +244,23 @@ def main():
 	for node in BrawlAPI.RootNode.Children:
 		if isinstance(node, STEXNode):
 			paramFilesOpenedCount += 1
-			currentParam = ""		# Current param output string
+			currentParam = "" # Current param output string
 			
 			# Progress bar
 			progressBar.Update(paramFilesOpenedCount)
 			
 			# Check stage pac, module, & tracklist, and store in a string (regardless of file write)
-			currentParam += "################\n" + node.Name + ".param\n\n"
-			currentParam += "\t" + getStagePacName(node) + "\n"
-			currentParam += "\t" + getModuleName(node) + "\n"
-			currentParam += "\t" + getTracklistName(node) + "\n"
+			currentParam += "################\n" + node.Name + ".param\n\n" + \
+			 "\t" + getStagePacName(node) + "\n" + \
+			 "\t" + getModuleName(node) + "\n" + \
+			 "\t" + getTracklistName(node) + "\n"
 			
 			# If file writing is enabled, output above info, sfx, gfx, overlay, and flags to text
 			if DO_FILE_WRITE:
 				sfxGfxString = getSfxGfxString(node)
 				overlay = getColorOverlay(node)
 				
-				# If [SFX, GFX] is not [FFFF, 32], get SFX/GFX
+				# If [SFX, GFX] is not empty banks, get SFX/GFX
 				if sfxGfxString:
 					currentParam += "\t" + sfxGfxString + "\n"
 				

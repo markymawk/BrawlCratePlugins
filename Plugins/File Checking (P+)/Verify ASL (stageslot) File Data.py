@@ -2,13 +2,13 @@ __author__ = "mawwwk"
 __version__ = "3.0"
 
 from BrawlCrate.API import *
+from BrawlCrate.UI import MainForm
 from BrawlLib.SSBB.ResourceNodes import *
 from BrawlLib.SSBB.ResourceNodes.ProjectPlus import *
 from BrawlCrate.API.BrawlAPI import AppPath
-from BrawlCrate.UI import MainForm
 from BrawlLib.Internal import *
-from System.IO import *
 from BrawlLib.Internal.Windows.Forms import ProgressWindow
+from System.IO import *
 from mawwwkLib import *
 
 ## Begin global variables
