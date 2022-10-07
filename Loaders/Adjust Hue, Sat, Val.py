@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.1"
+__version__ = "1.2"
 
 from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
@@ -227,7 +227,10 @@ def rotateHueForAllFrames(node, hueToAdd):
 	if hueToAdd >= -180:
 		for i in range(0, node.ColorCount(1),1): #was ColorCount(1)
 			
-			frame = node.Colors[0]
+			if node.Constant:
+				frame = node.SolidColor
+			else:
+				frame = node.Colors[i]
 			
 			# Get color as HSV value
 			HSV_as_List = RGB2HSV(frame)
@@ -250,7 +253,11 @@ def setHueForAllFrames(node, newHue):
 	successCheck = False
 	if newHue > -1:
 		for i in range(0,node.ColorCount(1),1):
-			frame = node.Colors[i]
+		
+			if node.Constant:
+				frame = node.SolidColor
+			else:
+				frame = node.Colors[i]
 			
 			# Get color as HSV value
 			HSV_as_List = RGB2HSV(frame)
@@ -275,7 +282,11 @@ def adjustValForAllFrames(node, valToAdd):
 	
 	if valToAdd >= -100:
 		for i in range(0, node.ColorCount(1), 1):
-			frame = node.Colors[i]
+			
+			if node.Constant:
+				frame = node.SolidColor
+			else:
+				frame = node.Colors[i]
 			
 			# Get color as HSV value
 			HSV_as_List = RGB2HSV(frame)
@@ -300,7 +311,11 @@ def adjustSatForAllFrames(node, valToAdd):
 	
 	if valToAdd >= -100:
 		for i in range(0, node.ColorCount(1), 1):
-			frame = node.Colors[i]
+			
+			if node.Constant:
+				frame = node.SolidColor
+			else:
+				frame = node.Colors[i]
 			
 			# Get color as HSV value
 			HSV_as_List = RGB2HSV(frame)
