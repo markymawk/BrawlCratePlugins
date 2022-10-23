@@ -1,10 +1,10 @@
 # Installation
-*Python 3.9.x required to run. Set the Python install path inside Tools > Settings > BrawlAPI tab.*  
-*BrawlCrate v0.37 or newer required for installation & auto-updates.*  
+*BrawlCrate v0.37 or newer required. Python 3.9.x required.*  
+*Set the Python install path inside Tools > Settings > BrawlAPI tab.*  
 
 In BrawlCrate, navigate to Tools > Settings > Updater tab, and click the Manage Subscriptions button.  
 Click add, then paste the link to this Github repo: https://github.com/markymawk/BrawlCratePlugins  
-Then, these plug-ins will download and update automatically!  
+These plug-ins will then be downloaded, and future updates will be pulled automatically!  
 
 Feedback welcome @ mawwwk#1068
 
@@ -20,7 +20,7 @@ Bulk export PNG files as InfFace BRRES files, given a starting index value. Supp
 
 Export stock textures and StockFace PAT0 animation data to the other files where stock icon data is used: `STGRESULT.pac`, `StockFaceTex.brres`, and `sc_selcharacter.pac`.
 
-## 1.3 Copy MenuRule CLRs
+## 1.3 Copy MenuRule colors
 **Usage:** Right-click a MenMainIcon CLR animation inside a MenuRule arc within menumain or selcharacter2
 
 Copy the selected CLR0 to its matching counterparts (those that end in the same digit). Recommended to be run once each for 0 through 5.
@@ -34,6 +34,7 @@ Export the MenuRule ARC between menumain & selchar2 files.
 **Usage:** Right-click any "Textures" group, or parent BRRES
 
 Sort textures alphabetically, while keeping colorsmash groups in-tact. Includes auto-save functionality for backups during longer sorts.
+
 # 2. Build management plug-ins
 
 ## 2.1 Copy Tracklist Frequencies
@@ -67,7 +68,7 @@ All .param files inside the given `stageinfo` folder (or parent `pf` folder) wil
 
 All .TLST files inside the given `tracklist` folder (or parent `pf` folder) will be checked for valid BRSTM file paths and song IDs, including pinch mode (SongSwitch) tracks. Optionally, the contents can be exported to a .txt file inside the tracklist folder, including frequency, volume (for custom BRSTMs), and SongDelay values.
 
-*Alternately, can be run per-tracklist as well, via any individual tracklist's right-click > plug-ins menu*
+*Alternately, can be run per tracklist via any individual tracklist's right-click > plug-ins menu*
 
 ## 2.7 ASL + Param File Navigator
 **Usage:** Right-click a param root node, ASL entry node, or any param substage entry.
@@ -77,7 +78,7 @@ Open a .param file from its ASL entry, or open the stage .pac or .tlst file asso
 ## 2.8 TLST Add BRSTMs to Tracklist
 **Usage:** Right-click tracklist root node
 
-Generate new tracklist entries from selected BRSTM files automatically, based on their filepaths. If the BRSTM files exist outside of a strm folder, a custom prefix can be added to describe the relative path, such as `../../`
+Generate new tracklist entries from selected BRSTM files based on their filepaths. If the BRSTM files exist outside of a strm folder, a custom prefix can be added to describe the relative path, such as `../../`
 
 ## 2.9 TLST Reset Track Frequencies
 **Usage:** Right-click tracklist root node
@@ -89,14 +90,14 @@ Reset all frequency values of tracklist entries to their default value (40).
 
 Rename or set volume of all instances of the selected track across every tracklist in the same directory. For quick repeat usage, leave the tracklist directory open in BrawlCrate.
 
-# 3. Stage optimization plug-ins
+# 3. Optimization plug-ins
 
 ## 3.1 Delete Unused Animation Data
 **Usage:** Plugins menu > PAC File Optimization
 
 Check CHR0, VIS0, SRT0, CLR0, and PAT0 animations in the currently opened stage .pac file. Any unused entries will be listed and deleted from the animation. Only recommended for FD, BF, or Palutena-based stages. The result should always be tested in-game, with a backup .pac file saved.
 
-*Alternately can be run per-animation as well, via any individual animation's right-click > plug-ins menu*
+*Alternately can be run per animation, via any individual animation's right-click > plug-ins menu*
 
 ## 3.2 Delete Unused Stage Textures
 **Usage:** Plugins menu > PAC File Optimization
@@ -138,12 +139,12 @@ Import materials and shaders from an external .MDL0 file, along with object Draw
 ## 4.4 MDL0 Set All FogIndex & LightSet
 **Usage:** Right-click any MDL0 node with materials
 
-Set all of the model's materials' FogIndex or LightSetIndex values to the given value (-1 to 20).
+Set all of the model's materials' FogIndex or LightSetIndex values to the entered value (-1 to 20).
 
 ## 4.5 PAT0 Set Palettes to Texture Name
 **Usage:** Right-click any PAT0, PAT0 texture entry, or PAT0 material entry  
 
-Set each palette within a PAT0 frame to match the name of the texture.
+Set each frame's palette within a PAT0 entry to match the name of the texture on that frame.
 
 ## 4.6 Set All Game & Watch Colors
 **Usage:** Right-click a CLR0 animation inside FitGameWatch00.pac, or the corresponding ColorRegister0 entry
