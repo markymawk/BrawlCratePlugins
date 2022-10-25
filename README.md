@@ -8,9 +8,11 @@ These plug-ins will then be downloaded, and future updates will be pulled automa
 
 Feedback welcome @ mawwwk#1068
 
-# 1. Cosmetics shortcut plug-ins
+<details>
+<summary><h1>1. Cosmetics shortcut plug-ins</h1></summary>
 
 ## 1.1 Convert PNGs to Battle Portraits
+
 **Usage:** Plugins menu
 
 Bulk export PNG files as InfFace BRRES files, given a starting index value. Supports 3-digit (vBrawl) and 4-digit (50CC) indices.
@@ -34,8 +36,10 @@ Export the MenuRule ARC between menumain & selchar2 files.
 **Usage:** Right-click any "Textures" group, or parent BRRES
 
 Sort textures alphabetically, while keeping colorsmash groups in-tact. Includes auto-save functionality for backups during longer sorts.
+</details>
 
-# 2. Build management plug-ins
+<details>
+<summary><h1>2. Build management plug-ins</h1></summary>
 
 ## 2.1 Copy Tracklist Frequencies
 **Usage:** Plugins menu
@@ -89,8 +93,9 @@ Reset all frequency values of tracklist entries to their default value (40).
 **Usage:** Right-click any track node that uses a custom BRSTM path
 
 Rename or set volume of all instances of the selected track across every tracklist in the same directory. For quick repeat usage, leave the tracklist directory open in BrawlCrate.
-
-# 3. Optimization plug-ins
+</details>
+<details>
+<summary><h1> 3. Optimization plug-ins</h1></summary>
 
 ## 3.1 Delete Unused Animation Data
 **Usage:** Plugins menu > PAC File Optimization
@@ -119,7 +124,9 @@ Delete any bones unused by objects or collisions. Out of caution, this doesn't a
 
 Improve readability of stage .pac files by converting "Static" BRRES nodes (nodes where the only entry is a Static model) to Redirect nodes at the end of the file. The result should always be tested in-game, with a backup .pac file saved.
 
-# 4. MDL0, TEX0, animation shortcuts
+</details>
+<details>
+<summary><h1>4. MDL0, TEX0, animation shortcuts</h1></summary>
 
 ## 4.1 Adjust HSV (Set and Rotate Hue, Adjust Saturation, Adjust Brightness)
 **Usage:** Right-click a MDL0 Color node, CLR0 animation node, CLR0 material, CLR0 material entry, or Vertex color node
@@ -172,7 +179,9 @@ Rename the selected texture, along with a given number of TEX0 nodes above it, b
 
 List all materials to which the selected LightSet index or Fog index is assigned.
 
-# 5. General node operations
+</details>
+<details>
+<summary><h1>5. Generic node operations</h1></summary>
 
 ## 5.1 Output Nodes to Text
 **Usage:** Plugins menu
