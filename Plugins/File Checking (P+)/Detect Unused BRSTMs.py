@@ -90,10 +90,10 @@ def main():
 	if workingDir[-3:] == "\\pf":
 		STRM_DIR = workingDir + "\\sound\\strm\\"
 		TRACKLIST_DIR = workingDir + "\\sound\\tracklist\\"
-	elif workingDir[-9:] == "\\pf\\sound\\":
+	elif workingDir[-9:] == "\\pf\\sound":
 		STRM_DIR = workingDir + "\\strm\\"
 		TRACKLIST_DIR = workingDir + "\\tracklist\\"
-	elif workingDir [-5:] == "\\strm\\":
+	elif workingDir [-5:] == "\\strm":
 		STRM_DIR = workingDir
 		TRACKLIST_DIR = workingDir.replace("\\strm", "\\tracklist")
 
