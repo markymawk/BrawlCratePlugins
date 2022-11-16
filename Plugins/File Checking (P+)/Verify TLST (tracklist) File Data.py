@@ -214,7 +214,7 @@ def main():
 				missingTracklistMessage += str(missingTracks[i][1]) + "\n"
 				
 			if isMissingTracks > ERROR_LIST_MAX:
-				missingTracklistMessage += "...and " + str(ERROR_LIST_MAX - isMissingTracks) + " more."
+				missingTracklistMessage += "...and " + str(isMissingTracks - ERROR_LIST_MAX) + " more."
 		
 		# If one or more tracklists have duplicate Song ID values, list them in error message
 		if isDuplicateIDs:
@@ -226,7 +226,7 @@ def main():
 				duplicateIDMessage += "\n" + str(duplicateIDsTracklists[i]) + "\n"
 			
 			if isDuplicateIDs > ERROR_LIST_MAX:
-				duplicateIDMessage += "...and " + str(ERROR_LIST_MAX - isDuplicateIDs) + " more."
+				duplicateIDMessage += "...and " + str(isDuplicateIDs - ERROR_LIST_MAX) + " more."
 				
 		# Show error message
 		BrawlAPI.ShowError(missingTracklistMessage + "\n" + duplicateIDMessage, "Error")
