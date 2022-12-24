@@ -153,11 +153,12 @@ def adjust_val_from_clr0(sender, event_args):
 # CLR0Material loader function to run adjustValForAllFrames()
 def adjust_val_from_material(sender, event_args):
 	val = getUserValue(SET_VAL_PROMPT, -100, 100, -999)
+	node = BrawlAPI.SelectedNode
 	for entry in BrawlAPI.SelectedNode.Children:
 		adjustValForAllFrames(entry, val)
 	
 	if successCheck:
-		BrawlAPI.ShowMessage(str(len(BrawlAPI.SelectedNode.Children)) + " animations' brightness adjusted by value '" + str(val) + "' inside\n" + node.Parent.Name + " > " + node.Name, "Success")
+		BrawlAPI.ShowMessage(str(len(node.Children)) + " animations' brightness adjusted by value '" + str(val) + "' inside\n" + node.Parent.Name + " > " + node.Name, "Success")
 
 # CLR0MaterialEntry loader function to run adjustValForAllFrames()
 def adjust_val_from_mat_entry(sender, event_args):
