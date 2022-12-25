@@ -1,5 +1,5 @@
 # Installation
-*BrawlCrate v0.37 or newer required. Python 3.9.x required.*  
+*BrawlCrate v0.37 or newer required. Python 3.9.x or newer required.*  
 *Set the Python install path inside Tools > Settings > BrawlAPI tab.*  
 
 In BrawlCrate, navigate to Tools > Settings > Updater tab, and click the Manage Subscriptions button.  
