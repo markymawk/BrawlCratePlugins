@@ -228,10 +228,12 @@ def rotateHueForAllFrames(node, hueToAdd):
 	if hueToAdd >= -180:
 		for i in range(0, node.ColorCount(1),1): #was ColorCount(1)
 			
-			if node.Constant:
-				frame = node.SolidColor
-			else:
+			# If in a vertex color node or non-Constant CLR0 node, use frame color
+			if "MDL0ColorNode" in node.NodeType or not node.Constant:
 				frame = node.Colors[i]
+			# If in a Constant color node
+			else:
+				frame = node.SolidColor
 			
 			# Get color as HSV value
 			HSV_as_List = RGB2HSV(frame)
@@ -255,10 +257,12 @@ def setHueForAllFrames(node, newHue):
 	if newHue > -1:
 		for i in range(0,node.ColorCount(1),1):
 		
-			if node.Constant:
-				frame = node.SolidColor
-			else:
+			# If in a vertex color node or non-Constant CLR0 node, use frame color
+			if "MDL0ColorNode" in node.NodeType or not node.Constant:
 				frame = node.Colors[i]
+			# If in a Constant color node
+			else:
+				frame = node.SolidColor
 			
 			# Get color as HSV value
 			HSV_as_List = RGB2HSV(frame)
