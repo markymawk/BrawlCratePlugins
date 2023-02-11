@@ -35,7 +35,6 @@ def checkForBones(anim):
 			
 			getBoneListFromBRRES(parentBRRES)
 			
-			
 			for bone in anim.Children:
 				if not bone.Name in brresBoneNameList:
 					bonesToDelete.append(bone)

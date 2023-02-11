@@ -115,6 +115,7 @@ def main():
 	
 	# Filename stuff: Remove spaces, brackets, parentheses
 	outputTextFileName = selNode.Name.translate({ ord(c): None for c in " []()→" })
+	
 	# Use first 10 chars of filename + first 13 chars of selected node (Enough for ModelDataXXX and TextureDataXX)
 	outputTextFileName = BrawlAPI.RootNode.FileName[:10] + "_" + outputTextFileName[:13] + "_md5.txt"
 	FULL_TEXT_FILE_PATH = str(OUTPUT_DIR) + "\\" + outputTextFileName

@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0.4"
+__version__ = "1.0.5"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB import FileFilters
@@ -13,20 +13,14 @@ from mawwwkLib import *
 
 ## Reference for using automatic dialog box:
 ## https://soopercool101.github.io/BrawlCrate/class_brawl_crate_1_1_external_interfacing_1_1_color_smash.html#aa4fadb82e34ae150d1e94ab101399a62
-	
+
 # INFFACE_DIGIT_COUNT: Can be changed to 3 for non-50CC builds
 INFFACE_DIGIT_COUNT = 4
 
 ## Begin helper methods
 
-def addLeadingZeros(value):
-	while len(str(value)) < INFFACE_DIGIT_COUNT:
-		value = "0" + str(value)
-	
-	return str(value)
-
 def getStartingPortraitID():
-	PROMPT_STR = "e.g. \"1\" for InfFace" + addLeadingZeros("1") + ":"
+	PROMPT_STR = "e.g. \"1\" for InfFace" + addLeadingZeros("1", INFFACE_DIGIT_COUNT) + ":"
 	initialID = BrawlAPI.UserIntegerInput("Enter starting portrait ID", PROMPT_STR)
 	
 	if initialID and initialID > 0 and len(str(initialID)) <= INFFACE_DIGIT_COUNT:
@@ -57,7 +51,7 @@ def main():
 	OUTPUT_DIR = images[0].rsplit("\\",1)[0]
 	
 	# Take user input to determine starting InfFace file name
-	PROMPT_STR = "e.g. \"1\" for InfFace" + addLeadingZeros("1") + ":"
+	PROMPT_STR = "e.g. \"1\" for InfFace" + addLeadingZeros("1", INFFACE_DIGIT_COUNT) + ":"
 	INITIAL_BP_ID = BrawlAPI.UserIntegerInput("Enter starting portrait ID", PROMPT_STR)
 	
 	if INITIAL_BP_ID < 0 or len(str(INITIAL_BP_ID)) > INFFACE_DIGIT_COUNT:
@@ -69,7 +63,7 @@ def main():
 	for image in images:
 	
 		# Determine PNG output path by adding initial ID + exported image count
-		outputPath = OUTPUT_DIR + "\\InfFace" + addLeadingZeros(INITIAL_BP_ID + exportedImageCount) + ".brres"
+		outputPath = OUTPUT_DIR + "\\InfFace" + addLeadingZeros(INITIAL_BP_ID + exportedImageCount, INFFACE_DIGIT_COUNT) + ".brres"
 		
 		# Generate new dialog box with CI8 settings
 		BrawlAPI.New[BRRESNode]()
