@@ -288,10 +288,10 @@ def adjustValForAllFrames(node, valToAdd):
 	if valToAdd >= -100:
 		for i in range(0, node.ColorCount(1), 1):
 			
-			if node.Constant:
-				frame = node.SolidColor
-			else:
+			if "MDL0ColorNode" in node.NodeType or not node.Constant:
 				frame = node.Colors[i]
+			else:
+				frame = node.SolidColor
 			
 			# Get color as HSV value
 			HSV_as_List = RGB2HSV(frame)
@@ -317,10 +317,10 @@ def adjustSatForAllFrames(node, valToAdd):
 	if valToAdd >= -100:
 		for i in range(0, node.ColorCount(1), 1):
 			
-			if node.Constant:
-				frame = node.SolidColor
-			else:
+			if "MDL0ColorNode" in node.NodeType or not node.Constant:
 				frame = node.Colors[i]
+			else:
+				frame = node.SolidColor
 			
 			# Get color as HSV value
 			HSV_as_List = RGB2HSV(frame)
@@ -348,7 +348,7 @@ BrawlAPI.AddContextMenuItem(CLR0MaterialWrapper, "", "Set the hue of all frames 
 # Set from Material Entry (LightChannel0MaterialColor)
 BrawlAPI.AddContextMenuItem(CLR0MaterialEntryWrapper, "", "Set the hue of all frames to a defined integer", EnableCheckCLR0MatEntry, ToolStripMenuItem("Set hue (all frames)", None, set_hue_from_mat_entry))
 # Set from MDL0 Vertex color
-BrawlAPI.AddContextMenuItem(MDL0ColorWrapper, "", "Set the hue of all frames to a defined integer", EnableCheckMDL0Color, ToolStripMenuItem("Set hue (all entries)", None, set_hue_from_mdl0_vertex_color))
+BrawlAPI.AddContextMenuItem(MDL0ColorWrapper, "", "Set the hue of all frames to a defined integer", EnableCheckMDL0Color, ToolStripMenuItem("Set hue", None, set_hue_from_mdl0_vertex_color))
 
 # "Rotate hue" context options
 # Set from CLR0
@@ -358,7 +358,7 @@ BrawlAPI.AddContextMenuItem(CLR0MaterialWrapper, "", "Rotate the hue of all fram
 # Set from CLR0 Material Entry (LightChannel0MaterialColor)
 BrawlAPI.AddContextMenuItem(CLR0MaterialEntryWrapper, "", "Rotate the hue of all frames by a defined integer", EnableCheckCLR0MatEntry, ToolStripMenuItem("Rotate hue (all frames)", None, rotate_hue_from_mat_entry))
 # Set from MDL0 Vertex color
-BrawlAPI.AddContextMenuItem(MDL0ColorWrapper, "", "Rotate the hue of all frames by a defined integer", EnableCheckMDL0Color, ToolStripMenuItem("Rotate hue (all entries)", None, rotate_hue_from_mdl0_vertex_color))
+BrawlAPI.AddContextMenuItem(MDL0ColorWrapper, "", "Rotate the hue of all frames by a defined integer", EnableCheckMDL0Color, ToolStripMenuItem("Rotate hue", None, rotate_hue_from_mdl0_vertex_color))
 
 # "Adjust brightness" context options
 # Set from CLR0
@@ -368,7 +368,7 @@ BrawlAPI.AddContextMenuItem(CLR0MaterialWrapper, "", "Adjust brightness value of
 # Set from CLR0 Material Entry LightChannel0MaterialColor)
 BrawlAPI.AddContextMenuItem(CLR0MaterialEntryWrapper, "", "Adjust brightness value of all frames by a defined integer", EnableCheckCLR0MatEntry, ToolStripMenuItem("Adjust brightness (all frames)", None, adjust_val_from_mat_entry))
 # Set from MDL0 Vertex color
-BrawlAPI.AddContextMenuItem(MDL0ColorWrapper, "", "Adjust brightness value of all frames by a defined integer", EnableCheckMDL0Color, ToolStripMenuItem("Adjust brightness (all entries)", None, adjust_val_mdl0_vertex_color))
+BrawlAPI.AddContextMenuItem(MDL0ColorWrapper, "", "Adjust brightness value of all frames by a defined integer", EnableCheckMDL0Color, ToolStripMenuItem("Adjust brightness", None, adjust_val_mdl0_vertex_color))
 
 # "Adjust saturation" context options
 # Set from CLR0
@@ -378,4 +378,4 @@ BrawlAPI.AddContextMenuItem(CLR0MaterialWrapper, "", "Adjust saturation value of
 # Set from CLR0 Material Entry LightChannel0MaterialColor)
 BrawlAPI.AddContextMenuItem(CLR0MaterialEntryWrapper, "", "Adjust saturation value of all frames by a defined integer", EnableCheckCLR0MatEntry, ToolStripMenuItem("Adjust saturation (all frames)", None, adjust_sat_from_mat_entry))
 # Set from MDL0 Vertex color
-BrawlAPI.AddContextMenuItem(MDL0ColorWrapper, "", "Adjust saturation value of all frames by a defined integer", EnableCheckMDL0Color, ToolStripMenuItem("Adjust saturation (all entries)", None, adjust_sat_mdl0_vertex_color))
+BrawlAPI.AddContextMenuItem(MDL0ColorWrapper, "", "Adjust saturation value of all frames by a defined integer", EnableCheckMDL0Color, ToolStripMenuItem("Adjust saturation", None, adjust_sat_mdl0_vertex_color))
