@@ -111,7 +111,7 @@ def getModuleName(parentNode):
 	
 	# If module field is empty, treat as missing
 	elif module == "":
-		missingModuleParams.append(parentNode.Name + ".param")
+		missingModuleParams.append(parentNode.Name)
 		return "[NO MODULE ASSIGNED]"
 	
 	# If module exists, return the module name
@@ -120,7 +120,7 @@ def getModuleName(parentNode):
 	
 	# If module file is missing, append error string
 	else:
-		missingModuleParams.append(parentNode.Name + ".param")
+		missingModuleParams.append(parentNode.Name)
 		return module + " [MODULE FILE MISSING]"
 
 # Derives tracklist name given a param node
