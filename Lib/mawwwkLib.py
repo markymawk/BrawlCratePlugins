@@ -1,4 +1,4 @@
-﻿version = "1.4"
+﻿version = "1.4.1"
 # mawwwkLib
 # Common functions for use with BrawlAPI scripts
 
@@ -6,6 +6,7 @@
 
 from BrawlCrate.API import *	# BrawlAPI
 from BrawlLib.SSBB.ResourceNodes import *
+from BrawlCrate.UI import MainForm
 
 ## Start constants
 
@@ -121,6 +122,9 @@ def getChildFromName(node, nameStr, EXACT_NEEDED=False):
 				return child
 	return 0	# If not found, return 0
 
+def getChildByName(node, nameStr, EXACT_NEEDED=False):
+	return getChildFromName(node, nameStr, EXACT_NEEDED)
+
 # getChildWrapperFromName()
 # Given any nodeWrapper, return its child wrapper whose Resource.Name contains the given nameStr
 def getChildWrapperFromName(wrapper, nameStr, EXACT_NEEDED=False):
@@ -132,6 +136,8 @@ def getChildWrapperFromName(wrapper, nameStr, EXACT_NEEDED=False):
 				return child
 	return 0	# If not found, return 0
 
+def getChildWrapperByName(wrapper, nameStr, EXACT_NEEDED=False):
+	return getChildWrapperFromName(wrapper, nameStr, EXACT_NEEDED)
 # nodeListToString()
 # Return a string containing the names of nodes inside the given list, one per line
 def nodeListToString(list):
@@ -234,7 +240,13 @@ def getOpenFile():
 	return 0
 
 ## End file operation functions
-## Start conversion functions
+## Start math/conversion functions
+
+def addLeadingZeros(value, count):
+	while len(str(value)) < count:
+		value = "0" + str(value)
+	
+	return str(value)
 
 # HSV2RGB()
 # Given a list of 3 numbers as HSV, return a list of 3 ints corresponding to the RGB values
@@ -338,6 +350,13 @@ def showMessage(msg, title="", mode=0):
 def showMsg(msg, title="", mode=0):
 	return showMessage(msg, title, mode)
 
+def savePreviewSettings():
+	return [MainForm.Instance.ShowBRRESPreviews, MainForm.Instance.ShowARCPreviews]
+
+def restorePreviewSettings(settings):
+	MainForm.Instance.ShowBRRESPreviews = settings[0]
+	MainForm.Instance.ShowARCPreviews = settings[1]
+	
 # dmessage(), dmsg()
 # Easy debug message
 def dmessage(msg):
