@@ -2,11 +2,13 @@ __author__ = "mawwwk"
 __version__ = "1.2"
 
 from BrawlCrate.API import *
+from BrawlCrate.API.BrawlAPI import AppPath
 from BrawlCrate.NodeWrappers import *
 from BrawlLib.SSBB.ResourceNodes import *
 from System.Windows.Forms import ToolStripMenuItem
 from BrawlLib import * # Imaging
 from BrawlLib.Imaging import * # Imaging
+from System.IO import *
 from mawwwkLib import *
 
 successCheck = False	# Global check to determine whether success prompt should be shown
@@ -14,6 +16,8 @@ successCheck = False	# Global check to determine whether success prompt should b
 SET_HUE_VALUE_PROMPT = "Enter hue value to set (0 to 359)"
 ROTATE_HUE_VALUE_PROMPT = "Enter hue value to adjust by (-180 to 180)"
 SET_VAL_PROMPT = "Enter brightness value to adjust by (-100 to 100)"
+SET_SAT_PROMPT = "Enter saturation value to adjust by (-100 to 100)"
+TEMP_MDL0_FILE_PATH = AppPath + "\\TEMP.mdl0"
 
 ## Start enable check functions
 # Wrapper: CLR0MaterialEntryWrapper
@@ -52,6 +56,14 @@ def getUserValue(promptText, minValue, maxValue, exitValue=-1):
 	else:
 		return int(userInput)
 
+# From vertex color node, update the parent model using a temp file
+def updateParentMDL0(selNode):
+	if not (selNode.Parent or selNode.Parent.Parent):
+		return
+	parentMDL0 = selNode.Parent.Parent
+	parentMDL0.Export(TEMP_MDL0_FILE_PATH)
+	parentMDL0.Replace(TEMP_MDL0_FILE_PATH)
+	File.Delete(TEMP_MDL0_FILE_PATH)
 ## End helper functions
 ## Start loader functions
 
@@ -89,13 +101,18 @@ def rotate_hue_from_mat_entry(sender, event_args):
 
 # MDL0Color loader function to run rotateHueForAllFrames()	
 def rotate_hue_from_mdl0_vertex_color(sender, event_args):
+	selNode = BrawlAPI.SelectedNode
+	entryName = selNode.Name
 	hue = getUserValue(ROTATE_HUE_VALUE_PROMPT, -180, 180, -999)
-	rotateHueForAllFrames(BrawlAPI.SelectedNode, hue)
+	if selNode.Parent and selNode.Parent.Parent: 
+		parentMDL0 = BrawlAPI.SelectedNode.Parent.Parent
+	
+	rotateHueForAllFrames(selNode, hue)
+
+	updateParentMDL0(selNode)
 	
 	if successCheck:
-		entryName = BrawlAPI.SelectedNode.Name
-		materialName = BrawlAPI.SelectedNode.Parent.Name
-		BrawlAPI.ShowMessage("All color frames rotated by hue '" + str(hue) + "' inside\n" + materialName + " > " + entryName, "Success")
+		BrawlAPI.ShowMessage("All color frames rotated by hue '" + str(hue) + "' inside\n" + entryName, "Success")
 
 # 1. END ROTATE HUE
 # 2. START SET HUE
@@ -131,12 +148,18 @@ def set_hue_from_mat_entry(sender, event_args):
 
 # MDL0Color loader function to run setHueForAllFrames()
 def set_hue_from_mdl0_vertex_color(sender, event_args):
+	selNode = BrawlAPI.SelectedNode
+	entryName = selNode.Name
 	hue = getUserValue(SET_HUE_VALUE_PROMPT, 0, 359)
-	node = BrawlAPI.SelectedNode
-	setHueForAllFrames(node, hue)
+	if selNode.Parent and selNode.Parent.Parent: 
+		parentMDL0 = BrawlAPI.SelectedNode.Parent.Parent
 	
+	setHueForAllFrames(selNode, hue)
+	# Update parent MDL0 by exporting and re-importing
+	updateParentMDL0(selNode)
+
 	if successCheck:
-		BrawlAPI.ShowMessage("All color frames set to hue '" + str(hue) + "' inside\n" + node.Parent.Name + " > " + node.Name, "Success")
+		BrawlAPI.ShowMessage("All color frames set to hue '" + str(hue) + "' inside\n" + entryName, "Success")
 
 # 2. END SET HUE
 # 3. START SET VALUE
@@ -171,18 +194,25 @@ def adjust_val_from_mat_entry(sender, event_args):
 
 # MDL0Color loader function to run adjustValForAllFrames()
 def adjust_val_mdl0_vertex_color(sender, event_args):
+	selNode = BrawlAPI.SelectedNode
+	entryName = selNode.Name
 	val = getUserValue(SET_VAL_PROMPT, -100, 100, -999)
-	node = BrawlAPI.SelectedNode
-	adjustValForAllFrames(node, val)
+	
+	if selNode.Parent and selNode.Parent.Parent: 
+		parentMDL0 = BrawlAPI.SelectedNode.Parent.Parent
+	
+	adjustValForAllFrames(selNode, val)
+	
+	updateParentMDL0(selNode)
 	
 	if successCheck:
-		BrawlAPI.ShowMessage("All color frames' brightness adjusted by value '" + str(val) + "' inside\n" + node.Parent.Name + " > " + node.Name, "Success")
+		BrawlAPI.ShowMessage("All color frames' brightness adjusted by value '" + str(val) + "' inside\n" + entryName, "Success")
 
 # 3. END ADJUST VALUE
 # 4. START ADJUST SATURATION
 # CLR0 loader function to run adjustSatForAllFrames()
 def adjust_sat_from_clr0(sender, event_args):
-	sat = getUserValue(SET_VAL_PROMPT, -100, 100, -999)
+	sat = getUserValue(SET_SAT_PROMPT, -100, 100, -999)
 	for material in BrawlAPI.SelectedNode.Children:
 		for entry in material.Children:
 			adjustSatForAllFrames(entry, sat)
@@ -192,7 +222,7 @@ def adjust_sat_from_clr0(sender, event_args):
 
 # CLR0Material loader function to run adjustSatForAllFrames()
 def adjust_sat_from_material(sender, event_args):
-	sat = getUserValue(SET_VAL_PROMPT, -100, 100, -999)
+	sat = getUserValue(SET_SAT_PROMPT, -100, 100, -999)
 	for entry in BrawlAPI.SelectedNode.Children:
 		adjustSatForAllFrames(entry, sat)
 	
@@ -201,7 +231,7 @@ def adjust_sat_from_material(sender, event_args):
 
 # CLR0MaterialEntry loader function to run adjustSatForAllFrames()
 def adjust_sat_from_mat_entry(sender, event_args):
-	sat = getUserValue(SET_VAL_PROMPT, -100, 100, -999)
+	sat = getUserValue(SET_SAT_PROMPT, -100, 100, -999)
 	node = BrawlAPI.SelectedNode
 	adjustSatForAllFrames(node, sat)
 	
@@ -210,12 +240,20 @@ def adjust_sat_from_mat_entry(sender, event_args):
 
 # MDL0Color loader function to run adjustSatForAllFrames()
 def adjust_sat_mdl0_vertex_color(sender, event_args):
-	sat = getUserValue(SET_VAL_PROMPT, -100, 100, -999)
-	node = BrawlAPI.SelectedNode
-	adjustSatForAllFrames(node, sat)
+	selNode = BrawlAPI.SelectedNode
+	entryName = selNode.Name
+	sat = getUserValue(SET_SAT_PROMPT, -100, 100, -999)
+	
+	if selNode.Parent and selNode.Parent.Parent: 
+		parentMDL0 = BrawlAPI.SelectedNode.Parent.Parent
+	
+	adjustSatForAllFrames(selNode, sat)
+	
+	# Update parent MDL0 by exporting and re-importing
+	updateParentMDL0(selNode)
 	
 	if successCheck:
-		BrawlAPI.ShowMessage("All color frames' saturation adjusted by value '" + str(sat) + "' inside\n" + node.Parent.Name + " > " + node.Name, "Success")
+		BrawlAPI.ShowMessage("All color frames' saturation adjusted by value '" + str(sat) + "' inside\n" + entryName, "Success")
 	
 ## End loader functions
 ## Start main functions
