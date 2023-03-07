@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0.2"
+__version__ = "1.0.3"
 # Relatively safe to use, but WILL break Hanenbow based stages.
 # Always test in game!!
 # Does anyone read the python comments lol
@@ -132,6 +132,8 @@ def parsePAT0(pat0):
 # Given a TextureData brres, log any tex0 nodes found, and delete any unused textures
 def parseTextureData(brresNode):
 	global tex0List
+	if not brresNode.HasChildren:
+		return
 	for tex0 in getChildFromName(brresNode, "Textures(NW4R)").Children:
 		tex0List.append(tex0)
 
