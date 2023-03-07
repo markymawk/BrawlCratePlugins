@@ -106,7 +106,7 @@ def getModuleName(parentNode):
 	module = str(parentNode.Module)
 	
 	# Results.param uses no .rel file
-	if parentNode.Name == "Results":
+	if "Results" in parentNode.Name:
 		return ""
 	
 	# If module field is empty, treat as missing
