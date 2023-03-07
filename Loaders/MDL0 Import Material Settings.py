@@ -100,6 +100,9 @@ def import_model_settings(sender, event_args):
 	# Number of materials imported that aren't assigned to any objects -- may be incorrectly assigned or unused
 	EMPTY_MATS_COUNT = len(sourceMatsList)
 	
+	# Force rebuild node to correctly update model
+	DEST_MODEL.Rebuild(True)
+	
 	message = "Materials and shaders imported successfully!"
 	
 	if EMPTY_MATS_COUNT:
