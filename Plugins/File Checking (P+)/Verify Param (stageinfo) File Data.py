@@ -272,7 +272,7 @@ def main():
 				if node.Flags:
 					currentParam += "\tFlags: " + getStageFlags(node) + "\n"
 			
-				TEXT_FILE.write(currentParam + "\n")
+				TEXT_FILE.write((currentParam + "\n").encode('utf-8'))
 		
 	# After all params are parsed, close text file, and copy from temp folder to tracklist folder
 	if DO_FILE_WRITE:

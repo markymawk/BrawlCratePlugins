@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "3.0.1"
+__version__ = "3.0.2"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
@@ -148,7 +148,7 @@ def main():
 			
 				# Check for any duplicate song IDs
 				if track.SongID in tracklistSongIDs and node.Name not in duplicateIDsTracklists:
-					duplicateIDsTracklists.append(str(node.Name) + ".tlst")
+					duplicateIDsTracklists.append(node.Name)
 					
 				# If not a duplicate, add to songIDs list
 				else:
@@ -174,8 +174,8 @@ def main():
 					currentTracklist += "\n"
 			
 			if DO_FILE_WRITE:
-				TEXT_FILE.write(getHeader(node))
-				TEXT_FILE.write(currentTracklist)
+				TEXT_FILE.write(getHeader(node).encode('utf-8'))
+				TEXT_FILE.write(currentTracklist.encode('utf-8'))
 	
 	# After all TLSTs are parsed, close text file, and copy from temp folder to tracklist folder
 	if DO_FILE_WRITE:
@@ -223,7 +223,7 @@ def main():
 			# Fill message with duplicate song ID tracklists, up to ERROR_LIST_MAX
 			
 			for i in range(0, min(isDuplicateIDs, ERROR_LIST_MAX), 1):
-				duplicateIDMessage += "\n" + str(duplicateIDsTracklists[i]) + "\n"
+				duplicateIDMessage += "\n" + str(duplicateIDsTracklists[i]) + ".tlst\n"
 			
 			if isDuplicateIDs > ERROR_LIST_MAX:
 				duplicateIDMessage += "...and " + str(isDuplicateIDs - ERROR_LIST_MAX) + " more."

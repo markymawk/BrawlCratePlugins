@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*- 
 # Fixes redirect arrow character
 __author__ = "mawwwk"
-__version__ = "1.0"
+__version__ = "1.0.1"
 
 from BrawlCrate.API import *
 from BrawlCrate.UI import MainForm
@@ -89,7 +89,7 @@ def writeOutput(node, textFile, prefixStr=""):
 	writeStr = prefixStr + node.Name + "\n" + str(type(node))[7:-2]
 	writeStr += getNodeProperties(node)
 	# Replace redirect arrow, has ascii issues
-	textFile.write(writeStr.replace("→",">") + "\n")
+	textFile.write((writeStr.replace("→",">") + "\n").encode('utf-8'))
 	
 	# Recursively check child nodes
 	if node.HasChildren:

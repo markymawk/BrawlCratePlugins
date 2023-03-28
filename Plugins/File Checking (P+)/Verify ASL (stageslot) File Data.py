@@ -136,7 +136,7 @@ def main():
 			
 			# If file writing enabled, output ASL info to text
 			if DO_FILE_WRITE:
-				TEXT_FILE.write(currentAsl + "\n\n")
+				TEXT_FILE.write((currentAsl + "\n\n").encode('utf-8'))
 			
 	# After all ASLs are parsed, close text file, and copy from temp folder to tracklist folder
 	if DO_FILE_WRITE:
