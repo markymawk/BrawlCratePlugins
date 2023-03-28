@@ -59,17 +59,16 @@ def rename_tex0_and_references(sender, event_args):
 	# If TEX0 is inside a TextureData BRRES, rename references across the entire file
 	parentBRRES = textureNode.Parent.Parent
 	if "Texture" in parentBRRES.Name and isinstance(parentBRRES, BRRESNode):
-	
+		
 		# Rename PAT0 references
 		for pat0 in BrawlAPI.NodeListOfType[PAT0Node]():
-			dmsg(pat0.Name)
 			renamePAT0(pat0, nodeNameOrig, newName)
 		
 		# Rename mat references 
 		for matRef in BrawlAPI.NodeListOfType[MDL0MaterialRefNode]():
 			if matRef.Texture == nodeNameOrig:
 				matRef.Texture = newName
-			if matRef.Palette and matRef.Palette.Name == nodeNameOrig:
+			if matRef.Palette and matRef.Palette == nodeNameOrig:
 				matRef.Palette = newName
 	
 	# If TEX0 is inside a ModelData or MiscData brres, rename only within that BRRES
@@ -86,6 +85,7 @@ def rename_tex0_and_references(sender, event_args):
 		if modelsGroup:
 			for mdl0 in modelsGroup.Children:
 				matsGroup = mdl0.FindChild("Materials")
+				#matsGroup = getChildFromName(mdl0, "Materials")
 				if matsGroup:
 					for mat in matsGroup.Children:
 						if mat.Children:
