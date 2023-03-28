@@ -62,7 +62,6 @@ def import_model_settings(sender, event_args):
 	
 	# End shader import
 	# Begin material import
-	
 	sourceMatsList = getChildNodes(SOURCE_MODEL_MAT_GROUP)
 	
 	# Replace materials that share names
@@ -83,12 +82,10 @@ def import_model_settings(sender, event_args):
 	
 	# End material import
 	# Begin object transparency settings
-	
 	for destObj in DEST_MODEL_OBJ_GROUP.Children:
 		sourceObj = getChildFromName(SOURCE_MODEL_OBJ_GROUP, destObj.Name)
-		
 		# Copy draw pass settings (XLU/OBJ) to each object
-		if sourceObj:
+		if sourceObj and destObj._drawCalls:
 			destObj._drawCalls[0].DrawPass = sourceObj._drawCalls[0].DrawPass
 	
 	# Delete temp mdl0 
