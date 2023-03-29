@@ -1,4 +1,4 @@
-﻿version = "1.4.1"
+﻿version = "1.5"
 # mawwwkLib
 # Common functions for use with BrawlAPI scripts
 
@@ -7,6 +7,8 @@
 from BrawlCrate.API import *	# BrawlAPI
 from BrawlLib.SSBB.ResourceNodes import *
 from BrawlCrate.UI import MainForm
+from BrawlLib import * # Imaging
+from BrawlLib.Imaging import * # Imaging, ARGBPixel
 
 ## Start constants
 
@@ -287,6 +289,12 @@ def HSV2RGB(colorList):
 	
 	return [red, green, blue]
 
+# HSVtoARGBPixel()
+# Given a list of 3 numbers as HSV, return an ARGBPixel object containing RGB values with 255 alpha
+def HSVtoARGBPixel(h, s, v):
+	RGBColors = HSV2RGB([h, s, v])
+	return ARGBPixel(255, RGBColors[0], RGBColors[1], RGBColors[2])
+	
 # RGB2HSV()
 # Given a color node (frame), return an array of 3 floats corresponding to the HSV values
 def RGB2HSV(colorNode):
@@ -319,6 +327,29 @@ def RGB2HSV(colorNode):
 	val = colorMax * 100
 	
 	return [hue, sat, val]
+
+def setColorGradient(node, startFrame, endFrame, startColor, endColor):
+	count = 1 + endFrame - startFrame
+	
+	# Calculate color change per frame
+	stepA = (endColor.A - startColor.A) / ((float) (count) - 1)
+	stepR = (endColor.R - startColor.R) / ((float) (count) - 1)
+	stepG = (endColor.G - startColor.G) / ((float) (count) - 1)
+	stepB = (endColor.B - startColor.B) / ((float) (count) - 1)
+	
+	# Set frames in range
+	for i in range(0, count):
+		newA = startColor.A + i * stepA
+		newR = startColor.R + i * stepR
+		newG = startColor.G + i * stepG
+		newB = startColor.B + i * stepB
+		
+		p = ARGBPixel(newA, newR, newG, newB)
+		frame = i + startFrame
+		selNode.SetColor(frame, frame, p)
+	
+	# Force end color to match
+	selNode.SetColor(endFrame, endFrame, endColor)
 
 # formatHex()
 # Given dec value, returns formatted hex value (17 -> 0x0011)
