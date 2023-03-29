@@ -264,7 +264,7 @@ def rotateHueForAllFrames(node, hueToAdd):
 	successCheck = False
 	
 	if hueToAdd >= -180:
-		for i in range(0, node.ColorCount(1),1): #was ColorCount(1)
+		for i in range(0, node.ColorCount(1),1):
 			
 			# If in a vertex color node or non-Constant CLR0 node, use frame color
 			if "MDL0ColorNode" in node.NodeType or not node.Constant:
