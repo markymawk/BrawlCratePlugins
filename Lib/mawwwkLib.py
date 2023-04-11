@@ -140,6 +140,7 @@ def getChildWrapperFromName(wrapper, nameStr, EXACT_NEEDED=False):
 
 def getChildWrapperByName(wrapper, nameStr, EXACT_NEEDED=False):
 	return getChildWrapperFromName(wrapper, nameStr, EXACT_NEEDED)
+
 # nodeListToString()
 # Return a string containing the names of nodes inside the given list, one per line
 def nodeListToString(list):
@@ -291,9 +292,9 @@ def HSV2RGB(colorList):
 
 # HSVtoARGBPixel()
 # Given a list of 3 numbers as HSV, return an ARGBPixel object containing RGB values with 255 alpha
-def HSVtoARGBPixel(h, s, v):
+def HSVtoARGBPixel(h, s, v, alpha=255):
 	RGBColors = HSV2RGB([h, s, v])
-	return ARGBPixel(255, RGBColors[0], RGBColors[1], RGBColors[2])
+	return ARGBPixel(alpha, RGBColors[0], RGBColors[1], RGBColors[2])
 	
 # RGB2HSV()
 # Given a color node (frame), return an array of 3 floats corresponding to the HSV values
@@ -368,18 +369,18 @@ def formatHex(value, DIGIT_COUNT=4):
 ## Start misc. / debug functions
 
 # showMessage(), showMsg()
-# Easy OK/Cancel prompt
-def showMessage(msg, title="", mode=0):
+# Easy OK/Cancel prompt. 
+def showMessage(msg, title="", ShowOK=0):
 	# OK Prompt
-	if mode == 0:
+	if ShowOK == 0:
 		return BrawlAPI.ShowMessage(msg, title)
 	
 	# OK Cancel Prompt
 	else:
 		return BrawlAPI.ShowOKCancelPrompt(msg, title)
 
-def showMsg(msg, title="", mode=0):
-	return showMessage(msg, title, mode)
+def showMsg(msg, title="", ShowOK=0):
+	return showMessage(msg, title, ShowOK)
 
 def savePreviewSettings():
 	return [MainForm.Instance.ShowBRRESPreviews, MainForm.Instance.ShowARCPreviews]
@@ -390,8 +391,8 @@ def restorePreviewSettings(settings):
 	
 # dmessage(), dmsg()
 # Easy debug message
-def dmessage(msg):
-	BrawlAPI.ShowMessage(str(msg), "DEBUG")
+def dmessage(msg, title="DEBUG"):
+	BrawlAPI.ShowMessage(str(msg), title)
 
-def dmsg(msg):
-	dmessage(msg)
+def dmsg(msg,title="DEBUG"):
+	dmessage(msg, title)
