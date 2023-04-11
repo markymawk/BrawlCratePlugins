@@ -9,7 +9,7 @@ These plug-ins will then be downloaded, and future updates will be pulled automa
 Feedback welcome @ mawwwk#1068
 
 <details>
-<summary><h1>1. Cosmetics shortcut plug-ins</h1></summary>
+<summary><h1>1. Cosmetics shortcuts</h1></summary>
 
 ## 1.1 Convert PNGs to Battle Portraits
 
@@ -39,7 +39,7 @@ Sort textures alphabetically, while keeping colorsmash groups in-tact. Includes 
 </details>
 
 <details>
-<summary><h1>2. Build management plug-ins</h1></summary>
+<summary><h1>2. Build & stage management</h1></summary>
 
 ## 2.1 Copy Tracklist Frequencies
 **Usage:** Plugins menu
@@ -51,10 +51,10 @@ Transfer entire tracklist frequencies across build updates. Select a "source" tr
 
 Scan a `strm` folder for any BRSTM files that aren't used by tracklist files inside `sound/tracklist/`. Unused files will be listed, with the option to delete them all at once.
 
-## 2.3 Match All StgPosition Nodes 
-**Usage:** Right-click any StgPosition model or its parent Model Data [100] BRRES inside a stage pac
+## 2.3 Copy StgPosition & STPM Camera to 1:1s
+**Usage:** Right-click any StgPosition model, parent Model Data [100] BRRES, STPM node, or STPMEntry node inside a stage pac
 
-Copy stageposition data (blastzones, respawn points) to all other stage .pac files that contain a given substring. For stage files with multiple StgPosition nodes, only the top-most one will be overwritten.  
+Copy stageposition data (blastzones, respawn points) and STPM camera data to all other stage .pac files that contain a given substring. For stage files with multiple StgPosition or STPM nodes, only the top-most one will be overwritten.  
 This process is irreversible -- always save backups!
 
 ## 2.4 Verify ASL (stageslot) File Data
@@ -95,7 +95,7 @@ Reset all frequency values of tracklist entries to their default value (40).
 Rename or set volume of all instances of the selected track across every tracklist in the same directory. For quick repeat usage, leave the tracklist directory open in BrawlCrate.
 </details>
 <details>
-<summary><h1> 3. Optimization plug-ins</h1></summary>
+<summary><h1> 3. File optimization</h1></summary>
 
 ## 3.1 Delete Unused Animation Data
 **Usage:** Plugins menu > PAC File Optimization
@@ -126,7 +126,7 @@ Improve readability of stage .pac files by converting "Static" BRRES nodes (node
 
 </details>
 <details>
-<summary><h1>4. MDL0, TEX0, animation shortcuts</h1></summary>
+<summary><h1>4. Model, color, texture, animation shortcuts</h1></summary>
 
 ## 4.1 Adjust HSV (Set and Rotate Hue, Adjust Saturation, Adjust Brightness)
 **Usage:** Right-click a MDL0 Color node, CLR0 animation node, CLR0 material, CLR0 material entry, or Vertex color node
@@ -153,28 +153,33 @@ Set all of the model's materials' FogIndex or LightSetIndex values to the entere
 
 Set each frame's palette within a PAT0 entry to match the name of the texture on that frame.
 
-## 4.6 Set All Game & Watch Colors
+## 4.6 CHR0 Set All Tangents
+**Usage:** Right-click any CHR0 or CHR0 entry node
+
+Set all tangents to a given value in a CHR0 animation, or for a specific bone within.
+
+## 4.7 Set All Game & Watch Colors
 **Usage:** Right-click a CLR0 animation inside FitGameWatch00.pac, or the corresponding ColorRegister0 entry
 
 Replace all matching ColorRegister0 entries with the selected color sequence inside the FitGamewatch00 file. Must be ran separately for fill and border entries.
 
-## 4.7 Locate Texture Usage
+## 4.8 Locate Texture Usage
 **Usage:** Right-click a TEX0 node inside a stage .pac file
 
 List all models, materials, objects, and PAT animations using the selected texture.
 
-## 4.8 Rename TEX0 & Preserve References
+## 4.9 Rename TEX0 & Preserve References
 **Usage:** Right-click a TEX0 node within any BRRES
 
 Rename the selected texture and any material references and PAT0 entries where the texture is used. If the selected TEX0 is renamed over an already-existing TEX0, then the selected TEX0 will be deleted, and all references to the selected texture will instead direct to the new texture.
 For TEX0s within a MiscData or ModelData, only that BRRES will be affected. For TEX0s within a TextureData, references within the whole file will be checked.
 
-## 4.9 Increment TEX0 Names
+## 4.10 Increment TEX0 Names
 **Usage**: Right-click a TEX0 whose name ends in a digit
 
 Rename the selected texture, along with a given number of TEX0 nodes above it, by automatically incrementing a numbered suffix by 1. Helpful for adding cosmetics in the middle of a set.
 
-## 4.10 Locate SCN0 LightSet/Fog Usage
+## 4.11 Locate SCN0 LightSet/Fog Usage
 **Usage:** Right-click a LightSet or Fog node
 
 List all materials to which the selected LightSet index or Fog index is assigned.
