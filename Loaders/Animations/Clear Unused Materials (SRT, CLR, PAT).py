@@ -77,6 +77,6 @@ def clear_unused_mats(sender, event_args):
 	else:	
 		BrawlAPI.ShowMessage("No unused material entries found", "Clear Unused Entries")
 	
-BrawlAPI.AddContextMenuItem(SRT0Wrapper, "", "Clear any materials not found in the brres", EnableCheckANIM, ToolStripMenuItem("Clear Unused Entries", None, clear_unused_mats))
-BrawlAPI.AddContextMenuItem(CLR0Wrapper, "", "Clear any materials not found in the brres", EnableCheckANIM, ToolStripMenuItem("Clear Unused Entries", None, clear_unused_mats))
-BrawlAPI.AddContextMenuItem(PAT0Wrapper, "", "Clear any materials not found in the brres", EnableCheckANIM, ToolStripMenuItem("Clear Unused Entries", None, clear_unused_mats))
+BrawlAPI.AddContextMenuItem(SRT0Wrapper, "", "Clear any materials not found in the brres", EnableCheckANIM, ToolStripMenuItem("Clear unused entries", None, clear_unused_mats))
+BrawlAPI.AddContextMenuItem(CLR0Wrapper, "", "Clear any materials not found in the brres", EnableCheckANIM, ToolStripMenuItem("Clear unused entries", None, clear_unused_mats))
+BrawlAPI.AddContextMenuItem(PAT0Wrapper, "", "Clear any materials not found in the brres", EnableCheckANIM, ToolStripMenuItem("Clear unused entries", None, clear_unused_mats))

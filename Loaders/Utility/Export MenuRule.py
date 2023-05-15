@@ -14,26 +14,26 @@ SCRIPT_NAME = "Export as selcharacter2"
 
 ## Start enable check functions
 
-# Run from MenuRule ARC - MenuRule in name and parent is named mu_menumain
+# Run from menumain MenuRule ARC
 # Wrapper type: ARCWrapper
-def EnableCheckMenuRuleARC(sender, event_args):
+def EnableCheck_menumain_RuleARC(sender, event_args):
 	node = BrawlAPI.SelectedNode
 	sender.Enabled = node is not None and "MenuRule" in node.Name and node.Parent and "mu_menumain" in node.Parent.Name
 
-# Run from root menumain ARC 
-def EnableCheckMenumainARC(sender, event_args):
+# Run from menumain root ARC 
+def EnableCheck_menumain_RootARC(sender, event_args):
 	node = BrawlAPI.SelectedNode
 	sender.Enabled = node is not None and "mu_menumain" in node.Name and node.Children and getChildFromName(node, "MenuRule_")
 
-# Run from selcharacter2 root ARC
-def EnableCheckSelchar2RootARC(sender, event_args):
-	node = BrawlAPI.SelectedNode
-	sender.Enabled = node is not None and "sc_selcharacter2_" in node.Name and node.Children and getChildFromName(node,"MenuRule_")
-
 # Run from selcharacter2 MenuRule ARC
-def EnableCheckSelchar2MenuruleARC(sender, event_args):
+def EnableCheck_selchar2_RuleARC(sender, event_args):
 	node = BrawlAPI.SelectedNode
 	sender.Enabled = node is not None and "MenuRule" in node.Name and node.Parent and "sc_selcharacter2_" in node.Parent.Name
+	
+# Run from selcharacter2 root ARC
+def EnableCheck_selchar2_rootARC(sender, event_args):
+	node = BrawlAPI.SelectedNode
+	sender.Enabled = node is not None and "sc_selcharacter2_" in node.Name and node.Children and getChildFromName(node,"MenuRule_")
 
 ## End enable check functions
 ## Start loader functions
@@ -65,6 +65,7 @@ def export_selchar2_rootnode(sender, event_args):
 
 def export_selchar2_MenuRule(sender, event_args):
 	main_selchar2(BrawlAPI.SelectedNode)
+
 ## End loader functions
 ## Start main function
 
@@ -75,6 +76,7 @@ def main_menumain(node):
 	MENUMAIN_PATH = BrawlAPI.RootNode.FilePath
 	MENU2_FOLDER = str(MENUMAIN_PATH).split("mu_menumain.pac")[0]
 	SELCHARACTER2_PATH = MENU2_FOLDER + "\sc_selcharacter2.pac"
+	
 	message = "Exporting MenuRule_en as a sc_selcharacter2.pac file inside\n" + MENU2_FOLDER
 	message += "\n\nPress OK to continue."
 	
@@ -137,13 +139,13 @@ def main_selchar2(node):
 ## Start context menu add
 
 # From menumain > MenuRule ARC
-BrawlAPI.AddContextMenuItem(ARCWrapper, "", "Export MenuRule ARC as a sc_selcharacter2.pac", EnableCheckMenuRuleARC, ToolStripMenuItem("Export as selcharacter2", None, export_menumain_menurule))
+BrawlAPI.AddContextMenuItem(ARCWrapper, "", "Export MenuRule ARC as a sc_selcharacter2.pac", EnableCheck_menumain_RuleARC, ToolStripMenuItem("Export MenuRule as selcharacter2", None, export_menumain_menurule))
 
 # From menumain (root node) ARC
-BrawlAPI.AddContextMenuItem(ARCWrapper, "", "Export MenuRule ARC as a sc_selcharacter2.pac", EnableCheckMenumainARC, ToolStripMenuItem("Export MenuRule as selcharacter2", None, export_menumain_rootnode))
+BrawlAPI.AddContextMenuItem(ARCWrapper, "", "Export MenuRule ARC as a sc_selcharacter2.pac", EnableCheck_menumain_RootARC, ToolStripMenuItem("Export MenuRule as selcharacter2", None, export_menumain_rootnode))
 
 # From selchar2 (root node) ARC
-BrawlAPI.AddContextMenuItem(ARCWrapper, "", "Export selcharacter2 file to MenuRule ARC in menumain .pac", EnableCheckSelchar2RootARC, ToolStripMenuItem("Export into menumain", None, export_selchar2_rootnode))
+BrawlAPI.AddContextMenuItem(ARCWrapper, "", "Export selcharacter2 file to MenuRule ARC in menumain.pac", EnableCheck_selchar2_rootARC, ToolStripMenuItem("Export MenuRule into menumain", None, export_selchar2_rootnode))
 
 # From selchar2 > MenuRule ARC
-BrawlAPI.AddContextMenuItem(ARCWrapper, "", "Export selcharacter2 file to MenuRule ARC in menumain .pac", EnableCheckSelchar2MenuruleARC, ToolStripMenuItem("Export into menumain", None, export_selchar2_MenuRule))
+BrawlAPI.AddContextMenuItem(ARCWrapper, "", "Export selcharacter2 file to MenuRule ARC in menumain.pac", EnableCheck_selchar2_RuleARC, ToolStripMenuItem("Export MenuRule into menumain", None, export_selchar2_MenuRule))

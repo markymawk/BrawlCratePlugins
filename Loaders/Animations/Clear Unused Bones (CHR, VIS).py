@@ -86,6 +86,6 @@ def clear_unused_bones(sender, event_args):
 	else:
 		BrawlAPI.ShowMessage("No unused bone entries found", "Clear Unused Entries")
 	
-BrawlAPI.AddContextMenuItem(CHR0Wrapper, "", "Clear any bones not found in the brres", EnableCheckANIM, ToolStripMenuItem("Clear Unused Entries", None, clear_unused_bones))
+BrawlAPI.AddContextMenuItem(CHR0Wrapper, "", "Clear any bones not found in the brres", EnableCheckANIM, ToolStripMenuItem("Clear unused entries", None, clear_unused_bones))
 
-BrawlAPI.AddContextMenuItem(VIS0Wrapper, "", "Clear any bones not found in the brres", EnableCheckANIM, ToolStripMenuItem("Clear Unused Entries", None, clear_unused_bones))
+BrawlAPI.AddContextMenuItem(VIS0Wrapper, "", "Clear any bones not found in the brres", EnableCheckANIM, ToolStripMenuItem("Clear unused entries", None, clear_unused_bones))
