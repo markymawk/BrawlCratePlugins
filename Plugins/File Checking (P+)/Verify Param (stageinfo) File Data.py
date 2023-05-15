@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "3.0.1"
+__version__ = "3.1"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
@@ -259,6 +259,7 @@ def main():
 			if DO_FILE_WRITE:
 				sfxGfxString = getSfxGfxString(node)
 				overlay = getColorOverlay(node)
+				memoryAllocation = node.MemoryAllocation
 				
 				# If [SFX, GFX] is not empty banks, get SFX/GFX
 				if sfxGfxString:
@@ -267,6 +268,10 @@ def main():
 				# If overlay is not #00000000, get overlay
 				if overlay:
 					currentParam += "\tCharacter overlay enabled: " + overlay + "\n"
+				
+				if memoryAllocation:
+					currentParam += "\tMemoryAllocation: " + formatHex(memoryAllocation) \
+					+ " (" + str(memoryAllocation) + " bytes)\n"
 					
 				# If stage flags exist, get stage flags
 				if node.Flags:
