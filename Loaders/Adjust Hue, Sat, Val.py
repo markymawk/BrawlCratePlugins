@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.2"
+__version__ = "1.2.1"
 
 from BrawlCrate.API import *
 from BrawlCrate.API.BrawlAPI import AppPath
@@ -14,7 +14,7 @@ from mawwwkLib import *
 successCheck = False	# Global check to determine whether success prompt should be shown
 
 SET_HUE_VALUE_PROMPT = "Enter hue value to set (0 to 359)"
-ROTATE_HUE_VALUE_PROMPT = "Enter hue value to adjust by (-180 to 180)"
+ROTATE_HUE_VALUE_PROMPT = "Enter hue value to adjust by (-360 to 360)"
 SET_VAL_PROMPT = "Enter brightness value to adjust by (-100 to 100)"
 SET_SAT_PROMPT = "Enter saturation value to adjust by (-100 to 100)"
 TEMP_MDL0_FILE_PATH = AppPath + "\\TEMP.mdl0"
@@ -70,7 +70,7 @@ def updateParentMDL0(selNode):
 # 1. START ROTATE HUE
 # CLR0 loader function to run rotateHueForAllFrames()
 def rotate_hue_from_clr0(sender,event_args):
-	hue = getUserValue(ROTATE_HUE_VALUE_PROMPT, -180, 180, -999)
+	hue = getUserValue(ROTATE_HUE_VALUE_PROMPT, -360, 360, -999)
 	
 	for material in BrawlAPI.SelectedNode.Children:
 		for entry in material.Children:
@@ -81,7 +81,7 @@ def rotate_hue_from_clr0(sender,event_args):
 
 # CLR0Material loader function to run rotateHueForAllFrames()
 def rotate_hue_from_material(sender, event_args):
-	hue = getUserValue(ROTATE_HUE_VALUE_PROMPT, -180, 180, -999)
+	hue = getUserValue(ROTATE_HUE_VALUE_PROMPT, -360, 360, -999)
 	
 	for entry in BrawlAPI.SelectedNode.Children:
 		rotateHueForAllFrames(entry, hue)
@@ -91,7 +91,7 @@ def rotate_hue_from_material(sender, event_args):
 
 # CLR0MaterialEntry loader function to run rotateHueForAllFrames()
 def rotate_hue_from_mat_entry(sender, event_args):
-	hue = getUserValue(ROTATE_HUE_VALUE_PROMPT, -180, 180, -999)
+	hue = getUserValue(ROTATE_HUE_VALUE_PROMPT, -360, 360, -999)
 	rotateHueForAllFrames(BrawlAPI.SelectedNode, hue)
 	
 	if successCheck:
@@ -103,7 +103,7 @@ def rotate_hue_from_mat_entry(sender, event_args):
 def rotate_hue_from_mdl0_vertex_color(sender, event_args):
 	selNode = BrawlAPI.SelectedNode
 	entryName = selNode.Name
-	hue = getUserValue(ROTATE_HUE_VALUE_PROMPT, -180, 180, -999)
+	hue = getUserValue(ROTATE_HUE_VALUE_PROMPT, -360, 360, -999)
 	if selNode.Parent and selNode.Parent.Parent: 
 		parentMDL0 = BrawlAPI.SelectedNode.Parent.Parent
 	
