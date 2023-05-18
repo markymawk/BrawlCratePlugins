@@ -36,12 +36,12 @@ Export the MenuRule ARC between menumain & selcharacter2 files.
 **Usage:** Right-click any "Textures" group, or parent BRRES
 
 Sort textures alphabetically, while keeping colorsmash groups in-tact. Includes auto-save functionality for backups during longer sorts.
-</details>
-
+  
 ## 1.6 Import palettes
 **Usage:** Right-click any "Palettes" group
 
 Import new palettes from one or many external PLT0 files.
+</details>
 
 <details>
 <summary><h1>2. Build & stage management</h1></summary>
