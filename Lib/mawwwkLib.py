@@ -355,12 +355,12 @@ def setColorGradient(node, startFrame, endFrame, startColor, endColor):
 # formatHex()
 # Given dec value, returns formatted hex value (17 -> 0x0011)
 # Uses lowercase 0x prefix with uppercase hex digits
-def formatHex(value, DIGIT_COUNT=4):
+def formatHex(value, MIN_DIGIT_COUNT=4):
 
 	# Convert to hex, and remove Python trailing L
 	string = str(hex(value)).upper()[2:-1]
 	
-	while len(string) < DIGIT_COUNT:
+	while len(string) < MIN_DIGIT_COUNT:
 		string = '0' + string
 	
 	return "0x" + string
