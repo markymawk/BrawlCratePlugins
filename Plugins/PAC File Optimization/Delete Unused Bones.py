@@ -43,7 +43,7 @@ def checkBone(bone, safeBones):
 	isOnlyBone = isinstance(bone.Parent, MDL0GroupNode) and len(bone.Parent.Children) == 1 and not bone.HasChildren
 	hasGeometry = "HasGeometry" in str(bone._boneFlags)
 	
-	if not isOnlyBone and not (bone.HasChildren or hasGeometry or bone in safeBones):
+	if not isOnlyBone and not (bone.HasChildren or len(bone.VisibilityDrawCalls) or hasGeometry or bone in safeBones):
 		removeNode(bone)
 		bonesRemovedCount += 1
 	
