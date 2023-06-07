@@ -6,8 +6,6 @@ In BrawlCrate, navigate to Tools > Settings > Updater tab, and click the Manage 
 Click add, then paste the link to this Github repo: https://github.com/markymawk/BrawlCratePlugins  
 These plug-ins will then be downloaded, and future updates will be pulled automatically!  
 
-Feedback welcome @ mawwwk#1068
-
 <details>
 <summary><h1>1. Cosmetics shortcuts</h1></summary>
 
