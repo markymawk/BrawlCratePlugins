@@ -347,10 +347,10 @@ def setColorGradient(node, startFrame, endFrame, startColor, endColor):
 		
 		p = ARGBPixel(newA, newR, newG, newB)
 		frame = i + startFrame
-		selNode.SetColor(frame, frame, p)
+		node.SetColor(frame, frame, p)
 	
 	# Force end color to match
-	selNode.SetColor(endFrame, endFrame, endColor)
+	node.SetColor(endFrame, endFrame, endColor)
 
 # formatHex()
 # Given dec value, returns formatted hex value (17 -> 0x0011)
