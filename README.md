@@ -23,7 +23,7 @@ Export stock textures and StockFace PAT0 animation data to the other files where
 ## 1.3 Copy MenuRule colors
 **Usage:** Right-click a MenMainIcon CLR animation inside a MenuRule arc within menumain or selcharacter2
 
-Copy the selected CLR0 to its matching counterparts (those that end in the same digit). Recommended to be run once each for 0 through 5.
+Copy the selected CLR0 to its matching counterparts (all CLR0s inside MenuRule that end in the same digit). Recommended to be run once each for 0 through 5.
 
 ## 1.4 Export MenuRule ARC
 **Usage:** Right-click the MenuRule_en ARC within a menumain or selcharacter2 pac
@@ -38,7 +38,7 @@ Sort textures alphabetically, while keeping colorsmash groups in-tact. Includes 
 ## 1.6 Import palettes
 **Usage:** Right-click any "Palettes" group
 
-Import new palettes from one or many external PLT0 files.
+Import new palettes from one or more external PLT0 files.
 </details>
 
 <details>
@@ -58,7 +58,7 @@ Scan a `strm` folder for any BRSTM files that aren't used by tracklist files ins
 **Usage:** Right-click any StgPosition model, parent Model Data [100] BRRES, STPM node, or STPMEntry node inside a stage pac
 
 Copy stageposition data (blastzones, respawn points) and STPM camera data to all other stage .pac files that contain a given substring. For stage files with multiple StgPosition or STPM nodes, only the top-most one will be overwritten.  
-This process is irreversible -- always save backups!
+This process is irreversible -- always keep backups!
 
 ## 2.4 Verify ASL (stageslot) File Data
 **Usage:** Plugins menu > File Checking (P+)
