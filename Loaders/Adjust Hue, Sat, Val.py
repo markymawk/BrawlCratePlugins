@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.2.1"
+__version__ = "1.2.3"
 
 from BrawlCrate.API import *
 from BrawlCrate.API.BrawlAPI import AppPath
@@ -223,8 +223,8 @@ def adjust_sat_from_clr0(sender, event_args):
 # CLR0Material loader function to run adjustSatForAllFrames()
 def adjust_sat_from_material(sender, event_args):
 	sat = getUserValue(SET_SAT_PROMPT, -100, 100, -999)
-	for entry in BrawlAPI.SelectedNode.Children:
-		adjustSatForAllFrames(entry, sat)
+	for node in BrawlAPI.SelectedNode.Children:
+		adjustSatForAllFrames(node, sat)
 	
 	if successCheck:
 		BrawlAPI.ShowMessage(str(len(BrawlAPI.SelectedNode.Children)) + " animations' saturation adjusted by value '" + str(sat) + "' inside\n" + node.Parent.Name + " > " + node.Name, "Success")
@@ -263,30 +263,29 @@ def rotateHueForAllFrames(node, hueToAdd):
 	global successCheck
 	successCheck = False
 	
-	if hueToAdd >= -180:
-		for i in range(0, node.ColorCount(1),1):
+	for i in range(0, node.ColorCount(1),1):
 			
-			# If in a vertex color node or non-Constant CLR0 node, use frame color
-			if "MDL0ColorNode" in node.NodeType or not node.Constant:
-				frame = node.Colors[i]
-			# If in a Constant color node
-			else:
-				frame = node.SolidColor
-			
-			# Get color as HSV value
-			HSV_as_List = RGB2HSV(frame)
-			
-			# Set hue to new
-			HSV_as_List[0] += hueToAdd
-
-			# Convert back to RGB
-			new_RGB = HSV2RGB(HSV_as_List)
-
-			# Set frame color to new RGB
-			newColor = ARGBPixel(frame.A, new_RGB[0], new_RGB[1], new_RGB[2])
-			node.SetColor(i, i, newColor)	# i: index
+		# If in a vertex color node or non-Constant CLR0 node, use frame color
+		if "MDL0ColorNode" in node.NodeType or not node.Constant:
+			frame = node.Colors[i]
+		# If in a Constant color node
+		else:
+			frame = node.SolidColor
 		
-		successCheck = True
+		# Get color as HSV value
+		HSV_as_List = RGB2HSV(frame)
+		
+		# Set hue to new
+		HSV_as_List[0] += hueToAdd
+	
+		# Convert back to RGB
+		new_RGB = HSV2RGB(HSV_as_List)
+	
+		# Set frame color to new RGB
+		newColor = ARGBPixel(frame.A, new_RGB[0], new_RGB[1], new_RGB[2])
+		node.SetColor(i, i, newColor)	# i: index
+		
+	successCheck = True
 
 # Main function to iterate through frames and set hue values
 def setHueForAllFrames(node, newHue):
