@@ -23,6 +23,11 @@ def EnableCheckPAT0Node(sender, event_args):
 	node = BrawlAPI.SelectedNode
 	sender.Enabled = node is not None and node.HasChildren
 
+# Wrapper: BRESGroupWrapper
+def EnableCheckBRESGroup(sender, event_args):
+	node = BrawlAPI.SelectedNode
+	sender.Enabled = node is not None and "AnmTexPat" in node.Name and node.HasChildren
+
 ## End enable check functions
 ## Start helper functions
 
@@ -57,14 +62,28 @@ def match_palette_names_pat0node(sender, event_args):
 				for texEntry in mat.Children:
 					setFramePalettes(texEntry)
 
+# AnmTexPat group
+def match_palette_names_group(sender, event_args):
+	selNode = BrawlAPI.SelectedNode
+	if selNode.HasChildren:
+		for pat0 in selNode.Children:
+			if pat0.HasChildren:
+				for mat in selNode.Children:
+					if mat.HasChildren:
+						for texEntry in mat.Children:
+							setFramePalettes(texEntry)
+
 ## End loader functions
 ## Start context menu add
 
 # From Texture0, etc.
-BrawlAPI.AddContextMenuItem(PAT0TextureWrapper, "", "Set all frames' palettes to texture name", EnableCheckPAT0TextureNode, ToolStripMenuItem("Match all palette names", None, match_palette_names_texturenode))
+BrawlAPI.AddContextMenuItem(PAT0TextureWrapper, "", "Set all frames' palettes to texture name", EnableCheckPAT0TextureNode, ToolStripMenuItem("Match PAT0 palettes to texture", None, match_palette_names_texturenode))
 
 # From material (lambert117) etc.
-BrawlAPI.AddContextMenuItem(PAT0EntryWrapper, "", "Set all frames' palettes to texture name", EnableCheckPAT0EntryNode, ToolStripMenuItem("Match all palette names", None, match_palette_names_entrynode))
+BrawlAPI.AddContextMenuItem(PAT0EntryWrapper, "", "Set all frames' palettes to texture name", EnableCheckPAT0EntryNode, ToolStripMenuItem("Match PAT0 palettes to texture", None, match_palette_names_entrynode))
 
 # From pat0 root
-BrawlAPI.AddContextMenuItem(PAT0Wrapper, "", "Set all frames' palettes to texture name", EnableCheckPAT0Node, ToolStripMenuItem("Match all palette names", None, match_palette_names_pat0node))
+BrawlAPI.AddContextMenuItem(PAT0Wrapper, "", "Set all frames' palettes to texture name", EnableCheckPAT0Node, ToolStripMenuItem("Match PAT0 palettes to texture", None, match_palette_names_pat0node))
+
+# From AnmTexPat bresGroup
+BrawlAPI.AddContextMenuItem(BRESGroupWrapper, "", "Set all frames' palettes to texture name", EnableCheckBRESGroup, ToolStripMenuItem("Match PAT0 palettes to texture", None, match_palette_names_group))
