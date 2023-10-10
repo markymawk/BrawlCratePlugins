@@ -152,7 +152,7 @@ Import materials and shaders from an external .MDL0 file, along with object Draw
 Set all of the model's materials' FogIndex or LightSetIndex values to the entered value (-1 to 20).
 
 ## 4.5 PAT0 Set Palettes to Texture Name
-**Usage:** Right-click any PAT0, PAT0 texture entry, or PAT0 material entry  
+**Usage:** Right-click any PAT0, PAT0 texture entry, PAT0 material entry, or AnmTexPat brres group  
 
 Set each frame's palette within a PAT0 entry to match the name of the texture on that frame.
 
