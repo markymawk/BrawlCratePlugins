@@ -1,4 +1,4 @@
-﻿version = "1.5"
+﻿version = "1.5.1"
 # mawwwkLib
 # Common functions for use with BrawlAPI scripts
 
@@ -329,27 +329,32 @@ def RGB2HSV(colorNode):
 	
 	return [hue, sat, val]
 
+# setColorGradient()
+# Set a gradient color blend in a given color node, using frame start/end indices, and start/end ARGBPixel colors
 def setColorGradient(node, startFrame, endFrame, startColor, endColor):
-	count = 1 + endFrame - startFrame
+	count = endFrame - startFrame
 	
 	# Calculate color change per frame
-	stepA = (endColor.A - startColor.A) / ((float) (count) - 1)
-	stepR = (endColor.R - startColor.R) / ((float) (count) - 1)
-	stepG = (endColor.G - startColor.G) / ((float) (count) - 1)
-	stepB = (endColor.B - startColor.B) / ((float) (count) - 1)
+	if (count == 0):
+		[stepA, stepR, stepG, stepB] = [0, 0, 0, 0]
+	else:
+		stepA = (endColor.A - startColor.A) / ((float) (count))
+		stepR = (endColor.R - startColor.R) / ((float) (count))
+		stepG = (endColor.G - startColor.G) / ((float) (count))
+		stepB = (endColor.B - startColor.B) / ((float) (count))
 	
 	# Set frames in range
-	for i in range(0, count):
-		newA = startColor.A + i * stepA
-		newR = startColor.R + i * stepR
-		newG = startColor.G + i * stepG
-		newB = startColor.B + i * stepB
+	for i in range(0, count+1):
+		frame = i + startFrame
+		newA = round(startColor.A + i * stepA)
+		newR = round(startColor.R + i * stepR)
+		newG = round(startColor.G + i * stepG)
+		newB = round(startColor.B + i * stepB)
 		
 		p = ARGBPixel(newA, newR, newG, newB)
-		frame = i + startFrame
 		node.SetColor(frame, frame, p)
 	
-	# Force end color to match
+	# Force last frame to ignore calculations and match endColor exactly
 	node.SetColor(endFrame, endFrame, endColor)
 
 # formatHex()
@@ -391,8 +396,8 @@ def restorePreviewSettings(settings):
 	
 # dmessage(), dmsg()
 # Easy debug message
-def dmessage(msg, title="DEBUG"):
-	BrawlAPI.ShowMessage(str(msg), title)
+def dmessage(msg, title=""):
+	dmsg(msg, title)
 
-def dmsg(msg,title="DEBUG"):
-	dmessage(msg, title)
+def dmsg(msg, title=""):
+	BrawlAPI.ShowMessage(str(msg), title)
