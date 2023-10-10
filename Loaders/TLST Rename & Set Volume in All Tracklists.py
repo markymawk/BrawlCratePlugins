@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0"
+__version__ = "1.1"
 
 from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
@@ -14,7 +14,7 @@ SCRIPT_NAME = "Rename in All Tracklists"
 # Wrapper: GenericWrapper
 def EnableCheckTLSTEntryNode(sender, event_args):
 	node = BrawlAPI.SelectedNode
-	sender.Enabled = (node is not None and isinstance(node, TLSTEntryNode) and node.Parent and str(node.SongFileName) != "None")
+	sender.Enabled = (node is not None and isinstance(node, TLSTEntryNode) and node.Parent)
 
 ## End enable check functions
 ## Start helper functions
@@ -40,6 +40,8 @@ def rename_in_all_tracklists(sender, event_args):
 	if newTrackName == "":
 		return
 	
+	isVanillaBrawlTrack = (selNode.SongID < 61440) # 0xF000
+	trackID = selNode.SongID
 	# If tracklist folder isn't already open from a previous use, open it. Otherwise, prompt to continue within opened folder
 	if BrawlAPI.RootNode.FilePath != tracklistDirPath or not (BrawlAPI.ShowYesNoPrompt("Use currently opened tracklist folder?", SCRIPT_NAME)):
 		BrawlAPI.OpenFile(tracklistDirPath)
@@ -50,19 +52,38 @@ def rename_in_all_tracklists(sender, event_args):
 		# If tracklist is Credits or Results, ignore song titles
 		if track.Parent.Name in ["Credits", "Results"]:
 			continue
+			
+		tracklistFileName = track.Parent.Name + ".tlst"
 		
-		# If file path matches the original track's, check the name
-		if str(track.SongFileName).lower() != "none" and track.SongFileName.lower() == originalTrackPath:
-			tracklistFileName = track.Parent.Name + ".tlst"
+		# If track is a vBrawl song, don't check SongFileName
+		if isVanillaBrawlTrack:
+		
+			# If song ID match
+			if track.SongID == trackID:
 			
-			# If name is the same, add tracklist to tracklistsUsedSameName[]
-			if track.Name == newTrackName:
-				tracklistsUsedSameName.append(tracklistFileName)
-			
-			# If track name is different, add to tracklistsUsedDiffName[], and rename track node
-			else:
-				track.Name = newTrackName
-				tracklistsUsedDiffName.append(tracklistFileName)
+				# and if name matches, add tracklist to tracklistsUsedSameName[]
+				if track.Name == newTrackName:
+					tracklistsUsedSameName.append(tracklistFileName)
+				
+				# If track name is different, add to tracklistsUsedDiffName[], and rename
+				else:
+					track.Name = newTrackName
+					tracklistsUsedDiffName.append(tracklistFileName)
+		
+		# If custom brstm
+		else:
+		
+			# If file path matches the original track's, check the name
+			if str(track.SongFileName).lower() != "none" and track.SongFileName.lower() == originalTrackPath:
+				
+				# If name is the same, add tracklist to tracklistsUsedSameName[]
+				if track.Name == newTrackName:
+					tracklistsUsedSameName.append(tracklistFileName)
+				
+				# If track name is different, add to tracklistsUsedDiffName[], and rename track node
+				else:
+					track.Name = newTrackName
+					tracklistsUsedDiffName.append(tracklistFileName)
 	
 	# Results
 	
