@@ -18,9 +18,7 @@ usedPAT0Names = []	# List of PAT0 node names that use the selected tex0
 # Wrapper: TEX0Wrapper
 def EnableCheckTEX0(sender, event_args):
 	sender.Enabled = (BrawlAPI.SelectedNode is not None \
-	and BrawlAPI.SelectedNode.Parent is not None \
-	and BrawlAPI.SelectedNode.Parent.Parent is not None \
-	and BrawlAPI.SelectedNode.Parent.Parent.Parent is not None)
+	and BrawlAPI.SelectedNode.Parent is not None)
 	#and BrawlAPI.SelectedNode.Parent.Parent.Parent.Name == "2")
 
 ## End enable check function
@@ -112,11 +110,10 @@ def locate_tex0_usage(sender, event_args):
 	# If selected tex0 is in a TextureData, scan all brres in the pac
 	if "Texture Data" in PARENT_BRRES.Name:
 		for node in BrawlAPI.NodeListOfType[BRRESNode]():
-			if "Model Data" in node.Name:
-				parseModelData(node)
+			parseModelData(node)
 	
 	# If selected tex0 is in a ModelData brres, only scan that ModelData
-	elif "Model Data" in PARENT_BRRES.Name or "Misc Data" in PARENT_BRRES.Name:
+	elif PARENT_BRRES.FindChild("3DModels(NW4R)"):
 		parseModelData(PARENT_BRRES)
 	
 	# Else, error -- can't detect parent brres
