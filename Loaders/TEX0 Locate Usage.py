@@ -36,7 +36,7 @@ def checkModelData(brres, tex0Name):
 	# Loop through PAT0 animations
 	if pat0Group:
 		for pat0 in pat0Group.Children:
-			modelData_pat0_uses = parsePAT0(pat0, tex0Name)
+			modelData_pat0_uses = scanPAT0(pat0, tex0Name)
 	
 	return [modelData_mdl0_uses, modelData_pat0_uses]
 
@@ -84,7 +84,7 @@ def getUsedObjectNames(mdl0, usedMaterialNames):
 				
 	return usedObjectNames
 
-def parsePAT0(pat0, tex0Name):
+def scanPAT0(pat0, tex0Name):
 	brresName = pat0.Parent.Parent.Name
 	usedPAT0Names = []
 	# Get material from base pat0 node
