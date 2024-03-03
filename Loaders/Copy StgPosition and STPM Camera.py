@@ -12,7 +12,7 @@ from mawwwkLib import *
 SCRIPT_NAME = "Match All StgPosition BRRES"
 MODELDATA_BRRES_NAME = "Model Data [100]"
 TEMP_BRRES_PATH = AppPath + "\ModelData100.brres"
-TEMP_STPM_PATH = AppPath + "\StageParameters.stpm"
+TEMP_STPM_PATH = AppPath + "\STPM.stpm"
 
 ## Start enable check function
 
@@ -30,13 +30,15 @@ def EnableCheckMDL0(sender, event_args):
 	sender.Enabled = (node is not None and node.IsStagePosition and node.Parent \
 	and node.Parent.Parent and node.Parent.Parent.Name == MODELDATA_BRRES_NAME)
 
-def EnableCheckSTPMEntry(sender, event_args):
-	node = BrawlAPI.SelectedNode
-	sender.Enabled = (node is not None and node.Parent and "STPMNode" in node.Parent.NodeType and node.Parent.Parent)
-
+# Wrapper: STPMWrapper
 def EnableCheckSTPM(sender, event_args):
 	node = BrawlAPI.SelectedNode
 	sender.Enabled = (node is not None and node.Parent and node.HasChildren)
+
+# Wrapper: GenericWrapper
+def EnableCheckSTPMEntry(sender, event_args):
+	node = BrawlAPI.SelectedNode
+	sender.Enabled = (node is not None and node.Parent and isinstance(node.Parent.NodeType, STPMNode) and node.Parent.Parent)
 
 ## End enable check function
 ## Start helper functions
@@ -328,21 +330,22 @@ def export_data_stpmEntryNode(sender, event_args):
 		return
 		
 	main(brresNode, selNode)
+
 ## End loader function
 ## Start main function
+
 def main(brresNode, STPMNode):
 	# Prompt for filename substring to check for
-	stageString = BrawlAPI.UserStringInput("Enter stage substring (e.g. \"_DP\")")
+	stageString = BrawlAPI.UserStringInput("Enter stage substring (e.g. \"_BF\")")
 	if stageString == "" or stageString == None:
 		return
 	
-	# Save currently opened file path
 	SOURCE_FILE = str(BrawlAPI.RootNode.FilePath)
 	
 	# Export stgPosition brres to temp brres file
 	brresNode.ExportUncompressed(TEMP_BRRES_PATH)
 	
-	# Store STPM camera values:
+	# Store STPM camera values
 	originalSTPMCameraProperties = getSTPMCameraValueList(STPMNode)
 	
 	# Get list of stage pacs in the same folder as the opened file

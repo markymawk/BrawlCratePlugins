@@ -10,14 +10,14 @@ from mawwwkLib import *
 ## Begin global variables
 
 SCRIPT_NAME = "Delete Unused Model Bones"
-MODEL_NAMES_TO_AVOID = ["PokeTrainer", "hyakunin_"] # Don't delete any bones inside models containing these names
+MODEL_NAMES_TO_AVOID = ["PokeTrainer", "hyakunin_", "StgResult00"] # Don't delete any bones inside models containing these names
 
 ## End global variables
 ## Begin helper methods
 
 # Return true if model uses only SingleBind objects
 def isSingleBindModel(model):
-	objectsGroup = getChildFromName(model,"Objects")
+	objectsGroup = model.FindChild("Objects")
 	if not objectsGroup:
 		return True
 	for obj in objectsGroup.Children:
@@ -54,7 +54,7 @@ def checkBone(bone, safeBones):
 
 def main():
 	bonesDeletedCount = 0
-	collisionBones = []
+	safeBones = [] # Collision bones, etc
 	modelsModifiedList = []
 	nonSingleBindModels = [] # Models that use non-SingleBind objects, and thus are skipped
 	
@@ -67,7 +67,7 @@ def main():
 	
 	# Get list of bone nodes used by collisions
 	for obj in BrawlAPI.NodeListOfType[CollisionObject]():
-		collisionBones.append(obj.LinkedBone)
+		safeBones.append(obj.LinkedBone)
 	
 	# Loop through all MDL0s in file
 	for model in BrawlAPI.NodeListOfType[MDL0Node]():
@@ -79,7 +79,6 @@ def main():
 				modelNameToAvoid = True
 				break
 		
-		# Move onto the next model if model name's ineligible, or model uses non-SingleBind objects
 		if modelNameToAvoid or model.IsStagePosition:
 			continue
 		
@@ -88,17 +87,17 @@ def main():
 			nonSingleBindModels.append(model.Parent.Parent.Name + "/" + model.Name)
 			continue
 		
-		# Get selected node, and quit script if no bones exist
-		modelBonesGroup = getChildFromName(model, "Bones")
+		# If no bones exist, continue
+		modelBonesGroup = model.FindChild("Bones")
 		if not modelBonesGroup:
-			return
+			continue
 		
 		# Get list of bones in current mdl0, using mawwwkLib.getChildNodes() to avoid deletion errors	
 		modelBonesList = getChildNodes(modelBonesGroup)
 		
 		# Start iterating through bones in the mdl0, and delete any unused bones
 		for bone in modelBonesList:
-			modelBonesDeletedCount = checkBone(bone, collisionBones)
+			modelBonesDeletedCount = checkBone(bone, safeBones)
 			
 			# If any bones deleted, append the BRRES name and MDL0 name to modelsModifiedList[]
 			if modelBonesDeletedCount:
@@ -106,14 +105,13 @@ def main():
 				bonesDeletedCount += modelBonesDeletedCount
 	
 	# Results
-	msg = ""
 	# If any edits made, list models modified
 	if len(modelsModifiedList):
-		msg += str(bonesDeletedCount) + " unused bones found and deleted in:\n" + listToString(modelsModifiedList)
+		msg = str(bonesDeletedCount) + " unused bones found and deleted in:\n" + listToString(modelsModifiedList)
 	
 	# If no edits made
 	else:
-		msg += "No unused bones found."
+		msg = "No unused bones found."
 	
 	# If any non-SingleBind models were skipped, list them for clarity
 	if len(nonSingleBindModels):

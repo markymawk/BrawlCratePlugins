@@ -146,9 +146,3 @@ if BrawlAPI.ShowOKCancelPrompt(message, SCRIPT_NAME):
 				mat.Remove()
 			for bone in bonesToDelete:
 				bone.Remove()
-				
-			## In cases like GHZ, the animation might need to exist?
-			
-			#for anim in affectedAnims:	
-			#	if not anim.HasChildren:
-			#		anim.Remove()

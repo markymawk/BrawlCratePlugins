@@ -1,12 +1,11 @@
 __author__ = "mawwwk"
-__version__ = "1.1"
+__version__ = "1.2"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
 from BrawlLib.SSBB.ResourceNodes.ProjectPlus import *
 from BrawlCrate.UI import MainForm
 from BrawlLib.Internal import *
-from BrawlLib.Imaging import *
 from System.IO import *
 from BrawlLib.Internal.Windows.Forms import ProgressWindow
 from mawwwkLib import *
@@ -40,11 +39,8 @@ def populateBrstmFilesList(dir, parentFolder=""):
 def checkTrackName(track):
 	trackName = str(track.SongFileName)
 	if trackName != "None":
-	
-		# Compare lower-case for case-insensitivity
-		trackName = trackName.lower() + ".brstm"
 		
-		# Swap backslash (\) with forward slash (/) for consistency
+		trackName = trackName.lower() + ".brstm"
 		trackName = trackName.replace("\\", "/")
 		
 		# If track is found, return index of the track
@@ -68,8 +64,9 @@ def getPinchTrackIndex(track):
 
 # Given a list of relative filepaths, delete brstm files that aren't used
 def deleteUnusedFiles(parentDir, fileNameList):
-	# "Are you sure?" prompt
-	if not (BrawlAPI.ShowOKCancelWarning("Deleting these BRSTM files is irreversible. They will be not be moved to the Recycle Bin, but be erased from your hard drive.\nAre you sure you want to continue?", SCRIPT_NAME)):
+	# Confirmation prompt
+	msg = "Deleting these BRSTM files is irreversible. They will be not be moved to the Recycle Bin, but be erased from your hard drive.\nAre you sure you want to continue?"
+	if not (BrawlAPI.ShowOKCancelWarning(msg, SCRIPT_NAME)):
 		return
 	
 	for fileName in fileNameList:
@@ -86,49 +83,48 @@ def main():
 	workingDir = str(workingDir)
 
 	# Derive strm and tracklist folder paths
-	[STRM_DIR, TRACKLIST_DIR] = [0,0]
+	[strmFolderPath, tracklistFolderPath] = [0, 0]
 	if workingDir[-3:] == "\\pf":
-		STRM_DIR = workingDir + "\\sound\\strm\\"
-		TRACKLIST_DIR = workingDir + "\\sound\\tracklist\\"
+		strmFolderPath = workingDir + "\\sound\\strm\\"
+		tracklistFolderPath = workingDir + "\\sound\\tracklist\\"
 	elif workingDir[-9:] == "\\pf\\sound":
-		STRM_DIR = workingDir + "\\strm\\"
-		TRACKLIST_DIR = workingDir + "\\tracklist\\"
+		strmFolderPath = workingDir + "\\strm\\"
+		tracklistFolderPath = workingDir + "\\tracklist\\"
 	elif workingDir [-5:] == "\\strm":
-		STRM_DIR = workingDir
-		TRACKLIST_DIR = workingDir.replace("\\strm", "\\tracklist")
+		strmFolderPath = workingDir
+		tracklistFolderPath = workingDir.replace("\\strm", "\\tracklist")
 
-	if workingDir and not STRM_DIR:
+	if workingDir and not strmFolderPath:
 		BrawlAPI.ShowError("Invalid directory", "Error")
 		return
 	elif not workingDir:
 		return
 	
 	# Save currently opened file, if any
-	CURRENT_OPEN_FILE = getOpenFile()
+	initialOpenedFile = getOpenFile()
 	
 	# Get list of brstm file names in sound/strm directory, and store in brstmFiles[]
-	populateBrstmFilesList(STRM_DIR)
 	BRSTM_FILE_COUNT = len(brstmFiles)
+	populateBrstmFilesList(strmFolderPath)
 	
 	# Open tracklist folder in BrawlCrate
-	if BrawlAPI.RootNode == None or BrawlAPI.RootNode.FilePath != TRACKLIST_DIR:
-		BrawlAPI.OpenFile(TRACKLIST_DIR)
+	if BrawlAPI.RootNode == None or BrawlAPI.RootNode.FilePath != tracklistFolderPath:
+		BrawlAPI.OpenFile(tracklistFolderPath)
 	
 	# Progress bar start
 	progressBar = ProgressWindow()
-	progressBar.Begin(0,len(BrawlAPI.RootNode.Children),0)
+	progressBar.Begin(0, len(BrawlAPI.RootNode.Children), 0)
+	filesOpenedCount = 0
 	
-	filesOpenedCount = 0	# Number of opened files
-	
-	# Iterate through all files in tracklist folder
+	# Loop through all files in tracklist folder
 	for node in BrawlAPI.RootNode.Children:
-		if isinstance(node,TLSTNode):
+		if isinstance(node, TLSTNode):
 		
 			# Update progress bar
 			filesOpenedCount += 1
 			progressBar.Update(filesOpenedCount)
 			
-			# Iterate through entries in tracklist
+			# Loop through entries in tracklist
 			for track in node.Children:
 				trackName = str(track.SongFileName)
 				
@@ -136,13 +132,14 @@ def main():
 				trackIndex = checkTrackName(track)
 				if trackIndex >= 0:
 					del brstmFiles[trackIndex]
+					
 					# Check pinch mode track (trackname_b.brstm)
 					if track.SongSwitch:
 						pinchIndex = getPinchTrackIndex(track)
 						if pinchIndex >= 0:
 							del brstmFiles[getPinchTrackIndex(track)]
 		
-		# Stop the loop if all brstm files are used
+		# If all brstm files are used, stop checking
 		if len(brstmFiles) == 0:
 			break
 			
@@ -150,13 +147,12 @@ def main():
 	progressBar.Finish()
 	
 	# Reopen previously-opened file
-	if CURRENT_OPEN_FILE:
-		BrawlAPI.OpenFile(CURRENT_OPEN_FILE)
+	if initialOpenedFile:
+		BrawlAPI.OpenFile(initialOpenedFile)
 	
 	# RESULTS
-	
 	# If no unused files found, show success dialog
-	if len(brstmFiles) == 0:
+	if not len(brstmFiles):
 		message = "No unused BRSTM files detected!" + \
 		"\n(" + str(BRSTM_FILE_COUNT) + " files)"
 		
@@ -167,43 +163,43 @@ def main():
 				message += i + "\n"
 		
 		BrawlAPI.ShowMessage(message, "Success!")
+		return
 	
 	# If unused files found
-	else:
-		message = "Unused BRSTM files detected:\n\n"
-		MAX_BRAWL_LIST = 5
-		MAX_CUSTOM_LIST = 25
-		brawlListPrintedCount = 0
-		customListPrintedCount = 0
-		
-		# List unused song files with Brawl IDs
-		# If greater than max limit, cut off list
-		while brawlListPrintedCount < MAX_BRAWL_LIST and brawlListPrintedCount < len(brawlBrstmFiles):
-			name = brawlBrstmFiles[brawlListPrintedCount]
-			message += name + " (Brawl song ID: possibly used)\n"
-			brawlListPrintedCount += 1
-		
-		# Truncate list at MAX_BRAWL_LIST
-		if MAX_BRAWL_LIST < len(brawlBrstmFiles):
-			message += "...and " + str((len(brawlBrstmFiles) - MAX_BRAWL_LIST)) + " more\n"
-		
-		# List unused brstm files with custom names
-		while customListPrintedCount < MAX_CUSTOM_LIST and customListPrintedCount < len(brstmFiles):
-			name = brstmFiles[customListPrintedCount]
-			message += name + "\n"
-			customListPrintedCount += 1
-		
-		# Truncate list at MAX_CUSTOM_LIST
-		if MAX_CUSTOM_LIST < len(brstmFiles):
-			message += "...and " + str((len(brstmFiles) - MAX_CUSTOM_LIST)) + " more\n"
-		
-		# Prompt to delete unused files
-		message += "\n\nDelete these BRSTM files?"
-		if brawlListPrintedCount:
-			message += " (Files with Brawl song IDs will be skipped)"
-		if not BrawlAPI.ShowOKCancelWarning(message, SCRIPT_NAME):
-			return
-		
-		deleteUnusedFiles(STRM_DIR, brstmFiles)
+	message = "Unused BRSTM files detected:\n\n"
+	MAX_BRAWL_LIST = 5
+	MAX_CUSTOM_LIST = 25
+	brawlListPrintedCount = 0
+	customListPrintedCount = 0
+	
+	# List unused song files with Brawl IDs
+	# If greater than max limit, cut off list
+	while brawlListPrintedCount < MAX_BRAWL_LIST and brawlListPrintedCount < len(brawlBrstmFiles):
+		name = brawlBrstmFiles[brawlListPrintedCount]
+		message += name + " (Brawl song ID: possibly used)\n"
+		brawlListPrintedCount += 1
+	
+	# Truncate list at MAX_BRAWL_LIST
+	if MAX_BRAWL_LIST < len(brawlBrstmFiles):
+		message += "...and " + str((len(brawlBrstmFiles) - MAX_BRAWL_LIST)) + " more\n"
+	
+	# List unused brstm files with custom names
+	while customListPrintedCount < MAX_CUSTOM_LIST and customListPrintedCount < len(brstmFiles):
+		name = brstmFiles[customListPrintedCount]
+		message += name + "\n"
+		customListPrintedCount += 1
+	
+	# Truncate list at MAX_CUSTOM_LIST
+	if MAX_CUSTOM_LIST < len(brstmFiles):
+		message += "...and " + str((len(brstmFiles) - MAX_CUSTOM_LIST)) + " more\n"
+	
+	# Prompt to delete unused files
+	message += "\n\nDelete these BRSTM files?"
+	if brawlListPrintedCount:
+		message += " (Files with Brawl song IDs will not be deleted)"
+	if not BrawlAPI.ShowOKCancelWarning(message, SCRIPT_NAME):
+		return
+	
+	deleteUnusedFiles(strmFolderPath, brstmFiles)
 
 main()
