@@ -13,7 +13,9 @@ SCRIPT_NAME = "Locate TEX0 Usage"
 # Wrapper: TEX0Wrapper
 def EnableCheckTEX0(sender, event_args):
 	sender.Enabled = (BrawlAPI.SelectedNode is not None \
-	and BrawlAPI.SelectedNode.Parent is not None)
+	and BrawlAPI.SelectedNode.Parent is not None \
+	and BrawlAPI.SelectedNode.Parent.Parent is not None \
+	and BrawlAPI.SelectedNode.Parent.Parent.Parent is not None)
 
 ## End enable check function
 ## Start helper functions
