@@ -22,8 +22,7 @@ def main():
 	
 	# Loop through models
 	for mdl0 in BrawlAPI.NodeListOfType[MDL0Node]():
-		unusedFound = False 			# Set to true if any unused nodes found
-		usedRegeneratedFound = False 	# Set to true if any nodes named "Regenerated" are actually used
+		unusedNodesFound = False
 		brresName = mdl0.Parent.Parent.Name
 		
 		for group in [mdl0.FindChild("Vertices"), mdl0.FindChild("Normals")]:
@@ -38,10 +37,10 @@ def main():
 					sizeCount += node.UncompressedSize
 					node.Remove()
 					deletedNodeCount += 1
-					unusedFound = True
+					unusedNodesFound = True
 		
 		# If any unused vertices or normals found, append brres name and mdl0 name to "affected" list
-		if unusedFound:
+		if unusedNodesFound:
 			affectedModelsNames.append(brresName + "/" + mdl0.Name)
 	
 	# Results
