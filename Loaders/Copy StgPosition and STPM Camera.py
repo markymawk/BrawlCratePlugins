@@ -38,7 +38,7 @@ def EnableCheckSTPM(sender, event_args):
 # Wrapper: GenericWrapper
 def EnableCheckSTPMEntry(sender, event_args):
 	node = BrawlAPI.SelectedNode
-	sender.Enabled = (node is not None and node.Parent and isinstance(node.Parent.NodeType, STPMNode) and node.Parent.Parent)
+	sender.Enabled = (node is not None and node.Parent and isinstance(node.Parent, STPMNode) and node.Parent.Parent)
 
 ## End enable check function
 ## Start helper functions
