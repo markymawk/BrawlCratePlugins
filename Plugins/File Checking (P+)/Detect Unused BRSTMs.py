@@ -104,8 +104,8 @@ def main():
 	initialOpenedFile = getOpenFile()
 	
 	# Get list of brstm file names in sound/strm directory, and store in brstmFiles[]
-	BRSTM_FILE_COUNT = len(brstmFiles)
 	populateBrstmFilesList(strmFolderPath)
+	BRSTM_FILE_COUNT = len(brstmFiles)
 	
 	# Open tracklist folder in BrawlCrate
 	if BrawlAPI.RootNode == None or BrawlAPI.RootNode.FilePath != tracklistFolderPath:
