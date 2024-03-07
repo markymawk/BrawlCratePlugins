@@ -362,9 +362,8 @@ def setColorGradient(node, startFrame, endFrame, startColor, endColor):
 # Uses lowercase 0x prefix with uppercase hex digits
 def formatHex(value, MIN_DIGIT_COUNT=4):
 
-	# Convert to hex, and remove Python trailing L
-	string = str(hex(value)).upper()[2:-1]
-	
+	# Convert to hex, and remove Python formatted "0X"
+	string = str(hex(value)).upper()[2:]
 	while len(string) < MIN_DIGIT_COUNT:
 		string = '0' + string
 	
