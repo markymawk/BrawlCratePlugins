@@ -15,7 +15,7 @@ SCRIPT_NAME = "Output Nodes to Text"
 # Get specific node properties depending on the node's type, and return as string
 def getNodeProperties(node):
 	nodeStr = ""
-	nodeType = str(type(node))[7:-2]
+	nodeType = node.NodeType.split(".")[-1]
 	nodeHash = node.MD5Str()
 	uncompressedSize = node.UncompressedSize
 	
@@ -86,11 +86,10 @@ def getNodeProperties(node):
 # writeOutput():
 # Recursive method to write node info to text file, then call for each child node
 def writeOutput(node, textFile, prefixStr=""):
-	writeStr = prefixStr + node.Name + "\n" + str(type(node))[7:-2]
+	writeStr = prefixStr + node.Name + "\n" + node.NodeType.split(".")[-1]
 	writeStr += getNodeProperties(node)
 	# Replace redirect arrow, has ascii issues
-	textFile.write((writeStr.replace("→",">") + "\n").encode('utf-8'))
-	
+	textFile.write(writeStr.replace("→",">") + "\n")
 	# Recursively check child nodes
 	if node.HasChildren:
 		for child in node.Children:
@@ -119,7 +118,7 @@ def main():
 	# Use first 10 chars of filename + first 13 chars of selected node (Enough for ModelDataXXX and TextureDataXX)
 	outputTextFileName = BrawlAPI.RootNode.FileName[:10] + "_" + outputTextFileName[:13] + "_md5.txt"
 	FULL_TEXT_FILE_PATH = str(OUTPUT_DIR) + "\\" + outputTextFileName
-	TEXT_FILE = open(FULL_TEXT_FILE_PATH,"w+")
+	TEXT_FILE = open(FULL_TEXT_FILE_PATH,"w+", encoding="utf-8")
 
 	writeOutput(selNode, TEXT_FILE)
 	

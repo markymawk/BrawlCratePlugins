@@ -222,7 +222,7 @@ def main():
 	if DO_FILE_WRITE:
 		TEMP_TEXT_FILE_PATH = AppPath + OUTPUT_TEXT_FILENAME
 		FULL_TEXT_FILE_PATH = str(workingDir) + OUTPUT_TEXT_FILENAME
-		TEXT_FILE = open(TEMP_TEXT_FILE_PATH, "w+")
+		TEXT_FILE = open(TEMP_TEXT_FILE_PATH,"w+", encoding="utf-8")
 	
 	# Derive module, tracklist, and stage/melee folders
 	PF_PATH = str(workingDir).rsplit("\\",3)[0] + "\\"
@@ -276,8 +276,8 @@ def main():
 				# If stage flags exist, get stage flags
 				if node.Flags:
 					currentParam += "\tFlags: " + getStageFlags(node) + "\n"
-			
-				TEXT_FILE.write((currentParam + "\n").encode('utf-8'))
+				
+				TEXT_FILE.write((currentParam + "\n"))
 		
 	# After all params are parsed, close text file, and copy from temp folder to tracklist folder
 	if DO_FILE_WRITE:

@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "3.0.2"
+__version__ = "3.1"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
@@ -119,7 +119,7 @@ def main():
 	if DO_FILE_WRITE:
 		TEMP_TEXT_FILE_PATH = AppPath + OUTPUT_TEXT_FILENAME
 		FULL_TEXT_FILE_PATH = str(workingDir) + OUTPUT_TEXT_FILENAME
-		TEXT_FILE = open(TEMP_TEXT_FILE_PATH,"w+")
+		TEXT_FILE = open(TEMP_TEXT_FILE_PATH,"w+", encoding="utf-8")
 	
 	# Open whole tracklist folder in BrawlCrate
 	if BrawlAPI.RootNode == None or BrawlAPI.RootNode.FilePath != workingDir:
@@ -174,8 +174,8 @@ def main():
 					currentTracklist += "\n"
 			
 			if DO_FILE_WRITE:
-				TEXT_FILE.write(getHeader(node).encode('utf-8'))
-				TEXT_FILE.write(currentTracklist.encode('utf-8'))
+				TEXT_FILE.write(getHeader(node))
+				TEXT_FILE.write(currentTracklist)
 	
 	# After all TLSTs are parsed, close text file, and copy from temp folder to tracklist folder
 	if DO_FILE_WRITE:

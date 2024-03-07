@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "3.0"
+__version__ = "3.1"
 
 from BrawlCrate.API import *
 from BrawlCrate.UI import MainForm
@@ -101,7 +101,7 @@ def main():
 	if DO_FILE_WRITE:
 		TEMP_TEXT_FILE_PATH = AppPath + OUTPUT_TEXT_FILENAME
 		FULL_TEXT_FILE_PATH = str(workingDir) + OUTPUT_TEXT_FILENAME
-		TEXT_FILE = open(TEMP_TEXT_FILE_PATH,"w+")
+		TEXT_FILE = open(TEMP_TEXT_FILE_PATH,"w+", encoding="utf-8")
 	
 	# Derive param folder
 	PARAM_DIR_PATH = str(workingDir).rsplit("\\",2)[0] + "\\stageinfo"
@@ -136,7 +136,7 @@ def main():
 			
 			# If file writing enabled, output ASL info to text
 			if DO_FILE_WRITE:
-				TEXT_FILE.write((currentAsl + "\n\n").encode('utf-8'))
+				TEXT_FILE.write((currentAsl + "\n\n"))
 			
 	# After all ASLs are parsed, close text file, and copy from temp folder to tracklist folder
 	if DO_FILE_WRITE:
