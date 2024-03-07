@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*- 
 # Fixes redirect arrow character
 __author__ = "mawwwk"
-__version__ = "1.0.1"
+__version__ = "1.1"
 
 from BrawlCrate.API import *
 from BrawlCrate.UI import MainForm
