@@ -363,11 +363,12 @@ def setColorGradient(node, startFrame, endFrame, startColor, endColor):
 def formatHex(value, MIN_DIGIT_COUNT=4):
 
 	# Convert to hex, and remove Python formatted "0X"
-	string = str(hex(value)).upper()[2:]
-	while len(string) < MIN_DIGIT_COUNT:
-		string = '0' + string
+	hexString = str(hex(value)).upper()[2:]
+	hexString.replace("L","") # Only needed for certain python versions
+	while len(hexString) < MIN_DIGIT_COUNT:
+		hexString = '0' + hexString
 	
-	return "0x" + string
+	return "0x" + hexString
 
 ## End conversion functions
 ## Start misc. / debug functions
