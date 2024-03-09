@@ -60,22 +60,12 @@ Scan a `strm` folder for any BRSTM files that aren't used by tracklist files ins
 Copy stageposition data (blastzones, respawn points) and STPM camera data to all other stage .pac files that contain a given substring. For stage files with multiple StgPosition or STPM nodes, only the top-most one will be overwritten.  
 This process is irreversible -- always keep backups!
 
-## 2.4 Verify ASL (stageslot) File Data
+## 2.4-2.6 Verify ASL, param, & TLST File Data
 **Usage:** Plugins menu > File Checking (P+)
 
-All .ASL files inside the given `stageslot` folder (or parent `pf` folder) will be checked for valid .param file locations. Optionally, the contents can be exported to a .txt file inside the stageslot folder, listing all stage entries in each ASL file along with the corresponding button combination for each.
+All .ASL files, .param files, or TLST files inside their respective folders (or parent `pf` folder) will be checked for valid file locations. Optionally, the contents can be exported to a .txt file, containing various relevant information or error data.
 
-## 2.5 Verify Param (stageinfo) File Data
-**Usage:** Plugins menu > File Checking (P+)
-
-All .param files inside the given `stageinfo` folder (or parent `pf` folder) will be checked for valid stage .pac, stage module, and tracklist file locations. Optionally, the contents can be exported to a .txt file inside the stageinfo folder, including SFX/GFX banks, stage flags, and character color overlay values.
-
-## 2.6 Verify TLST (tracklist) File Data
-**Usage:** Plugins menu > File Checking (P+)
-
-All .TLST files inside the given `tracklist` folder (or parent `pf` folder) will be checked for valid BRSTM file paths and song IDs, including pinch mode (SongSwitch) tracks. Optionally, the contents can be exported to a .txt file inside the tracklist folder, including frequency, volume (for custom BRSTMs), and SongDelay values.
-
-*Alternately, can be run per tracklist via any individual tracklist's right-click > plug-ins menu*
+*An individual tracklist can be checked via its right-click > plug-ins menu*
 
 ## 2.7 ASL + Param File Navigator
 **Usage:** Right-click a param root node, ASL entry node, or any param substage entry.
@@ -120,7 +110,7 @@ Delete any Normal or Vertex nodes unused by any objects within models. The resul
 ## 3.4 Delete Unused Bones
 **Usage:** Plugins menu > PAC File Optimization
 
-Delete any bones unused by objects or collisions. Out of caution, this doesn't affect any models that use non-SingleBind objects (objects bound to multiple bones), and also avoids PokeTrainer and hyakunin_pos models.
+Delete any bones unused by objects or collisions. Out of caution, this doesn't affect any models that use non-SingleBind objects (objects bound to multiple bones).
 
 ## 3.5 Generate Static BRRES Redirects
 **Usage:** Plugins menu > PAC File Optimization
