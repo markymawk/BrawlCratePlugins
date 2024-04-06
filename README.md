@@ -1,6 +1,5 @@
 # Installation
-*BrawlCrate v0.37 or newer required. Python 3.9.x or newer required.*  
-*Set the Python install path inside Tools > Settings > BrawlAPI tab.*  
+*BrawlCrate v0.41 or newer required.*  
 
 In BrawlCrate, navigate to Tools > Settings > Updater tab, and click the Manage Subscriptions button.  
 Click add, then paste the link to this Github repo: https://github.com/markymawk/BrawlCratePlugins  
