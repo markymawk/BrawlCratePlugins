@@ -134,7 +134,7 @@ Export the selected fighter MDL0 to all identically-named MDL0 nodes in the figh
 ## 4.3 MDL0 Import Material Settings
 **Usage:** Right-click any MDL0 node
 
-Import materials and shaders from an external .MDL0 file, along with object DrawPass settings. Objects still must be re-assigned to materials manually.
+Import materials and shaders from an external .MDL0 file, along with object DrawPass settings. Some materials may need to be re-assigned to objects manually.
 
 ## 4.4 MDL0 Set All FogIndex & LightSet
 **Usage:** Right-click any MDL0 node with materials
