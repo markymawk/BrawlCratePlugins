@@ -40,7 +40,7 @@ Sort textures alphabetically, while keeping colorsmash groups in-tact. Includes 
 Import new palettes from one or more external PLT0 files.
 
 ## 1.7 Check UV Wrap Settings
-**Usage: ** Plugins menu
+**Usage:** Plugins menu
 
 Check currently opened file for materials that use a texture of a non-power of 2 and whose wrap mode isn't set to Clamp. UWrapMode and VWrapMode are checked separately for width and height, respectively.
 </details>
