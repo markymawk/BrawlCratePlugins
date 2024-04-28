@@ -87,7 +87,7 @@ def main():
 	msg += "\nSet these to Clamp now?"
 	
 	# If not auto-setting any materials, quit
-	if not BrawlAPI.ShowYesNoError(msg, "Incorrect wrap mode settings found"):
+	if not BrawlAPI.ShowYesNoError(msg, SCRIPT_NAME):
 		return
 	
 	# Set to Clamp
