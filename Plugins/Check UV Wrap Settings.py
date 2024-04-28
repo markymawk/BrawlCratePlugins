@@ -3,7 +3,7 @@ __version__ = "1.0"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
-from BrawlLib.Internal import * # Vector3 etc
+
 from mawwwkLib import *
 
 # Verify that any textures whose resolution isn't
@@ -12,9 +12,9 @@ SCRIPT_NAME = "Check UV Wrap Settings"
 VALID_TEXTURE_RES = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024]
 
 def main():
-	startMsg = "Check if all materials using non-power-of-2 textures are correctly set to Clamp.\n"
-	startMsg += "Incorrect wrap settings for these materials will cause rendering issues on console.\n\n"
-	startMsg += "Press OK to continue."
+	startMsg = "Check if all materials using non-power-of-2 textures are correctly set to Clamp.\n" + \
+	"Incorrect wrap settings for these materials will cause rendering issues on console.\n\n" + \
+	"Press OK to continue."
 	
 	if not BrawlAPI.ShowOKCancelPrompt(startMsg, SCRIPT_NAME):
 		return
@@ -57,8 +57,8 @@ def main():
 		mat = matRef.Parent
 		mdl0 = mat.Parent.Parent
 		brres = mdl0.Parent.Parent
-		msg += brres.Name + "/" + mdl0.Name + "/" + mat.Name + ": " + matRef.Name
-	msg += "\n\nSet these to Clamp now?"
+		msg += brres.Name + "/" + mdl0.Name + "/" + mat.Name + ": " + matRef.Name + "\n"
+	msg += "\nSet these to Clamp now?"
 	
 	# If not auto-setting any materials, quit
 	if not BrawlAPI.ShowYesNoError(msg, "Incorrect wrap mode settings found"):
