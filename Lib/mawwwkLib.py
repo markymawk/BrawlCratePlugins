@@ -150,14 +150,44 @@ def nodeListToString(list):
 	
 	return message
 
+def listNoDuplicates(list):
+	newList = []
+	for item in list:
+		if item not in newList:
+			newList.append(item)
+	return newList
+
 # listToString()
 # Return a string containing the (str) items of the given list, one per line
-def listToString(list):
+def listToString(list, max=0):
 	message = ""
-	for item in list:
-		message += item + "\n"
+	# If max is negative, throw error
+	if max < 0:
+		dmsg("Maximum cannot be negative")
+		return listToString(list)
+	
+	# If maximum set and list exceeds maximum, list only the max count of items
+	elif max and len(list) > max:
+		for i in range(max):
+			message += list[i] + "\n"
+		message += "...and " + str(len(list) - max) + " more." 
+		
+	# If no maximum set, list all items
+	else:
+		for item in list:
+			message += item + "\n"
 	
 	return message
+
+def listToStringNoDuplicates(list, max=0):
+	newList = []
+	
+	# Remove duplicates
+	for i in list:
+		if i not in newList:
+			newList.append(i)
+	
+	return listToString(newList,max)
 
 ## End list functions
 ## Start node functions
