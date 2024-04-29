@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0"
+__version__ = "1.0.1"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
@@ -45,13 +45,13 @@ def add_brstms_to_tracklist(sender, event_args):
 	currentSongID = 61440 	# Starts at 0xF000, stores the lowest-used SongID
 	
 	# Prompt for brstms to add
-	BRSTM_FILES_LIST = BrawlAPI.OpenMultiFileDialog(SCRIPT_NAME, BRSTM_FILTER)
+	brstmFilesList = BrawlAPI.OpenMultiFileDialog(SCRIPT_NAME, BRSTM_FILTER)
 	
-	if not BRSTM_FILES_LIST:
-		return # User quit
+	if not brstmFilesList:
+		return
 	
 	# If brstms are inside strm directory, use normal path derivation
-	isInsideStrmDir = "\strm\\" in BRSTM_FILES_LIST[0]
+	isInsideStrmDir = "\strm\\" in brstmFilesList[0]
 	
 	# If brstms exist outside of the strm dir, prompt for a custom prefix such as ../../
 	if not isInsideStrmDir:
@@ -61,13 +61,13 @@ def add_brstms_to_tracklist(sender, event_args):
 			filePathPrefix = BrawlAPI.UserStringInput("Enter filepath prefix (e.g. \"../../\")")
 			
 			if not filePathPrefix:
-				return # User quit
+				return
 		
 		else:
-			return # User quit
+			return
 	
 	# Add tracklist entries
-	for file in BRSTM_FILES_LIST:
+	for file in brstmFilesList:
 	
 		# Use uniform slash formatting
 		file = file.replace("\\", "/")

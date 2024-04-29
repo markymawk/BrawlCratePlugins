@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.1"
+__version__ = "1.1.1"
 
 from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
@@ -8,7 +8,8 @@ from BrawlLib.SSBB.ResourceNodes.ProjectPlus import *
 from System.Windows.Forms import ToolStripMenuItem
 from mawwwkLib import *
 
-SCRIPT_NAME = "Rename in All Tracklists"
+SCRIPT_NAME_RENAME = "Rename in All Tracklists"
+SCRIPT_NAME_VOLUME = "Match Volume in All Tracklists"
 
 ## Start enable check functions
 # Wrapper: GenericWrapper
@@ -42,8 +43,9 @@ def rename_in_all_tracklists(sender, event_args):
 	
 	isVanillaBrawlTrack = (selNode.SongID < 61440) # 0xF000
 	trackID = selNode.SongID
+	
 	# If tracklist folder isn't already open from a previous use, open it. Otherwise, prompt to continue within opened folder
-	if BrawlAPI.RootNode.FilePath != tracklistDirPath or not (BrawlAPI.ShowYesNoPrompt("Use currently opened tracklist folder?", SCRIPT_NAME)):
+	if BrawlAPI.RootNode.FilePath != tracklistDirPath or not (BrawlAPI.ShowYesNoPrompt("Use currently opened tracklist folder?", SCRIPT_NAME_RENAME)):
 		BrawlAPI.OpenFile(tracklistDirPath)
 	
 	# Loop through all track nodes in opened tracklist folder
@@ -55,10 +57,10 @@ def rename_in_all_tracklists(sender, event_args):
 			
 		tracklistFileName = track.Parent.Name + ".tlst"
 		
-		# If track is a vBrawl song, don't check SongFileName
+		# If track is a vBrawl song, check only SongID and skip SongFileName
 		if isVanillaBrawlTrack:
 		
-			# If song ID match
+			# If song ID matches,
 			if track.SongID == trackID:
 			
 				# and if name matches, add tracklist to tracklistsUsedSameName[]
@@ -103,7 +105,7 @@ def rename_in_all_tracklists(sender, event_args):
 		
 		msg = msg[:-1] # Cut off a line break
 	
-	showMsg(msg, SCRIPT_NAME)
+	BrawlAPI.ShowMessage(msg, SCRIPT_NAME_RENAME)
 
 def match_volume_in_all_tracklists(sender, event_args):
 	selNode = BrawlAPI.SelectedNode
@@ -121,7 +123,7 @@ def match_volume_in_all_tracklists(sender, event_args):
 	newVolume = int(newVolume)
 	
 	# If tracklist folder isn't already open from a previous use, open it. Otherwise, prompt to continue within opened folder
-	if BrawlAPI.RootNode.FilePath != tracklistDirPath or not (BrawlAPI.ShowYesNoPrompt("Use currently opened tracklist folder?", SCRIPT_NAME)):
+	if BrawlAPI.RootNode.FilePath != tracklistDirPath or not (BrawlAPI.ShowYesNoPrompt("Use currently opened tracklist folder?", SCRIPT_NAME_VOLUME)):
 		BrawlAPI.OpenFile(tracklistDirPath)
 	
 	# Loop through all track nodes in opened tracklist folder
@@ -158,7 +160,7 @@ def match_volume_in_all_tracklists(sender, event_args):
 		
 		msg = msg[:-1] # Cut off a line break
 	
-	showMsg(msg, SCRIPT_NAME)
+	BrawlAPI.ShowMessage(msg, SCRIPT_NAME_VOLUME)
 
 ## End loader functions
 ## Start context menu add

@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0"
+__version__ = "1.0.1"
 
 from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
@@ -7,15 +7,11 @@ from BrawlLib.SSBB.ResourceNodes import *
 from System.Windows.Forms import ToolStripMenuItem
 from mawwwkLib import *
 
-## Start enable check function
 # Check that group has Palettes in name
 # Wrapper: BRESGroupWrapper
 def EnableCheckGroupWrapper(sender, event_args):
 	node = BrawlAPI.SelectedNode
 	sender.Enabled = (node is not None and "Palettes(" in node.Name and node.HasChildren)
-
-## End enable check function
-## Start loader function
 
 def import_plt0(sender, event_args):
 	plt0Files = BrawlAPI.OpenMultiFileDialog("Select PLT0 files", "Palettes (*.plt0)|*.plt0")

@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0"
+__version__ = "1.0.1"
 
 from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
@@ -42,7 +42,7 @@ def buildUsedMaterialsList(SCN0Index, isLightSet):
 			for material in matsGroup.Children:
 				if isLightSet and material.LightSetIndex == SCN0Index:
 					usedMaterialsList.append(material)
-				elif not isLightSet and material.FogIndex == SCN0Index:
+				elif (not isLightSet) and material.FogIndex == SCN0Index:
 					usedMaterialsList.append(material)
 	
 	return usedMaterialsList
@@ -58,17 +58,19 @@ def checkLightSetUse(sender, event_args):
 	usedMaterialsList = buildUsedMaterialsList(lightSetIndex, True)
 	
 	# Results
-	# If unused, show unused message and end script
+	# If LightSet used, list all materials used, formatted as brres/MDL0Name/MaterialName
 	if len(usedMaterialsList) == 0:
-		BrawlAPI.ShowMessage("LightSet " + lightSetName + " not used by any materials.", "SCN0 LightSet Unused")
-	# If used, list all materials used, formatted as ModelData/MDL0Name/MaterialName
-	else:
 		msg = "LightSet " + lightSetName + " used by " + str(len(usedMaterialsList)) + " material(s):\n"
 		
 		for mat in usedMaterialsList:
-			msg += mat.Parent.Parent.Parent.Parent.Name + "/" + mat.Parent.Parent.Name + "/" + mat.Name + "\n"
+			mdl0 = mat.Parent.Parent
+			brres = mat.Parent.Parent.Parent.Parent
+			msg += brres.Name + "/" + mdl0.Name + "/" + mat.Name + "\n"
 		
 		BrawlAPI.ShowMessage(msg, "SCN0 LightSet Usage")
+	# If LightSet unused, show unused message
+	else:
+		BrawlAPI.ShowMessage("LightSet " + lightSetName + " not used by any materials.", "SCN0 LightSet Unused")
 
 def checkFogUse(sender, event_args):
 	fogIndex = BrawlAPI.SelectedNode.RealIndex
@@ -78,17 +80,20 @@ def checkFogUse(sender, event_args):
 	usedMaterialsList = buildUsedMaterialsList(fogIndex, False)
 	
 	# Results
-	# If unused, show unused message and end script
-	if len(usedMaterialsList) == 0:
-		BrawlAPI.ShowMessage("Fog " + fogName + " not used by any materials.", "SCN0 Fog Unused")
-	# If used, list all materials used, formatted as ModelData/MDL0Name/MaterialName
-	else:
+	# If fog used, list all materials used, formatted as brres/MDL0Name/MaterialName
+	if len(usedMaterialsList):
 		msg = "Fog " + fogName + " used by " + str(len(usedMaterialsList)) + " material(s):\n"
 		
 		for mat in usedMaterialsList:
-			msg += mat.Parent.Parent.Parent.Parent.Name + "/" + mat.Parent.Parent.Name + "/" + mat.Name + "\n"
+			mdl0 = mat.Parent.Parent
+			brres = mat.Parent.Parent.Parent.Parent
+			msg += brres.Name + "/" + mdl0.Name + "/" + mat.Name + "\n"
 		
 		BrawlAPI.ShowMessage(msg, "SCN0 Fog Usage")
+		
+	# If fog unused, show unused message
+	else:
+		BrawlAPI.ShowMessage("Fog " + fogName + " not used by any materials.", "SCN0 Fog Unused")
 
 ## End main functions
 ## Start context menu add

@@ -6,7 +6,6 @@ from BrawlCrate.NodeWrappers import *
 from BrawlLib.SSBB.ResourceNodes import *
 from BrawlLib.SSBB.ResourceNodes.ProjectPlus import *
 from System.Windows.Forms import ToolStripMenuItem
-from System.IO import File
 from mawwwkLib import *
 
 TRACK_FREQUENCY = 40
