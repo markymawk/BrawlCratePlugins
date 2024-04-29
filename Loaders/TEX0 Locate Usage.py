@@ -14,9 +14,6 @@ SCRIPT_NAME = "Locate TEX0 Usage"
 def EnableCheckTEX0(sender, event_args):
 	sender.Enabled = (BrawlAPI.SelectedNode is not None \
 	and BrawlAPI.SelectedNode.Parent is not None)
-	# Check that tex0 is under a 2 ARC
-	# Forgot why this is needed. I want this to work on characters so it's gone now
-	#and BrawlAPI.SelectedNode.Parent.Parent.Parent.Name == "2")
 
 ## End enable check function
 ## Start helper functions
