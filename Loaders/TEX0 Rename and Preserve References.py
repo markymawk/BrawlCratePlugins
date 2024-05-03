@@ -39,9 +39,9 @@ def renameMatRefs(mdl0, oldName, newName):
 		for mat in matsGroup.Children:
 			if mat.Children:
 				for matRef in mat.Children:
-					if matRef.Name == originalTEX0Name:
-						matRef.Name = newTEX0Name
-						matRef.Palette = newTEX0Name
+					if matRef.Name == oldName:
+						matRef.Name = newName
+						matRef.Palette = newName
 ## End helper functions
 ## Start loader function
 
