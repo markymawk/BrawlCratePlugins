@@ -56,20 +56,20 @@ def getUsedMaterialsNames(mdl0TexturesGroup, tex0Name):
 	mdl0TextureNode = mdl0TexturesGroup.FindChild(tex0Name)
 	
 	materialsNamesList = []
-	for i in mdl0TextureNode.References:
-		materialsNamesList.append(str(i))
+	for texRef in mdl0TextureNode.References:
+		materialsNamesList.append(str(texRef))
 	
 	return materialsNamesList
 
 # Given a mdl0 node and list of material names, return a list of objects used by those mats
-def getUsedObjectsList(mdl0, materialsList):
+def getUsedObjectsList(mdl0, materialsNamesList):
 	matsGroup = mdl0.FindChild("Materials")
 	objectsList = []
 	
-	for i in materialsList:
+	for matName in materialsNamesList:
 	
 		# Get material from name
-		mat = matsGroup.FindChild(i)
+		mat = matsGroup.FindChild(matName)
 		
 		# If material exists and is used by objects, append the object(s) to objectsList[]
 		if mat and len(mat._objects):
@@ -88,7 +88,7 @@ def locate_tex0_usage(sender, event_args):
 	allModelUses = [] # List of lists[3] which contain model, material, and object names that use the selected tex0
 	allPAT0Uses = []  # List of PAT0 node names that use the selected tex0
 	
-	# If parent brres contains models or PAT0s, only check inside that brres
+	# If parent brres contains models or PAT0s, only check within that brres
 	if parentBRRES.FindChild("3DModels(NW4R)") or parentBRRES.FindChild("AnmTexPat(NW4R)"):
 		modelsGroup = parentBRRES.FindChild("3DModels(NW4R)")
 		pat0Group = parentBRRES.FindChild("AnmTexPat(NW4R)")
