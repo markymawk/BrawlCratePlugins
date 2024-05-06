@@ -1,5 +1,5 @@
 __author__ = "mawwwk and soopercool101"
-__version__ = "1.3"
+__version__ = "1.4"
 
 from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
@@ -12,8 +12,7 @@ SCRIPT_NAME = "Locate TEX0 Usage"
 ## Start enable check function
 # Wrapper: TEX0Wrapper
 def EnableCheckTEX0(sender, event_args):
-	sender.Enabled = (BrawlAPI.SelectedNode is not None \
-	and BrawlAPI.SelectedNode.Parent is not None)
+	sender.Enabled = (BrawlAPI.SelectedNode and BrawlAPI.SelectedNode.Parent)
 
 ## End enable check function
 ## Start helper functions
@@ -89,8 +88,27 @@ def locate_tex0_usage(sender, event_args):
 	allModelUses = [] # List of lists[3] which contain model, material, and object names that use the selected tex0
 	allPAT0Uses = []  # List of PAT0 node names that use the selected tex0
 	
+	# If parent brres contains models or PAT0s, only check inside that brres
+	if parentBRRES.FindChild("3DModels(NW4R)") or parentBRRES.FindChild("AnmTexPat(NW4R)"):
+		modelsGroup = parentBRRES.FindChild("3DModels(NW4R)")
+		pat0Group = parentBRRES.FindChild("AnmTexPat(NW4R)")
+		
+		# Get individual MDL0 usage, then append to allModelUses[]
+		if modelsGroup:
+			thisModelUses = findModelUses(modelsGroup, tex0Name)
+			
+			for i in thisModelUses:
+				allModelUses.append(i)
+		
+		# Get individual PAT0 usage, then append to allPAT0Uses[]
+		if pat0Group:
+			thisPAT0Uses = checkPAT0Uses(pat0Group, tex0Name)
+			
+			for i in thisPAT0Uses:
+				allPAT0Uses.append(i)
+	
 	# If selected tex0 is in a TextureData, scan all brres nodes in the file
-	if "Texture Data" in parentBRRES.Name:
+	elif isinstance(parentBRRES, BRRESNode):
 		for brres in BrawlAPI.NodeListOfType[BRRESNode]():
 			modelsGroup = brres.FindChild("3DModels(NW4R)")
 			pat0Group = brres.FindChild("AnmTexPat(NW4R)")
@@ -109,28 +127,9 @@ def locate_tex0_usage(sender, event_args):
 				for i in thisPAT0Uses:
 					allPAT0Uses.append(i)
 	
-	# If parent brres contains models or PAT0s, only check inside that brres
-	elif parentBRRES.FindChild("3DModels(NW4R)") or parrentBRRES.FindChild("AnmTexPat(NW4R)"):
-		modelsGroup = parentBRRES.FindChild("3DModels(NW4R)")
-		pat0Group = parentBRRES.FindChild("AnmTexPat(NW4R)")
-		
-		# Get individual MDL0 usage, then append to allModelUses[]
-		if modelsGroup:
-			thisModelUses = findModelUses(modelsGroup, tex0Name)
-			
-			for i in thisModelUses:
-				allModelUses.append(i)
-		
-		# Get individual PAT0 usage, then append to allPAT0Uses[]
-		if pat0Group:
-			thisPAT0Uses = checkPAT0Uses(pat0Group, tex0Name)
-			
-			for i in thisPAT0Uses:
-				allPAT0Uses.append(i)
-	
 	# Else, error
 	else:
-		BrawlAPI.ShowError("Error: can't detect usable textures in parent BRRES", SCRIPT_NAME)
+		BrawlAPI.ShowError("Error: can't detect usable textures in parent node", SCRIPT_NAME)
 		return
 	
 	# Results
