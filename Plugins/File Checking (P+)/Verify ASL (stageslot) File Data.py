@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "3.1"
+__version__ = "3.1.1"
 
 from BrawlCrate.API import *
 from BrawlCrate.UI import MainForm
@@ -15,14 +15,30 @@ from mawwwkLib import *
 
 SCRIPT_NAME = "Verify ASL File Data"
 OUTPUT_TEXT_FILENAME = "_ASL Data.txt"
-FLAGS_LIST = [4096, 2048, 1024, 512, 256, 64, 32, 16, 8, 4, 2, 1]
-missingParamFiles = []		# List of [asl, param] combinations where the param file isn't found
+FLAGS_LIST = [0x1000, 0x800, 0x400, 0x200, 0x100, 0x80, 0x40, 0x20, 0x10, 8, 4, 2, 1]
+missingParamFiles = []		# List of [asl name, param name] combinations where the param file isn't found
+
+ASL_FLAGS_TO_BUTTONS = {
+	0x1000: "Start",
+	0x800 : "Y",
+	0x400 : "X",
+	0x200 : "B",
+	0x100 : "A",
+	0x80 : "??",
+	0x40 : "L",
+	0x20 : "R",
+	0x10 : "Z",
+	8: "Up",
+	4: "Down",
+	2: "Right",
+	1: "Left"
+}
 
 ## End global variables
 ## Begin helper methods
 
 # Print header for each file
-def writeHeader(textfile, parentNode):
+def writeHeader(textFile, parentNode):
 	childCount = len(parentNode.Children)
 	
 	writeStr = "################\n" + parentNode.Name + ".asl - "
@@ -32,17 +48,17 @@ def writeHeader(textfile, parentNode):
 	else:
 		writeStr += str(childCount) + " entries\n\n"
 	
-	textfile.write(writeStr)
+	textFile.write(writeStr)
 
 # Return string containing param filename
-def checkParam(asl, param):
-	paramFilename = str(param) + ".param"
+def checkParam(paramDirPath, aslName, paramName):
+	paramFileName = str(paramName) + ".param"
 	
-	if File.Exists(PARAM_DIR_PATH + "\\" + paramFilename):
-		return paramFilename
+	if File.Exists(paramDirPath + "\\" + paramFileName):
+		return paramFileName
 	else:
-		missingParamFiles.append([asl, param])
-		return paramFilename + " [PARAM FILE NOT FOUND]"
+		missingParamFiles.append([aslName, paramName])
+		return paramFileName + " [PARAM FILE NOT FOUND]"
 
 # Convert flags hex to list of GCC buttons, then return a formatted string
 def getButtons(node):
@@ -71,7 +87,6 @@ def getButtons(node):
 ## Start of main script
 
 def main():
-	global PARAM_DIR_PATH
 	
 	# Prompt for the stageslot directory
 	workingDir = BrawlAPI.OpenFolderDialog("Open pf or stageslot folder")
@@ -104,7 +119,7 @@ def main():
 		TEXT_FILE = open(TEMP_TEXT_FILE_PATH,"w+", encoding="utf-8")
 	
 	# Derive param folder
-	PARAM_DIR_PATH = str(workingDir).rsplit("\\",2)[0] + "\\stageinfo"
+	paramDirPath = str(workingDir).rsplit("\\",2)[0] + "\\stageinfo"
 	
 	# Open whole stageslot folder in BrawlCrate
 	if BrawlAPI.RootNode == None or BrawlAPI.RootNode.FilePath != workingDir:
@@ -112,13 +127,13 @@ def main():
 		
 	# Progress bar start
 	progressBar = ProgressWindow()
-	progressBar.Begin(0,len(BrawlAPI.RootNode.Children),0)
+	progressBar.Begin(0, len(BrawlAPI.RootNode.Children), 0)
 	
 	aslFilesOpenedCount = 0	# Number of opened files
 	
-	# Iterate through all ASL files in folder
-	for node in BrawlAPI.RootNode.Children:
-		if isinstance(node, ASLSNode):
+	# Loop through all ASL files in folder
+	for aslNode in BrawlAPI.RootNode.Children:
+		if isinstance(aslNode, ASLSNode):
 			aslFilesOpenedCount += 1
 			currentAsl = ""
 			
@@ -127,12 +142,12 @@ def main():
 			
 			# If file writing enabled, write header (asl file name, number of entries)
 			if DO_FILE_WRITE:
-				writeHeader(TEXT_FILE, node)
+				writeHeader(TEXT_FILE, aslNode)
 			
 			# For each child node, check button combination and assigned param
-			for child in node.Children:
+			for child in aslNode.Children:
 				currentAsl += getButtons(child) + ": "
-				currentAsl += checkParam(node.Name, child.Name) + "\n"
+				currentAsl += checkParam(paramDirPath, aslNode.Name, child.Name) + "\n"
 			
 			# If file writing enabled, output ASL info to text
 			if DO_FILE_WRITE:

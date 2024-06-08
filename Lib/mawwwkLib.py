@@ -45,21 +45,6 @@ BRAWL_SONG_ID_LIST = [
  "Z26", "Z27", "Z28", "Z32", "Z33", "Z34", "Z35", "Z37", "Z38", "Z39", "Z41", "Z46", 
  "Z47", "Z50", "Z51", "Z52", "Z53", "Z54", "Z55", "Z56" "Z57", "Z58"
  ]
- 
-ASL_FLAGS_TO_BUTTONS = {
-	1 : "Left",
-	2 : "Right",
-	4 : "Down",
-	8: "Up",
-	16 : "Z", 		# 0x10
-	32 : "R",		# 0x20
-	64 : "L",       # 0x40
-	256 : "A",      # 0x100
-	512 : "B",      # 0x200
-	1024 : "X",     # 0x400
-	2048 : "Y",     # 0x800
-	4096 : "Start"  # 0x1000
-}
 
 BRAWL_STAGE_PACS = [
  "STGBATTLEFIELD", "STGCHARAROLL", "STGCONFIGTEST", "STGCRAYON",
@@ -180,14 +165,8 @@ def listToString(list, max=0):
 	return message
 
 def listToStringNoDuplicates(list, max=0):
-	newList = []
-	
-	# Remove duplicates
-	for i in list:
-		if i not in newList:
-			newList.append(i)
-	
-	return listToString(newList,max)
+	newList = listNoDuplicates(list)	
+	return listToString(newList, max)
 
 ## End list functions
 ## Start node functions

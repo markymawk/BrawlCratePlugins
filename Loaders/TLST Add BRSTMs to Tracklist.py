@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
@@ -37,12 +37,14 @@ def getUsedSongIDs(parentNode):
 ## Start loader functions
 
 def add_brstms_to_tracklist(sender, event_args):
-	ROOT_NODE = BrawlAPI.SelectedNode
+	tlstNode = BrawlAPI.SelectedNode
 	
 	# Store song IDs of all tracks currently in the tracklist
-	usedSongIDs = getUsedSongIDs(ROOT_NODE)
+	usedSongIDs = getUsedSongIDs(tlstNode)
 	
-	currentSongID = 61440 	# Starts at 0xF000, stores the lowest-used SongID
+	currentSongID = 0xF000 	# Starts at 0xF000, stores the lowest-used SongID
+	if "Menu" in tlstNode.Name:
+		currentSongID += 0x40
 	
 	# Prompt for brstms to add
 	brstmFilesList = BrawlAPI.OpenMultiFileDialog(SCRIPT_NAME, BRSTM_FILTER)
@@ -67,17 +69,17 @@ def add_brstms_to_tracklist(sender, event_args):
 			return
 	
 	# Add tracklist entries
-	for file in brstmFilesList:
+	for filePath in brstmFilesList:
 	
 		# Use uniform slash formatting
-		file = file.replace("\\", "/")
+		filePath = filePath.replace("\\", "/")
 		
 		# Create new tlst entry
 		track = TLSTEntryNode()
-		ROOT_NODE.AddChild(track)
+		tlstNode.AddChild(track)
 		
 		# Set name based on brstm name
-		track.Name = file.rsplit("/",1)[1].rsplit(".brstm",1)[0]
+		track.Name = filePath.rsplit("/",1)[1].rsplit(".brstm",1)[0]
 		
 		# Set volume and frequency to default values
 		track.Volume = 80
@@ -92,11 +94,17 @@ def add_brstms_to_tracklist(sender, event_args):
 		
 		# If "strm" exists in the filepath, base SongFileName off of that
 		if isInsideStrmDir:
-			track.SongFileName = file.rsplit("strm/")[1].rsplit(".brstm",1)[0]
+			filePathPrefix = ""
+			fileName = filePath.rsplit("strm/")[1]
 		
 		# If "strm" isn't in filepath, add user-defined prefix to the beginning (i.e. "../../")
 		else:
-			track.SongFileName = filePathPrefix + file.rsplit("/",1)[1].rsplit(".brstm",1)[0]
+			fileName = filePath.rsplit("/",1)[1]
+		
+		# Remove extension
+		fileName = fileName.rsplit(".brstm",1)[0]
+		fileName = filePathPrefix + fileName
+		track.SongFileName = fileName
 
 ## End loader functions
 ## Start context menu add
