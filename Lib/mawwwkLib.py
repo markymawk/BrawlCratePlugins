@@ -1,4 +1,4 @@
-﻿version = "1.5.2"
+﻿version = "1.5.3"
 # mawwwkLib
 # Common functions for use with BrawlAPI scripts
 
@@ -79,6 +79,17 @@ BRAWL_MODULES = [
  "st_village.rel"
 ]
 
+## Misc CHR GetKeyframe() ArrayIndex shortcuts
+scaleX = 0
+scaleY = 1
+scaleZ = 2
+rotX = 3
+rotY = 4
+rotZ = 5
+transX = 6
+transY = 7
+transZ = 8
+
 ## End constants
 ## Start list functions
 
@@ -148,7 +159,7 @@ def listToString(list, max=0):
 	message = ""
 	# If max is negative, throw error
 	if max < 0:
-		dmsg("Maximum cannot be negative")
+		dmsg("listToString() maximum cannot be negative")
 		return listToString(list)
 	
 	# If maximum set and list exceeds maximum, list only the max count of items
@@ -224,7 +235,7 @@ def getChildNodes(node):
 # isStaticBRRES()
 # Return true if given node is a brres, of exactly 640 bytes, and has exactly one MDL0 node
 def isStaticBRRES(node):
-	modelsGroup = getChildFromName(node,"3DModels")
+	modelsGroup = node.FindChild("3DModels(NW4R)")
 	
 	if node.UncompressedSize == 640 \
 	and isinstance(node, BRRESNode) \
