@@ -41,12 +41,11 @@ def findModelUses(modelsGroup, tex0Name):
 # Given a brres PAT0 group, check for usage in PAT0s
 def checkPAT0Uses(pat0Group, tex0Name):
 	pat0Uses = []
+	
 	for pat0 in pat0Group.Children:
-		# Get material from base pat0 node
-		for material in pat0.Children:
-			# For texture reference in material
-			for texRef in material.Children:
-				# If texture exists in the pat0, append to usedPAT0Names[]
+		for mat in pat0.Children:
+			for texRef in mat.Children:
+				# If texture exists in the pat0, append to pat0Uses[]
 				if tex0Name in getChildNames(texRef):
 						pat0Uses.append("PAT0: " + pat0.Parent.Parent.Name + "/" + pat0.Name)
 	return pat0Uses
