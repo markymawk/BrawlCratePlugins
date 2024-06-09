@@ -1,4 +1,4 @@
-﻿version = "1.5.3"
+﻿version = "1.5.4"
 # mawwwkLib
 # Common functions for use with BrawlAPI scripts
 
@@ -94,7 +94,7 @@ transZ = 8
 ## Start list functions
 
 # reverseResourceList()
-# Basic impl of list.reverse() to accommodate ResourceNode lists
+# Basic implementation of list.reverse() to accommodate ResourceNode lists
 # params:
 #	nodeList: any list of ResourceNodes
 def reverseResourceList(nodeList):
@@ -213,8 +213,6 @@ def getParentArc():
 
 # getChildNames()
 # Return list containing group.Children node names
-# params:
-#	group: any node with children
 def getChildNames(group):
 	list = []
 	for i in group.Children:
@@ -282,15 +280,16 @@ def HSV2RGB(colorList):
 	SAT = min(max(SAT, 0), 100)
 	VAL = min(max(VAL, 0), 100)
 	
-	# Some formula calcs
-	cValue = float(VAL * SAT) / 10000.0
-	xValue = cValue * (1.0 - abs((HUE / 60.0) % 2 - 1.0))
-	mValue = VAL/100.0 - cValue
-	
 	# Keep hue value in [0, 359] range
 	while HUE < 0:
 		HUE = HUE + 360
 	HUE = HUE % 360
+	
+	# Misc formula calculations
+	cValue = float(VAL * SAT) / 10000.0
+	xValue = cValue * (1.0 - abs((HUE / 60.0) % 2 - 1.0))
+	mValue = VAL/100.0 - cValue
+	
 	if HUE >= 0 and HUE < 60:
 		[red, green, blue] = [cValue, xValue, 0]
 	elif HUE >= 60 and HUE < 120:
@@ -317,7 +316,7 @@ def HSVtoARGBPixel(h, s, v, alpha=255):
 	return ARGBPixel(alpha, RGBColors[0], RGBColors[1], RGBColors[2])
 	
 # RGB2HSV()
-# Given a color node (frame), return an array of 3 floats corresponding to the HSV values
+# Given a color node (frame), return a list of 3 floats corresponding to the HSV values
 def RGB2HSV(colorNode):
 	RED = colorNode.R / 255.0
 	BLUE = colorNode.B / 255.0
@@ -414,10 +413,8 @@ def restorePreviewSettings(settings):
 	MainForm.Instance.ShowBRRESPreviews = settings[0]
 	MainForm.Instance.ShowARCPreviews = settings[1]
 	
-# dmessage(), dmsg()
+# dmsg()
 # Easy debug message
-def dmessage(msg, title=""):
-	dmsg(msg, title)
 
 def dmsg(msg, title=""):
 	BrawlAPI.ShowMessage(str(msg), title)
