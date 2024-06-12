@@ -59,7 +59,7 @@ def checkLightSetUse(sender, event_args):
 	
 	# Results
 	# If LightSet used, list all materials used, formatted as brres/MDL0Name/MaterialName
-	if len(usedMaterialsList) == 0:
+	if len(usedMaterialsList) > 0:
 		msg = "LightSet " + lightSetName + " used by " + str(len(usedMaterialsList)) + " material(s):\n"
 		
 		for mat in usedMaterialsList:
