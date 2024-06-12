@@ -11,13 +11,13 @@ SCRIPT_NAME = "Locate Unused Stage Textures"
 # Relatively safe to use, but WILL break Hanenbow based stages.
 
 def main():
-	bytesDeletedCount = 0		# Sum of uncompressed bytes worth of textures deleted
-	deletedMatsNamesList = []	# Names of deleted materials (unused by any objects)
-	deletedTex0NamesList = []	# Names of deleted tex0 nodes (unused by any material or pat0)
-	tex0NodeList = []
+	bytesDeletedCount = 0	# Sum of uncompressed bytes worth of textures deleted
+	deletedMatsNamesList = []			# Names of deleted materials (unused by any objects)
+	deletedTex0NamesList = []			# Names of deleted tex0 nodes (unused by any material or pat0)
 	cullAllMatsNamesList = []
 	cullAllMDL0NamesList = []
-	texturesInMatNamesList = []
+	tex0NodeList = []
+	texturesInMatNamesList = []	# Names of textures used by mats
 	texturesInPat0NamesList = []
 	
 	# Check for intended file structure
