@@ -88,9 +88,9 @@ def getStagePacName(paramNode, filePath_meleeDir):
 			skipMushroomyKingdomCheck = "MUSHROOMKINGDOM_LR_1-1" in fullStagePacName or "MARIOPAST_01" in fullStagePacName
 			
 			# Check if pac exists
-			stagePacExists = checkStagePacFilePath(filePath_meleeDir, paramNode.Name, fullStagePacName)
+			stagePacExists = skipMushroomyKingdomCheck or checkStagePacFilePath(filePath_meleeDir, paramNode.Name, fullStagePacName)
 			
-			if not skipMushroomyKingdomCheck and not stagePacExists:
+			if not stagePacExists:
 				stageStr += " [PAC FILE MISSING]"
 			stageStr += "\n"
 	
