@@ -22,7 +22,7 @@ missingTracklistParams = []
 ## End global variables
 ## Start helper methods
 
-# Returns a string containing pac filename.
+# Returns a string containing pac filename and other info.
 # If multiple stage pacs are used, format the string in a way that lists the substage format and all stage pacs used by the param
 # Currently uses hard-coded cases for Break_The_Targets.param and for Mushroom(y) Kingdom config behavior
 def getStagePacName(paramNode, filePath_meleeDir):
@@ -114,7 +114,8 @@ def checkStagePacFilePath(filePath_meleeDir, paramName, pacFilename):
 	return pacFileExists
 
 # Derives module filename given a param node
-# Also checks for existence of the given .rel file, and returns an error string if the file is missing or empty
+# Also checks for existence of the given .rel file.
+# If rel file is missing, returns an error string and appends param file name to missingModuleParams[]
 def getModuleName(parentNode, filePath_moduleDir):
 	module = str(parentNode.Module)
 	moduleFilePath = filePath_moduleDir + module
@@ -204,9 +205,8 @@ def getSfxGfxString(paramNode):
 ## Start of main script
 
 def main():
-	global filePath_tracklistDir
 	
-	# Prompt for the stageinfo directory
+	# Prompt for stageinfo directory
 	workingDir = BrawlAPI.OpenFolderDialog("Open pf or stageinfo folder")
 	if not workingDir:
 		return
@@ -219,14 +219,14 @@ def main():
 		workingDir += "\\"
 	
 	# Confirm dialog box
-	message = "Contents of all .param files in the folder:\n" + str(workingDir) + \
+	START_MSG = "Contents of all .param files in the folder:\n" + str(workingDir) + \
 	 "\nwill be checked for valid stage, module, and tracklist files." + \
 	 "\n\nPress OK to continue."
 
-	if not BrawlAPI.ShowOKCancelPrompt(message, SCRIPT_NAME):
+	if not BrawlAPI.ShowOKCancelPrompt(START_MSG, SCRIPT_NAME):
 		return
 	
-	# File output prompt
+	# Text file output prompt
 	SHORT_PATH = workingDir.rsplit("\\",2)[1] + "/" + OUTPUT_TEXT_FILENAME
 	DO_FILE_WRITE = BrawlAPI.ShowYesNoPrompt("Output results to /" + SHORT_PATH + "?", SCRIPT_NAME)
 	
@@ -242,19 +242,18 @@ def main():
 	filePath_moduleDir = filePath_pf + "module\\"
 	filePath_tracklistDir = filePath_pf + "sound\\tracklist\\"
 	
-	# Open whole stageinfo folder in BrawlCrate
+	# Open stageinfo folder in BrawlCrate
 	if BrawlAPI.RootNode == None or BrawlAPI.RootNode.FilePath != workingDir:
 		BrawlAPI.OpenFile(workingDir)
 	
 	# Progress bar start
 	progressBar = ProgressWindow()
 	progressBar.Begin(0, len(BrawlAPI.RootNode.Children), 0)
-	
 	paramFilesOpenedCount = 0	# Number of opened files
 	
 	# Iterate through all param files in folder
-	#for paramNode in BrawlAPI.RootNode.Children:
 	for paramNode in BrawlAPI.NodeListOfType[STEXNode]():
+		
 		# Progress bar
 		paramFilesOpenedCount += 1
 		progressBar.Update(paramFilesOpenedCount)
@@ -269,36 +268,37 @@ def main():
 		
 		# If file writing is enabled, output above info, sfx, gfx, overlay, and flags to text
 		if DO_FILE_WRITE:
-			sfxGfxString = getSfxGfxString(paramNode)
-			overlay = getColorOverlay(paramNode)
-			memoryAllocation = paramNode.MemoryAllocation
 			
 			# If [SFX, GFX] is not empty banks, get SFX/GFX
+			sfxGfxString = getSfxGfxString(paramNode)
 			if sfxGfxString:
 				currentParam += "\t" + sfxGfxString + "\n"
 			
-			# If overlay is not #00000000, get overlay
+			# Get overlay if not #00000000
+			overlay = getColorOverlay(paramNode)
 			if overlay:
 				currentParam += "\tCharacter overlay enabled: " + overlay + "\n"
 			
+			# Get memory allocation if not 0
+			memoryAllocation = paramNode.MemoryAllocation
 			if memoryAllocation:
 				currentParam += "\tMemoryAllocation: " + formatHex(memoryAllocation) \
 				+ " (" + str(memoryAllocation) + " bytes)\n"
 				
-			# If stage flags exist, get stage flags
+			# Get stage flags if they exist
 			if paramNode.Flags:
 				currentParam += "\tFlags: " + getStageFlags(paramNode) + "\n"
 			
 			# Write to text file
 			TEXT_FILE.write(currentParam + "\n")
 	
-	# After all params are parsed, close text file, and copy from temp folder to tracklist folder
+	progressBar.Finish()
+	
+	# After all params are checked, close text file and copy from temp folder to tracklist folder
 	if DO_FILE_WRITE:
 		TEXT_FILE.close()
 		File.Copy(TEMP_TEXT_FILE_PATH, FULL_TEXT_FILE_PATH, True)
 		File.Delete(TEMP_TEXT_FILE_PATH) # File.Move() doesn't work?
-	
-	progressBar.Finish()
 	
 	# Results
 	
