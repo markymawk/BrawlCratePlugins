@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "3.1.1"
+__version__ = "3.2"
 
 from BrawlCrate.API import *
 from BrawlCrate.UI import MainForm
@@ -60,24 +60,30 @@ def checkParam(paramDirPath, aslName, paramName):
 		missingParamFiles.append([aslName, paramName])
 		return paramFileName + " [PARAM FILE NOT FOUND]"
 
-# Convert flags hex to list of GCC buttons, then return a formatted string
-def getButtons(node):
-	thisFileFlags = node.ButtonFlags
-	if thisFileFlags == 0:
+# Convert flags hex to list of buttons, then return a formatted string (i.e. "L+X")
+def getButtons(aslEntryNode):
+	entryFlags = aslEntryNode.ButtonFlags
+	if entryFlags == 0:
 		return "Base"
 	
-	thisFileButtons = []
+	# If out of button range, return value of ButtonFlags in hex
+	if entryFlags >= 0x2000:
+		return formatHex(entryFlags, 4)
+	
+	entryButtons = []
 	returnStr = ""
 	
+	# Generate list of buttons
 	for flag in FLAGS_LIST:
-		if thisFileFlags >= flag:
-			thisFileButtons.append(ASL_FLAGS_TO_BUTTONS[flag])
-			thisFileFlags -= flag
+		if entryFlags >= flag:
+			entryButtons.append(ASL_FLAGS_TO_BUTTONS[flag])
+			entryFlags -= flag
 		# Exit loop after getting to 0
-		if thisFileFlags == 0:
+		if entryFlags == 0:
 			break
 	
-	for button in thisFileButtons:
+	# Convert list to formatted string
+	for button in entryButtons:
 		returnStr += button + "+"
 	
 	# Truncate final plus sign
@@ -167,7 +173,7 @@ def main():
 	if aslFilesOpenedCount == 0:
 		BrawlAPI.ShowError("No .ASL files found in\n" + str(workingDir), "No ASL files found")
 		
-	# Success, but one or more files missing
+	# Success, but one or more files missing (don't show file write info)
 	elif len(missingParamFiles):
 		message = "ASL file errors found.\n\nStage .param file missing:\n"
 		
