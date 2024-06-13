@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "3.1"
+__version__ = "3.2"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
@@ -16,7 +16,7 @@ from mawwwkLib import *
 SCRIPT_NAME = "Verify Tracklist File Data"
 OUTPUT_TEXT_FILENAME = "_Tracklist Data.txt"
 missingTracks = []				# List of [tracklists, tracks with missing file paths]
-existingFilePaths = []			# Saves any found file paths, for faster checks
+existingFilePaths = []			# Saves any found file paths, for fewer hard drive checks
 
 ## End global variables
 ## Begin helper methods
@@ -35,50 +35,54 @@ def getHeader(parentNode):
 	return headerStr
 
 # Get file path of a brstm given a track node
-def checkBRSTMFilePath(track):
-
+def checkBRSTMFilePath(trackNode):
+	brstmString = ""
+	
 	# If file path is empty (track is from ISO)
-	if str(track.SongFileName) == "None":
+	if str(trackNode.SongFileName) == "None":
 	
 		# Append Brawl track to tracklist string using static BrawlCrate dict
-		brawlBrstmFilePath = track.BrawlBRSTMs[track.SongID] + ".brstm"
-		brawlSongHex = formatHex(track.SongID)
+		brawlBrstmFilePath = trackNode.BrawlBRSTMs[trackNode.SongID] + ".brstm"
+		brawlSongHex = formatHex(trackNode.SongID)
 		
 		# Return formatted string containing filepath and Brawl hex ID
-		return brawlBrstmFilePath + " (" + brawlSongHex + ")"
+		brstmString = brawlBrstmFilePath + " (" + brawlSongHex + ")"
 	
-	# If file path isn't empty (track is a custom .brstm)
+	# If track is a custom BRSTM
 	else:
 		
 		# Derive filepath string
-		trackStr = str(track.SongFileName) + ".brstm"
+		brstmString = str(trackNode.SongFileName) + ".brstm"
 		
 		# If track filepath has already been found in this script run, return it without extra checks
-		if track.rstmPath in existingFilePaths:
-			return trackStr
-			
-		# If brstm file is missing, add it to the "missing" list and mark it accordingly in output
-		elif track.SongFileName not in BRAWL_SONG_ID_LIST and not File.Exists(track.rstmPath):
-			tracklistName = str(track.Parent.Name) + ".tlst"
-			missingTrackName = str(track.SongFileName) + ".brstm"
-			missingTracks.append([tracklistName, missingTrackName])
-			
-			return trackStr + " [BRSTM FILE MISSING]"
+		if trackNode.rstmPath in existingFilePaths:
+			return brstmString
 		
-		# If brstm file exists, save it in existingFilePaths[] for easier future checking, and return filepath
+		trackExists = trackNode.SongFileName in BRAWL_SONG_ID_LIST or File.Exists(trackNode.rstmPath)
+		
+		# If brstm file exists, add it to existingFilePaths[] for easier checks
+		if trackExists:
+			existingFilePaths.append(trackNode.rstmPath)
+		
+		# If brstm file is missing, add it to the "missing" list and mark it accordingly in output
 		else:
-			existingFilePaths.append(track.rstmPath)
-			return trackStr
+			tlstName = str(trackNode.Parent.Name) + ".tlst"
+			trackName = str(trackNode.SongFileName) + ".brstm"
+			missingTracks.append([tlstName, trackName])
+			
+			brstmString += " [BRSTM FILE MISSING]"
+		
+	return brstmString
 
 # Get pinch mode info
-def getPinchModeStr(track):
-	trackStr = "[PINCH MODE TRACK: " + str(track.SongSwitch) + " frames]\n"
-	trackStr += "\t" + str(track.SongFileName) + "_b.brstm"
+def getPinchModeStr(trackNode):
+	trackStr = "[PINCH MODE TRACK: " + str(trackNode.SongSwitch) + " frames]\n"
+	trackStr += "\t" + str(trackNode.SongFileName) + "_b.brstm"
 	
 	# If pinch brstm file doesn't exist, append to missingTracks[] and indicate such in the string
-	if not File.Exists(str(track.rstmPath)[0:-6] + "_b.brstm"):
-		tracklistName = str(track.Parent.Name) + ".tlst"
-		missingTrackName = str(track.SongFileName) + "_b.brstm"
+	if not File.Exists(str(trackNode.rstmPath)[0:-6] + "_b.brstm"):
+		tracklistName = str(trackNode.Parent.Name) + ".tlst"
+		missingTrackName = str(trackNode.SongFileName) + "_b.brstm"
 		missingTracks.append([tracklistName, missingTrackName])
 
 		trackStr += " [BRSTM FILE MISSING]"
@@ -104,13 +108,13 @@ def main():
 		workingDir += "\\"
 	
 	# Confirm dialog box
-	message = "Contents of all tracklists in the folder:\n" + str(workingDir)
-	message += "\nwill be checked for valid track filepaths and properties."
-	message += "\n\nPress OK to continue."
+	START_MSG = "Contents of all tracklists in the folder:\n" + str(workingDir)
+	START_MSG += "\nwill be checked for valid track filepaths and properties."
+	START_MSG += "\n\nPress OK to continue."
 	
-	if not BrawlAPI.ShowOKCancelPrompt(message, SCRIPT_NAME):
+	if not BrawlAPI.ShowOKCancelPrompt(START_MSG, SCRIPT_NAME):
 		return
-		
+	
 	# File output prompt
 	SHORT_PATH = workingDir.rsplit("\\",2)[1] + "/" + OUTPUT_TEXT_FILENAME
 	DO_FILE_WRITE = BrawlAPI.ShowYesNoPrompt("Output results to /" + SHORT_PATH + "?", SCRIPT_NAME)
@@ -131,51 +135,48 @@ def main():
 	
 	tracklistOpenedCount = 0	# Number of opened files
 	
-	# Iterate through all TLST files in folder
-	for node in BrawlAPI.RootNode.Children:
-	
-		# If file is not a tlst, ignore
-		if isinstance(node, TLSTNode):
-			tracklistOpenedCount += 1
-			currentTracklist = ""	# Current tracklist output string
-			tracklistSongIDs = []	# Current tracklist song IDs
-			
-			# Progress bar
-			progressBar.Update(tracklistOpenedCount)
-			
-			# Iterate through tracklist entries
-			for track in node.Children:
-			
-				# Check for any duplicate song IDs
-				if track.SongID in tracklistSongIDs and node.Name not in duplicateIDsTracklists:
-					duplicateIDsTracklists.append(node.Name)
-					
-				# If not a duplicate, add to songIDs list
-				else:
-					tracklistSongIDs.append(track.SongID)
-					
-				# Check track name and filepath, and store in a string (regardless of file write)
-				currentTracklist += "\t" + str(track.Name) + "\n"
-				currentTracklist += "\t" + checkBRSTMFilePath(track) + "\n"
+	# Check all TLST files in folder
+	for tlstNode in BrawlAPI.NodeListofType[TLSTNode]():
+		tracklistOpenedCount += 1
+		currentTracklist = ""	# Current tracklist output string
+		tracklistSongIDs = []	# Current tracklist song IDs
+		
+		# Progress bar
+		progressBar.Update(tracklistOpenedCount)
+		
+		# Loop through tracklist entries
+		for trackNode in tlstNode.Children:
+		
+			# Check for any duplicate song IDs
+			if trackNode.SongID in tracklistSongIDs and tlstNode.Name not in duplicateIDsTracklists:
+				duplicateIDsTracklists.append(tlstNode.Name)
 				
-				# If track is from SD card, get volume
-				if str(track.SongFileName) != "None":
-					currentTracklist += "\tVolume: " + str(track.Volume) + "\n"
-					
-				# If songSwitch is enabled, check for pinch mode brstm and print info
-				if track.SongSwitch:
-					currentTracklist += "\t" + getPinchModeStr(track) + "\n"
+			# If not a duplicate, add to songIDs list
+			else:
+				tracklistSongIDs.append(trackNode.SongID)
+				
+			# Check track name and filepath, and store in a string (regardless of file write)
+			currentTracklist += "\t" + str(trackNode.Name) + "\n"
+			currentTracklist += "\t" + checkBRSTMFilePath(trackNode) + "\n"
 			
-				# If file writing is enabled, check frequency and songDelay
-				if DO_FILE_WRITE:
-					currentTracklist += "\tFrequency: " + str(track.Frequency) + "\n"
-					if track.SongDelay != 0:
-						currentTracklist += "\tSong delay: " + str(track.SongDelay) + "\n"
-					currentTracklist += "\n"
-			
+			# If track is from SD card, get volume
+			if str(trackNode.SongFileName) != "None":
+				currentTracklist += "\tVolume: " + str(trackNode.Volume) + "\n"
+				
+			# If songSwitch is enabled, check for pinch mode brstm and print info
+			if trackNode.SongSwitch:
+				currentTracklist += "\t" + getPinchModeStr(trackNode) + "\n"
+		
+			# If file writing is enabled, check frequency and songDelay
 			if DO_FILE_WRITE:
-				TEXT_FILE.write(getHeader(node))
-				TEXT_FILE.write(currentTracklist)
+				currentTracklist += "\tFrequency: " + str(trackNode.Frequency) + "\n"
+				if trackNode.SongDelay != 0:
+					currentTracklist += "\tSong delay: " + str(trackNode.SongDelay) + "\n"
+				currentTracklist += "\n"
+		
+		if DO_FILE_WRITE:
+			TEXT_FILE.write(getHeader(tlstNode))
+			TEXT_FILE.write(currentTracklist)
 	
 	# After all TLSTs are parsed, close text file, and copy from temp folder to tracklist folder
 	if DO_FILE_WRITE:
