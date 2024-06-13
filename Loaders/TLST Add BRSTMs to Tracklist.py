@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0.2"
+__version__ = "1.0.3"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
@@ -22,25 +22,16 @@ def EnableCheck(sender, event_args):
 	sender.Enabled = node is not None
 
 ## End enable check functions
-## Start helper functions
-
-def getUsedSongIDs(parentNode):
-	IDs = []
-	
-	for track in parentNode.Children:
-		if track.SongID >= 61440: #0xF000 
-			IDs.append(track.SongID)
-	
-	return IDs
-
-## End helper functions
 ## Start loader functions
 
 def add_brstms_to_tracklist(sender, event_args):
 	tlstNode = BrawlAPI.SelectedNode
 	
 	# Store song IDs of all tracks currently in the tracklist
-	usedSongIDs = getUsedSongIDs(tlstNode)
+	usedSongIDs = []
+	for track in tlstNode.Children:
+		if track.SongID >= 0xF000:
+			usedSongIDs.append(track.SongID)
 	
 	currentSongID = 0xF000 	# Starts at 0xF000, stores the lowest-used SongID
 	if "Menu" in tlstNode.Name:
@@ -57,15 +48,13 @@ def add_brstms_to_tracklist(sender, event_args):
 	
 	# If brstms exist outside of the strm dir, prompt for a custom prefix such as ../../
 	if not isInsideStrmDir:
-	
-		if BrawlAPI.ShowOKCancelPrompt("strm directory not found in filepath.\n\nEnter a custom prefix relative to the strm folder.","strm directory not found"):
+		message = "strm directory not found in filepath.\n\nEnter a custom prefix relative to the strm folder."
+		if not BrawlAPI.ShowOKCancelPrompt(message, "strm directory not found"):
+			return
 		
-			filePathPrefix = BrawlAPI.UserStringInput("Enter filepath prefix (e.g. \"../../\")")
+		filePathPrefix = BrawlAPI.UserStringInput("Enter filepath prefix (e.g. \"../../\")")
 			
-			if not filePathPrefix:
-				return
-		
-		else:
+		if not filePathPrefix:
 			return
 	
 	# Add tracklist entries

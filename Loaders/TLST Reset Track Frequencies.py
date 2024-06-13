@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0"
+__version__ = "1.0.1"
 
 from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
@@ -14,7 +14,7 @@ TRACK_FREQUENCY = 40
 # Wrapper: TLSTWrapper
 def EnableCheckTLST(sender, event_args):
 	node = BrawlAPI.SelectedNode
-	sender.Enabled = (node is not None and node.HasChildren)
+	sender.Enabled = (node and node.HasChildren)
 
 ## End enable check functions
 ## Start loader functions

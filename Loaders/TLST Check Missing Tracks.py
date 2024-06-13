@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0"
+__version__ = "1.0.1"
 
 from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
@@ -13,7 +13,7 @@ from mawwwkLib import *
 # Wrapper: TLSTWrapper
 def EnableCheckTLST(sender, event_args):
 	node = BrawlAPI.SelectedNode
-	sender.Enabled = (node is not None and node.HasChildren)
+	sender.Enabled = (node and node.HasChildren)
 
 ## End enable check function
 ## Start of main script
@@ -23,21 +23,20 @@ def check_for_missing_brstm_filepaths(sender, event_args):
 	
 	# Check tracks
 	for track in BrawlAPI.SelectedNode.Children:
-		if track.SongID >= 61440:	# 0xF000
+		if track.SongID >= 0xF000:
 			if not File.Exists(str(track.rstmPath)):
 				missingTrackNames.append(track.Name)
 			
 			# If pinch mode, check for track_b.brstm
 			if track.SongSwitch and not File.Exists(str(track.rstmPath)[0:-6] + "_b.brstm"):
-				missingTrackNames.append("[SONGSWITCH] " + track.Name)
+				missingTrackNames.append("[SONG SWITCH] " + track.Name)
 	
 	# Results
 	if len(missingTrackNames) == 0:
 		BrawlAPI.ShowMessage("No missing tracks found!","Success")
 	else:
 		message = str(len(missingTrackNames)) + " missing track(s) found:\n\n"
-		for track in missingTrackNames:
-			message += track + "\n"
+		message += listToString(missingTrackNames, 15)
 
 		BrawlAPI.ShowError(message, "Missing tracks found")
 

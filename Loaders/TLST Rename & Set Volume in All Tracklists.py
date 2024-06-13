@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.1.1"
+__version__ = "1.1.2"
 
 from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
@@ -15,16 +15,9 @@ SCRIPT_NAME_VOLUME = "Match Volume in All Tracklists"
 # Wrapper: GenericWrapper
 def EnableCheckTLSTEntryNode(sender, event_args):
 	node = BrawlAPI.SelectedNode
-	sender.Enabled = (node is not None and isinstance(node, TLSTEntryNode) and node.Parent)
+	sender.Enabled = (node and isinstance(node, TLSTEntryNode) and node.Parent)
 
 ## End enable check functions
-## Start helper functions
-
-def getParentFolderPath(filepath):
-	path = filepath.rsplit("\\",1)[0] + "\\"
-	return path
-
-## End helper functions
 ## Start loader functions
 
 def rename_in_all_tracklists(sender, event_args):
@@ -41,7 +34,7 @@ def rename_in_all_tracklists(sender, event_args):
 	if newTrackName == "":
 		return
 	
-	isVanillaBrawlTrack = (selNode.SongID < 61440) # 0xF000
+	isVanillaBrawlTrack = (selNode.SongID < 0xF000) # 0xF000
 	trackID = selNode.SongID
 	
 	# If tracklist folder isn't already open from a previous use, open it. Otherwise, prompt to continue within opened folder
@@ -60,7 +53,7 @@ def rename_in_all_tracklists(sender, event_args):
 		# If track is a vBrawl song, check only SongID and skip SongFileName
 		if isVanillaBrawlTrack:
 		
-			# If song ID matches,
+			# If song ID matches...
 			if track.SongID == trackID:
 			
 				# and if name matches, add tracklist to tracklistsUsedSameName[]
