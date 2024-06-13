@@ -25,7 +25,7 @@ missingTracklistParams = []
 # Returns a string containing pac filename.
 # If multiple stage pacs are used, format the string in a way that lists the substage format and all stage pacs used by the param
 # Currently uses hard-coded cases for Break_The_Targets.param and for Mushroom(y) Kingdom config behavior
-def getStagePacName(paramNode):
+def getStagePacName(paramNode, filePath_meleeDir):
 	parentStage = paramNode.StageName.upper()
 	stageStr = ""
 	
@@ -40,7 +40,7 @@ def getStagePacName(paramNode):
 		# Check parent stage
 		stageStr += "[Substages / DualLoad]\n"
 		stageStr += "\t- " + fullStagePacName
-		parentPacExists = fullStagePacName[:-4] in BRAWL_STAGE_PACS or checkStagePacFilepath(parentStage, fullStagePacName)
+		parentPacExists = fullStagePacName[:-4] in BRAWL_STAGE_PACS or checkStagePacFilePath(filePath_meleeDir, parentStage, fullStagePacName)
 		
 		# If DualLoad parent stage is not in vBrawl, and not found in the pf/stage/melee folder, mark as missing
 		if not parentPacExists:
@@ -53,7 +53,7 @@ def getStagePacName(paramNode):
 			substagePacName = "STG" + substage.Name.upper() + ".PAC"
 			stageStr += "\t- " + substagePacName
 			
-			substagePacExists = substagePacName[:-4] in BRAWL_STAGE_PACS or checkStagePacFilepath(paramNode.Name, substagePacName)
+			substagePacExists = substagePacName[:-4] in BRAWL_STAGE_PACS or checkStagePacFilePath(filePath_meleeDir, paramNode.Name, substagePacName)
 			
 			# If DualLoad substage is not in vBrawl, and not found in the pf/stage/melee folder, mark as missing
 			if not substagePacExists:
@@ -88,7 +88,7 @@ def getStagePacName(paramNode):
 			skipMushroomyKingdomCheck = "MUSHROOMKINGDOM_LR_1-1" in fullStagePacName or "MARIOPAST_01" in fullStagePacName
 			
 			# Check if pac exists
-			stagePacExists = checkStagePacFilepath(paramNode.Name, fullStagePacName)
+			stagePacExists = checkStagePacFilePath(filePath_meleeDir, paramNode.Name, fullStagePacName)
 			
 			if not skipMushroomyKingdomCheck and not stagePacExists:
 				stageStr += " [PAC FILE MISSING]"
@@ -99,24 +99,25 @@ def getStagePacName(paramNode):
 		stageStr += fullStagePacName
 		
 		# If pac file is missing, append error string
-		if fullStagePacName[:-4] not in BRAWL_STAGE_PACS and not checkStagePacFilepath(paramNode.Name, fullStagePacName):
+		if fullStagePacName[:-4] not in BRAWL_STAGE_PACS and not checkStagePacFilePath(filePath_meleeDir, paramNode.Name, fullStagePacName):
 			stageStr += " [PAC FILE MISSING]"
 	
 	return stageStr.replace(".PAC", ".pac")
 
-# Returns true if pac filepath exists, else returns false and adds .param filename to missingPacParams[]
-def checkStagePacFilepath(paramName, pacFilename):
-	if pacFilename[:-4].upper() in BRAWL_STAGE_PACS or File.Exists(filePath_melee + "\\" + pacFilename):
-		return True
-	else:
+# Returns true if pac filepath exists, else returns false and adds param file name to missingPacParams[]
+def checkStagePacFilePath(filePath_meleeDir, paramName, pacFilename):
+	pacFileExists = pacFilename[:-4].upper() in BRAWL_STAGE_PACS or File.Exists(filePath_meleeDir + pacFilename)
+	
+	if not pacFileExists:
 		missingPacParams.append(paramName)
-		return False
+	
+	return pacFileExists
 
 # Derives module filename given a param node
 # Also checks for existence of the given .rel file, and returns an error string if the file is missing or empty
-def getModuleName(parentNode):
+def getModuleName(parentNode, filePath_moduleDir):
 	module = str(parentNode.Module)
-	
+	moduleFilePath = filePath_moduleDir + module
 	# Results.param uses no .rel file
 	if "Results" in parentNode.Name:
 		return ""
@@ -127,7 +128,7 @@ def getModuleName(parentNode):
 		return "[NO MODULE ASSIGNED]"
 	
 	# If module exists, return the module name
-	elif module in BRAWL_MODULES or File.Exists(filePath_module + module):
+	elif module in BRAWL_MODULES or File.Exists(moduleFilePath):
 		return module
 	
 	# If module file is missing, append error string
@@ -137,8 +138,9 @@ def getModuleName(parentNode):
 
 # Derives tracklist name given a param node
 # Also checks for the existence of the .tlst file, and returns an error string if the file is missing
-def getTracklistName(parentNode):
+def getTracklistName(parentNode, filePath_tracklistDir):
 	tracklist = str(parentNode.TrackList) + ".tlst"
+	tracklistFilePath = filePath_tracklistDir + tracklist
 	
 	# Edit_Stage.param uses no tracklist at time of writing
 	if parentNode.Name == "Edit_Stage":
@@ -150,7 +152,7 @@ def getTracklistName(parentNode):
 		return "[NO TRACKLIST ASSIGNED]"
 	
 	# If tracklist file is missing, append error string to tracklist filename, and append error string
-	elif not File.Exists(filePath_tracklist + "\\" + tracklist):
+	elif not File.Exists(tracklistFilePath):
 		missingTracklistParams.append(parentNode.Name)
 		return tracklist + " [TRACKLIST FILE MISSING]"
 	
@@ -159,8 +161,8 @@ def getTracklistName(parentNode):
 		return tracklist
 
 # Return character color overlay value, or return 0 if overlay string corresponds to #00000000
-def getColorOverlay (parentNode):
-	overlay = parentNode.CharacterOverlay.ToString()
+def getColorOverlay(paramNode):
+	overlay = paramNode.CharacterOverlay.ToString()
 	
 	if overlay == "R:0 G:0 B:0 A:0":
 		return 0
@@ -168,30 +170,30 @@ def getColorOverlay (parentNode):
 		return overlay
 	
 # Returns string containing all flags set in param file (assuming 1 or more flags set)
-def getStageFlags(parentNode):
+def getStageFlags(paramNode):
 	thisStageFlags = []
 	strFlags = ""
 	
-	if parentNode.IsFlat:
+	if paramNode.IsFlat:
 		strFlags += "Flat, "
-	if parentNode.IsFixedCamera:
+	if paramNode.IsFixedCamera:
 		strFlags += "FixedCamera, "
-	if parentNode.IsSlowStart:
+	if paramNode.IsSlowStart:
 		strFlags += "SlowStart, "
-	if parentNode.IsDualLoad:
+	if paramNode.IsDualLoad:
 		strFlags += "DualLoad, "
-	if parentNode.IsDualShuffle:
+	if paramNode.IsDualShuffle:
 		strFlags += "DualShuffle, "
-	if parentNode.IsOldSubstage:
+	if paramNode.IsOldSubstage:
 		strFlags += "OldSubstage, "
 	
 	# Truncate final comma
 	return strFlags[:-2]
 
 # Returns string containing SFX and GFX bank IDs, if they exist. Otherwise returns 0
-def getSfxGfxString(parentNode):
-	sfxID = parentNode.SoundBank
-	gfxID = parentNode.EffectBank
+def getSfxGfxString(paramNode):
+	sfxID = paramNode.SoundBank
+	gfxID = paramNode.EffectBank
 	
 	if [sfxID, gfxID] == [0xFFFF, 0x32]:
 		return 0
@@ -202,9 +204,7 @@ def getSfxGfxString(parentNode):
 ## Start of main script
 
 def main():
-	global filePath_melee
-	global filePath_module
-	global filePath_tracklist
+	global filePath_tracklistDir
 	
 	# Prompt for the stageinfo directory
 	workingDir = BrawlAPI.OpenFolderDialog("Open pf or stageinfo folder")
@@ -238,9 +238,9 @@ def main():
 	
 	# Derive module, tracklist, and stage/melee folders
 	filePath_pf = str(workingDir).rsplit("\\",3)[0] + "\\"
-	filePath_melee = filePath_pf + "stage\\melee"
-	filePath_module = filePath_pf + "module\\"
-	filePath_tracklist = filePath_pf + "sound\\tracklist"
+	filePath_meleeDir = filePath_pf + "stage\\melee\\"
+	filePath_moduleDir = filePath_pf + "module\\"
+	filePath_tracklistDir = filePath_pf + "sound\\tracklist\\"
 	
 	# Open whole stageinfo folder in BrawlCrate
 	if BrawlAPI.RootNode == None or BrawlAPI.RootNode.FilePath != workingDir:
@@ -253,45 +253,45 @@ def main():
 	paramFilesOpenedCount = 0	# Number of opened files
 	
 	# Iterate through all param files in folder
-	for node in BrawlAPI.RootNode.Children:
-		if isinstance(node, STEXNode):
-			paramFilesOpenedCount += 1
-			currentParam = "" # Current param output string
-			
-			# Progress bar
-			progressBar.Update(paramFilesOpenedCount)
-			
-			# Check stage pac, module, & tracklist, and store in a string (regardless of file write)
-			currentParam += "################\n" + node.Name + ".param\n\n" + \
-			 "\t" + getStagePacName(node) + "\n" + \
-			 "\t" + getModuleName(node) + "\n" + \
-			 "\t" + getTracklistName(node) + "\n"
-			
-			# If file writing is enabled, output above info, sfx, gfx, overlay, and flags to text
-			if DO_FILE_WRITE:
-				sfxGfxString = getSfxGfxString(node)
-				overlay = getColorOverlay(node)
-				memoryAllocation = node.MemoryAllocation
-				
-				# If [SFX, GFX] is not empty banks, get SFX/GFX
-				if sfxGfxString:
-					currentParam += "\t" + sfxGfxString + "\n"
-				
-				# If overlay is not #00000000, get overlay
-				if overlay:
-					currentParam += "\tCharacter overlay enabled: " + overlay + "\n"
-				
-				if memoryAllocation:
-					currentParam += "\tMemoryAllocation: " + formatHex(memoryAllocation) \
-					+ " (" + str(memoryAllocation) + " bytes)\n"
-					
-				# If stage flags exist, get stage flags
-				if node.Flags:
-					currentParam += "\tFlags: " + getStageFlags(node) + "\n"
-				
-				#currentParam = currentParam.replace(".PAC", ".pac")
-				TEXT_FILE.write(currentParam + "\n")
+	#for paramNode in BrawlAPI.RootNode.Children:
+	for paramNode in BrawlAPI.NodeListOfType[STEXNode]():
+		# Progress bar
+		paramFilesOpenedCount += 1
+		progressBar.Update(paramFilesOpenedCount)
 		
+		# Param output header
+		currentParam = "################\n" + paramNode.Name + ".param\n\n" 
+		
+		# Check stage pac, module, & tracklist, and store in a string (regardless of file write)
+		currentParam += "\t" + getStagePacName(paramNode, filePath_meleeDir) + "\n"
+		currentParam += "\t" + getModuleName(paramNode, filePath_moduleDir) + "\n"
+		currentParam += "\t" + getTracklistName(paramNode, filePath_tracklistDir) + "\n"
+		
+		# If file writing is enabled, output above info, sfx, gfx, overlay, and flags to text
+		if DO_FILE_WRITE:
+			sfxGfxString = getSfxGfxString(paramNode)
+			overlay = getColorOverlay(paramNode)
+			memoryAllocation = paramNode.MemoryAllocation
+			
+			# If [SFX, GFX] is not empty banks, get SFX/GFX
+			if sfxGfxString:
+				currentParam += "\t" + sfxGfxString + "\n"
+			
+			# If overlay is not #00000000, get overlay
+			if overlay:
+				currentParam += "\tCharacter overlay enabled: " + overlay + "\n"
+			
+			if memoryAllocation:
+				currentParam += "\tMemoryAllocation: " + formatHex(memoryAllocation) \
+				+ " (" + str(memoryAllocation) + " bytes)\n"
+				
+			# If stage flags exist, get stage flags
+			if paramNode.Flags:
+				currentParam += "\tFlags: " + getStageFlags(paramNode) + "\n"
+			
+			# Write to text file
+			TEXT_FILE.write(currentParam + "\n")
+	
 	# After all params are parsed, close text file, and copy from temp folder to tracklist folder
 	if DO_FILE_WRITE:
 		TEXT_FILE.close()
