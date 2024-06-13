@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "3.1"
+__version__ = "3.2"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
@@ -32,33 +32,40 @@ def getStagePacName(paramNode):
 	if parentStage == "":
 		return "[NO STAGE PAC ASSIGNED]"
 	
-	fullStagePacName = "STG" + parentStage.upper() + ".pac"
+	fullStagePacName = "STG" + parentStage.upper() + ".PAC"
 	
 	# If param loads multiple substages in DualLoad format
 	if paramNode.IsDualLoad:
+		
+		# Check parent stage
 		stageStr += "[Substages / DualLoad]\n"
+		stageStr += "\t- " + fullStagePacName
+		parentPacExists = fullStagePacName[:-4] in BRAWL_STAGE_PACS or checkStagePacFilepath(parentStage, fullStagePacName)
 		
-		# Check for DualLoad parent stage pac
-		if fullStagePacName[:-4] not in BRAWL_STAGE_PACS and not checkStagePacFilepath(parentStage, fullStagePacName):
-			fullStagePacName += " [PAC FILE MISSING]"
+		# If DualLoad parent stage is not in vBrawl, and not found in the pf/stage/melee folder, mark as missing
+		if not parentPacExists:
+			stageStr += " [PAC FILE MISSING]"
 		
-		stageStr += "\t- " + fullStagePacName.upper() + "\n"
+		stageStr += "\n"
 		
-		# Loop through DualLoad child nodes and check/list the substage names
+		# Loop through DualLoad child nodes, check & list the substage names
 		for substage in paramNode.Children:
-			fullSubstagePacName = "STG" + substage.Name + ".pac"
+			substagePacName = "STG" + substage.Name.upper() + ".PAC"
+			stageStr += "\t- " + substagePacName
+			
+			substagePacExists = substagePacName[:-4] in BRAWL_STAGE_PACS or checkStagePacFilepath(paramNode.Name, substagePacName)
 			
 			# If DualLoad substage is not in vBrawl, and not found in the pf/stage/melee folder, mark as missing
-			if not fullSubstagePacName[:-4].upper() in BRAWL_STAGE_PACS and not checkStagePacFilepath(paramNode.Name,fullSubstagePacName):
-				fullSubstagePacName += " [PAC FILE MISSING]"
+			if not substagePacExists:
+				stageStr += " [PAC FILE MISSING]"
 				
-			stageStr += "\t- " + fullSubstagePacName.upper() + "\n"
+			stageStr += "\n"
 		
 	# If param uses substages in non-DualLoad format
 	elif paramNode.HasChildren and str(paramNode.SubstageVarianceType) != "None":
 		stageStr += "[Substages / " + str(paramNode.SubstageVarianceType) + "]\n"
 		
-		# Combine parent+substage text to form full stage .pac file name
+		# Combine parent + substage text to form full stage .pac file name
 		for substage in paramNode.Children:
 			
 			# Remove underscore in certain params/slots, such as Smashville and Edit_Stage
@@ -67,34 +74,39 @@ def getStagePacName(paramNode):
 			else:
 				substageSuffix = substage.Name
 			
-			# Add a necessary underscore for Targets substages
-			if paramNode.Name == "Break_The_Targets":
-				fullStagePacName = "STG" + parentStage + substageSuffix.upper() + ".pac"
-			else:
-				fullStagePacName = "STG" + parentStage + "_" + substageSuffix.upper() + ".pac"
+			stagePacNameStart = "STG" + parentStage
 			
-			# Special check for Mushroomy Kingdom stage loads (assume pac exists)
-			if "MUSHROOMKINGDOM_LR_1-1" in fullStagePacName.upper() or "MARIOPAST_01" in fullStagePacName.upper():
-				stageStr += "\t- " + fullStagePacName.upper() + "\n"
-			else:
-				if not checkStagePacFilepath(paramNode.Name, fullStagePacName):
-					fullStagePacName += " [PAC FILE MISSING]"
-				stageStr += "\t- " + fullStagePacName.upper() + "\n"
-
+			# Skip adding underscore for Targets substages
+			if paramNode.Name != "Break_The_Targets":
+				stagePacNameStart += "_"
+			
+			fullStagePacName = stagePacNameStart + substageSuffix.upper() + ".PAC"
+			fullStagePacName = fullStagePacName.upper()
+			stageStr += "\t- " + fullStagePacName
+			
+			# Special check for Mushroomy Kingdom stage loads
+			skipMushroomyKingdomCheck = "MUSHROOMKINGDOM_LR_1-1" in fullStagePacName or "MARIOPAST_01" in fullStagePacName
+			
+			# Check if pac exists
+			stagePacExists = checkStagePacFilepath(paramNode.Name, fullStagePacName)
+			
+			if not skipMushroomyKingdomCheck and not stagePacExists:
+				stageStr += " [PAC FILE MISSING]"
+			stageStr += "\n"
+	
 	# If param has no substages, return the pac file name
 	else:
+		stageStr += fullStagePacName
 		
-		# If pac file is missing, append error string before returning
+		# If pac file is missing, append error string
 		if fullStagePacName[:-4] not in BRAWL_STAGE_PACS and not checkStagePacFilepath(paramNode.Name, fullStagePacName):
-			fullStagePacName += " [PAC FILE MISSING]"
-		
-		return fullStagePacName
+			stageStr += " [PAC FILE MISSING]"
 	
-	return stageStr
+	return stageStr.replace(".PAC", ".pac")
 
 # Returns true if pac filepath exists, else returns false and adds .param filename to missingPacParams[]
 def checkStagePacFilepath(paramName, pacFilename):
-	if pacFilename[:-4].upper() in BRAWL_STAGE_PACS or File.Exists(STAGE_MELEE_DIR_PATH + "\\" + pacFilename):
+	if pacFilename[:-4].upper() in BRAWL_STAGE_PACS or File.Exists(filePath_melee + "\\" + pacFilename):
 		return True
 	else:
 		missingPacParams.append(paramName)
@@ -115,7 +127,7 @@ def getModuleName(parentNode):
 		return "[NO MODULE ASSIGNED]"
 	
 	# If module exists, return the module name
-	elif module in BRAWL_MODULES or File.Exists(MODULE_DIR_PATH + "\\" + module):
+	elif module in BRAWL_MODULES or File.Exists(filePath_module + module):
 		return module
 	
 	# If module file is missing, append error string
@@ -138,7 +150,7 @@ def getTracklistName(parentNode):
 		return "[NO TRACKLIST ASSIGNED]"
 	
 	# If tracklist file is missing, append error string to tracklist filename, and append error string
-	elif not File.Exists(TRACKLIST_DIR_PATH + "\\" + tracklist):
+	elif not File.Exists(filePath_tracklist + "\\" + tracklist):
 		missingTracklistParams.append(parentNode.Name)
 		return tracklist + " [TRACKLIST FILE MISSING]"
 	
@@ -181,7 +193,7 @@ def getSfxGfxString(parentNode):
 	sfxID = parentNode.SoundBank
 	gfxID = parentNode.EffectBank
 	
-	if [sfxID, gfxID] == [65535, 50]: # 0xFFFF and 0x32
+	if [sfxID, gfxID] == [0xFFFF, 0x32]:
 		return 0
 	else:
 		return "SFX / GFX: " + str(formatHex(sfxID)) + " / " + str(formatHex(gfxID))
@@ -190,9 +202,9 @@ def getSfxGfxString(parentNode):
 ## Start of main script
 
 def main():
-	global STAGE_MELEE_DIR_PATH
-	global MODULE_DIR_PATH
-	global TRACKLIST_DIR_PATH
+	global filePath_melee
+	global filePath_module
+	global filePath_tracklist
 	
 	# Prompt for the stageinfo directory
 	workingDir = BrawlAPI.OpenFolderDialog("Open pf or stageinfo folder")
@@ -225,10 +237,10 @@ def main():
 		TEXT_FILE = open(TEMP_TEXT_FILE_PATH,"w+", encoding="utf-8")
 	
 	# Derive module, tracklist, and stage/melee folders
-	PF_PATH = str(workingDir).rsplit("\\",3)[0] + "\\"
-	STAGE_MELEE_DIR_PATH = PF_PATH + "stage\\melee"
-	MODULE_DIR_PATH = PF_PATH + "module"
-	TRACKLIST_DIR_PATH = PF_PATH + "sound\\tracklist"
+	filePath_pf = str(workingDir).rsplit("\\",3)[0] + "\\"
+	filePath_melee = filePath_pf + "stage\\melee"
+	filePath_module = filePath_pf + "module\\"
+	filePath_tracklist = filePath_pf + "sound\\tracklist"
 	
 	# Open whole stageinfo folder in BrawlCrate
 	if BrawlAPI.RootNode == None or BrawlAPI.RootNode.FilePath != workingDir:
@@ -277,7 +289,8 @@ def main():
 				if node.Flags:
 					currentParam += "\tFlags: " + getStageFlags(node) + "\n"
 				
-				TEXT_FILE.write((currentParam + "\n"))
+				#currentParam = currentParam.replace(".PAC", ".pac")
+				TEXT_FILE.write(currentParam + "\n")
 		
 	# After all params are parsed, close text file, and copy from temp folder to tracklist folder
 	if DO_FILE_WRITE:
@@ -287,7 +300,7 @@ def main():
 	
 	progressBar.Finish()
 	
-	# RESULTS
+	# Results
 	
 	# If no params found
 	if paramFilesOpenedCount == 0:
