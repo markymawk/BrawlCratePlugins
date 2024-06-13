@@ -1,4 +1,4 @@
-﻿version = "1.5.4"
+﻿version = "1.5.5"
 # mawwwkLib
 # Common functions for use with BrawlAPI scripts
 
@@ -178,6 +178,10 @@ def listToString(list, max=0):
 def listToStringNoDuplicates(list, max=0):
 	newList = listNoDuplicates(list)	
 	return listToString(newList, max)
+
+def getParentFolderPath(filepath):
+	path = filepath.rsplit("\\",1)[0] + "\\"
+	return path
 
 ## End list functions
 ## Start node functions
