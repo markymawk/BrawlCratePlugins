@@ -136,7 +136,7 @@ def main():
 	tracklistOpenedCount = 0	# Number of opened files
 	
 	# Check all TLST files in folder
-	for tlstNode in BrawlAPI.NodeListofType[TLSTNode]():
+	for tlstNode in BrawlAPI.NodeListOfType[TLSTNode]():
 		tracklistOpenedCount += 1
 		currentTracklist = ""	# Current tracklist output string
 		tracklistSongIDs = []	# Current tracklist song IDs
