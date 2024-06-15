@@ -1,4 +1,4 @@
-﻿version = "1.5.5"
+﻿version = "1.5.6"
 # mawwwkLib
 # Common functions for use with BrawlAPI scripts
 
@@ -9,6 +9,7 @@ from BrawlLib.SSBB.ResourceNodes import *
 from BrawlCrate.UI import MainForm
 from BrawlLib import * # Imaging
 from BrawlLib.Imaging import * # Imaging, ARGBPixel
+import math
 
 ## Start constants
 
@@ -89,6 +90,15 @@ rotZ = 5
 transX = 6
 transY = 7
 transZ = 8
+
+# Misc brres group name shortcuts
+MDL_GROUP = "3DModels(NW4R)"
+CHR_GROUP = "AnmChr(NW4R)"
+VIS_GROUP = "AnmVis(NW4R)"
+PAT_GROUP = "AnmTexPat(NW4R)"
+SRT_GROUP = "AnmTxSrt(NW4R)"
+TEX_GROUP = "Textures(NW4R)"
+PLT_GROUP = "Palettes(NW4R)"
 
 ## End constants
 ## Start list functions
@@ -266,6 +276,10 @@ def getOpenFile():
 
 ## End file operation functions
 ## Start math/conversion functions
+
+def mathDist(p, q):
+	distance = math.sqrt( ((p[0] - q[0]) ** 2.0) + ((p[1] - q[1]) ** 2.0) )
+	return abs(distance)
 
 def addLeadingZeros(value, count):
 	while len(str(value)) < count:
