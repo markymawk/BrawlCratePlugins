@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "2.0"
+__version__ = "2.1"
 
 from BrawlCrate.API import *
 from BrawlCrate.API.BrawlAPI import AppPath
@@ -9,8 +9,8 @@ from System.Windows.Forms import ToolStripMenuItem
 from mawwwkLib import *
 from System.IO import File
 
-TEMP_ARC_PATH = AppPath + "\SELCHAR2_EXPORT_temp.pac"
-SCRIPT_NAME = "Export as selcharacter2"
+TEMP_ARC_PATH = AppPath + "\MenuRule_temp.pac"
+SCRIPT_NAME = "Export MenuRule ARC"
 
 ## Start enable check functions
 
@@ -18,22 +18,22 @@ SCRIPT_NAME = "Export as selcharacter2"
 # Wrapper type: ARCWrapper
 def EnableCheck_menumain_RuleARC(sender, event_args):
 	node = BrawlAPI.SelectedNode
-	sender.Enabled = node is not None and "MenuRule" in node.Name and node.Parent and "mu_menumain" in node.Parent.Name
+	sender.Enabled = node and "MenuRule" in node.Name and node.Parent and "mu_menumain" in node.Parent.Name
 
 # Run from menumain root ARC 
 def EnableCheck_menumain_RootARC(sender, event_args):
 	node = BrawlAPI.SelectedNode
-	sender.Enabled = node is not None and "mu_menumain" in node.Name and node.Children and getChildFromName(node, "MenuRule_")
+	sender.Enabled = node and "mu_menumain" in node.Name and node.Children and getChildFromName(node, "MenuRule_")
 
 # Run from selcharacter2 MenuRule ARC
 def EnableCheck_selchar2_RuleARC(sender, event_args):
 	node = BrawlAPI.SelectedNode
-	sender.Enabled = node is not None and "MenuRule" in node.Name and node.Parent and "sc_selcharacter2_" in node.Parent.Name
+	sender.Enabled = node and "MenuRule" in node.Name and node.Parent and "sc_selcharacter2_" in node.Parent.Name
 	
 # Run from selcharacter2 root ARC
 def EnableCheck_selchar2_rootARC(sender, event_args):
 	node = BrawlAPI.SelectedNode
-	sender.Enabled = node is not None and "sc_selcharacter2_" in node.Name and node.Children and getChildFromName(node,"MenuRule_")
+	sender.Enabled = node and "sc_selcharacter2_" in node.Name and node.Children and getChildFromName(node,"MenuRule_")
 
 ## End enable check functions
 ## Start loader functions
@@ -44,24 +44,19 @@ def export_menumain_menurule(sender, event_args):
 
 # Loader from MenuMain ARC (root node)
 def export_menumain_rootnode(sender, event_args):
-	
-	node = getChildFromName(BrawlAPI.SelectedNode, "MenuRule_")
-	
-	# Make sure MenuRule node exists, then call main()
-	if node and "ARCNode" in node.NodeType:
+	menuRuleNode = getChildFromName(BrawlAPI.SelectedNode, "MenuRule_")
+	if menuRuleNode and isinstance(menuRuleNode, ARCNode):
 		main_menumain(node)
-		
-	# If MenuRule node not found, show an error
 	else:
-		showMsg("MenuRule ARC not found", "Error")
+		BrawlAPI.ShowMessage("MenuRule ARC not found", "Error")
 
 # Loader from selchar2 (root node)
 def export_selchar2_rootnode(sender, event_args):
-	node = getChildFromName(BrawlAPI.SelectedNode, "MenuRule_")
-	if not node or "ARCNode" not in node.NodeType:
+	menuRuleNode = getChildFromName(BrawlAPI.SelectedNode, "MenuRule_")
+	if menuRuleNode and isinstance(menuRuleNode, ARCNode):
+		main_selchar2(menuRuleNode)
+	else:
 		BrawlAPI.ShowMessage("MenuRule ARC not found", "Error")
-	
-	main_selchar2(node)
 
 def export_selchar2_MenuRule(sender, event_args):
 	main_selchar2(BrawlAPI.SelectedNode)
@@ -73,29 +68,27 @@ def export_selchar2_MenuRule(sender, event_args):
 def main_menumain(node):
 
 	# Derive build pf path from the open menumain.pac file
-	MENUMAIN_PATH = BrawlAPI.RootNode.FilePath
-	MENU2_FOLDER = str(MENUMAIN_PATH).split("mu_menumain.pac")[0]
-	SELCHARACTER2_PATH = MENU2_FOLDER + "\sc_selcharacter2.pac"
+	menumain_path = BrawlAPI.RootNode.FilePath
+	menu2_path = getParentFolderPath(menumain_path)
+	selcharacter2_path = menu2_path + "\sc_selcharacter2.pac"
 	
-	message = "Exporting MenuRule_en as a sc_selcharacter2.pac file inside\n" + MENU2_FOLDER
-	message += "\n\nPress OK to continue."
+	START_MSG = "Exporting MenuRule_en as a sc_selcharacter2.pac file inside\n" + menu2_path
+	START_MSG += "\n\nPress OK to continue."
 	
 	# Show prompt
-	if not BrawlAPI.ShowOKCancelPrompt(message, SCRIPT_NAME):
+	if not BrawlAPI.ShowOKCancelPrompt(START_MSG, SCRIPT_NAME):
 		return
 	
 	# Export MenuRule_en as a temp .pac file
 	node.Export(TEMP_ARC_PATH)
 	
-	# Open existing selcharacter2 file
-	BrawlAPI.OpenFile(SELCHARACTER2_PATH)
-	
-	# Replace existing child node
+	# Replace node in selchar2
+	BrawlAPI.OpenFile(selcharacter2_path)
 	BrawlAPI.RootNode.Children[0].Replace(TEMP_ARC_PATH)
 	BrawlAPI.SaveFile()
 	
 	# Re-open menumain
-	BrawlAPI.OpenFile(MENUMAIN_PATH)
+	BrawlAPI.OpenFile(menumain_path)
 	
 	# Delete temp file
 	File.Delete(TEMP_ARC_PATH)
@@ -104,30 +97,28 @@ def main_menumain(node):
 	BrawlAPI.ShowMessage("Export complete!", SCRIPT_NAME)
 
 def main_selchar2(node):
-	SELCHAR2_PATH = BrawlAPI.RootNode.FilePath
-	MENU2_FOLDER = str(SELCHAR2_PATH).split("sc_selcharacter2.pac")[0]
-	MENUMAIN_PATH = MENU2_FOLDER + "\mu_menumain.pac"
+	selcharacter2_path = BrawlAPI.RootNode.FilePath
+	menu2_path = getParentFolderPath(selcharacter2_path)
+	menumain_path = menu2_path + "\mu_menumain.pac"
 	
-	message = "Exporting MenuRule_en into the mu_menumain.pac file\n" + MENU2_FOLDER
-	message += "\n\nPress OK to continue."
+	START_MSG = "Exporting MenuRule_en into the mu_menumain.pac file inside\n" + menu2_path
+	START_MSG += "\n\nPress OK to continue."
 	
 	# Show prompt
-	if not BrawlAPI.ShowOKCancelPrompt(message, SCRIPT_NAME):
+	if not BrawlAPI.ShowOKCancelPrompt(START_MSG, SCRIPT_NAME):
 		return
 	
 	# Export MenuRule_en as a temp .pac file
 	node.Export(TEMP_ARC_PATH)
 	
-	# Open menumain
-	BrawlAPI.OpenFile(MENUMAIN_PATH)
-	
-	# Replace existing child node
+	# Replace node in menumain
+	BrawlAPI.OpenFile(menumain_path)
 	menuRuleNode = getChildFromName(BrawlAPI.RootNode, "MenuRule")
 	menuRuleNode.Replace(TEMP_ARC_PATH)
 	BrawlAPI.SaveFile()
 	
 	# Re-open selchar2
-	BrawlAPI.OpenFile(SELCHAR2_PATH)
+	BrawlAPI.OpenFile(selcharacter2_path)
 	
 	# Delete temp file
 	File.Delete(TEMP_ARC_PATH)
