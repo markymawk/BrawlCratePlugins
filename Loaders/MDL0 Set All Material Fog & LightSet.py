@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0"
+__version__ = "1.1"
 
 from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
@@ -14,27 +14,28 @@ MAXIMUM_INDEX_VALUE = 20
 # Check that model has Materials group
 # Wrapper: MDL0Wrapper
 def EnableCheckMDL0(sender, event_args):
-	sender.Enabled = (BrawlAPI.SelectedNode is not None \
-	and getChildFromName(BrawlAPI.SelectedNode, "Materials"))
+	node = BrawlAPI.SelectedNode
+	sender.Enabled = node and node.FindChild("Materials")
 
 ## End enable check function
 ## Begin helper methods
 
-def getMatValues(isLightSet=0):
+def promptNewValues(isLightSet):
 	if isLightSet:
-		indexName = "LightSetIndex"
+		fieldName = "LightSetIndex"
 	else:
-		indexName = "FogIndex"
+		fieldName = "FogIndex"
 	
-	newValue = BrawlAPI.UserStringInput("Enter " + indexName + " value (-1 to 20)")
+	newValue = BrawlAPI.UserStringInput("Enter " + fieldName + " value (-1 to 20)")
 	
 	if str(newValue) == "" or str(newValue) == "None":
-		return -99
-	
-	newValue = int(newValue)
-	
-	if newValue < MINIMUM_INDEX_VALUE or newValue > MAXIMUM_INDEX_VALUE:
-		BrawlAPI.ShowError("Value out of range (" + str(MINIMUM_INDEX_VALUE) + " to " + str(MAXIMUM_INDEX_VALUE) + ")", "Error")
+		newValue = -99
+	else:
+		newValue = int(newValue)
+		
+		if newValue < MINIMUM_INDEX_VALUE or newValue > MAXIMUM_INDEX_VALUE:
+			BrawlAPI.ShowError("Value out of range (" + str(MINIMUM_INDEX_VALUE) + " to " + str(MAXIMUM_INDEX_VALUE) + ")", "Error")
+			newValue = -99
 		
 	return newValue
 
@@ -42,24 +43,24 @@ def getMatValues(isLightSet=0):
 ## Start of loader functions
 
 def set_all_mats_fog(sender, event_args):
-	matsGroup = getChildFromName(BrawlAPI.SelectedNode, "Materials")
+	matsGroup = BrawlAPI.SelectedNode.FindChild("Materials")
 	
 	if not matsGroup:
 		return
 	
-	fogValue = getMatValues(0)
+	fogValue = promptNewValues(False)
 	
 	if fogValue >= MINIMUM_INDEX_VALUE:
 		for mat in matsGroup.Children:
 			mat.FogIndex = fogValue
 
 def set_all_mats_lightset(sender, event_args):
-	matsGroup = getChildFromName(BrawlAPI.SelectedNode, "Materials")
+	matsGroup = BrawlAPI.SelectedNode.FindChild("Materials")
 	
 	if not matsGroup:
 		return
 	
-	lightSetValue = getMatValues(1)
+	lightSetValue = promptNewValues(True)
 	
 	if lightSetValue >= MINIMUM_INDEX_VALUE:
 		for mat in matsGroup.Children:

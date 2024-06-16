@@ -9,114 +9,74 @@ from BrawlLib.SSBB.ResourceNodes import *
 from System.IO import File
 from mawwwkLib import *
 
-# Store temp files in the BrawlCrate program folder.
-# These are deleted at the end of the script.
-TEMP_STOCKS_PAT0_PATH = AppPath + "\STOCKFACE_PAT0_EXPORT_temp.pat0"
+STOCKS_PAT0_PATH = AppPath + "\STOCKFACE_PAT0_temp.pat0"
 
 # Name of the pat0 animation that contains frames for each stock icon
 STOCKFACE_PAT0_NAME = "InfStockface_TopN__0"
-SCRIPT_NAME = "Stock Icon Exporter"
+SCRIPT_NAME = "info.pac Stock Icon Exporter"
 
 ## Start enable check functions
 
 # Check to ensure the context menu item is only active if it's info.pac
 def EnableCheckARC(sender, event_args):
-	sender.Enabled = (BrawlAPI.SelectedNode is not None and BrawlAPI.SelectedNode.Name == "info_en")
+	node = BrawlAPI.SelectedNode
+	sender.Enabled = (node and node.Name == "info_en")
 	
 # Same as above, but from MiscData 30
 def EnableCheckBRES(sender, event_args):
-	bres = BrawlAPI.SelectedNode
-	sender.Enabled = (bres is not None and "[30]" in bres.Name and bres.Parent and "info_en" in bres.Parent.Name)
+	brres = BrawlAPI.SelectedNode
+	sender.Enabled = (brres and "[30]" in brres.Name and brres.Parent and "info_en" in brres.Parent.Name)
 
 ## End enable check functions
 ## Start helper functions
 
-# Locate stockface pat0 in brres (temp), and export to a temp pat0 file
-def exportStockfacePat0():
-	# Find pat0 group inside file
-	pat0Group = getChildFromName(BrawlAPI.RootNode, "AnmTexPat")
-	
-	# Find Stockface pat0 and export to temp file
-	stockfacePAT0 = getChildFromName(pat0Group, STOCKFACE_PAT0_NAME)
-	stockfacePAT0.Export(TEMP_STOCKS_PAT0_PATH)
-
 # Within the exported StockFaceTex brres, clear everything that isn't a stock icon tex0 or plt0
-def purgeAllExceptStocks():
-	parentBrres = BrawlAPI.RootNode
+def purgeAllExceptStocks(parentBRRES):
 	groupsToDelete = []
 	
 	# Delete any groups other than Textures and Palettes
-	for bresGroup in parentBrres.Children:
+	for bresGroup in parentBRRES.Children:
 		if bresGroup.Name not in ["Textures(NW4R)", "Palettes(NW4R)"]:
 			groupsToDelete.append(bresGroup)
 	
 	removeChildNodes(groupsToDelete)
 	
 	# Only textures and palette groups should remain
-	if len(parentBrres.Children) != 2:
+	if len(parentBRRES.Children) != 2:
 		BrawlAPI.ShowError("Unexpected data in info.pac MiscData30 brres", "Error")
 		return 0
 	
 	# Generate lists of tex0 and plt0 nodes that aren't stocks
 	unusedTEX0List = []
 	unusedPLT0List = []
-	tex0Group = getChildFromName(parentBrres, "Textures")
-	plt0Group = getChildFromName(parentBrres, "Palettes")
+	tex0Group = parentBRRES.FindChild("Textures")
+	plt0Group = parentBRRES.FindChild("Palettes")
 	
 	for tex0 in tex0Group.Children:
-		if tex0.Name[:7] != "InfStc.":
+		if not tex0.Name.startswith("InfStc."):
 			unusedTEX0List.append(tex0)
 	
 	for plt0 in plt0Group.Children:
-		if plt0.Name[:7] != "InfStc.":
+		if not plt0.Name.startswith("InfStc."):
 			unusedPLT0List.append(plt0)
 	
 	# Delete remaining non-stock nodes
 	removeChildNodes(unusedTEX0List)
 	removeChildNodes(unusedPLT0List)
 
-# With STGRESULT.pac open, replace the existing Stockface pat0 inside MiscData 110
-def importStockfaceIntoSTGRESULTpac():
-	# Within Root > ARC 2, find MiscData 110
-	MiscData110 = getChildFromName(BrawlAPI.RootNode.Children[1], "Misc Data [110]")
-	
-	# Within MiscData 110, find pat0 folder
-	pat0Folder = getChildFromName(MiscData110, "AnmTexPat")
-	
-	# Within pat0 folder, find existing stockface pat0
-	stockFacePAT0 = getChildFromName(pat0Folder, STOCKFACE_PAT0_NAME)
-	
-	# Replace existing pat0 animation in STGRESULT with the temp pat0 (from info.pac)
-	stockFacePAT0.Replace(TEMP_STOCKS_PAT0_PATH)
-
-# Find MiscData 120 inside STGRESULT.pac, or MiscData90 inside selcharacter.pac, and replace with stocks BRRES
-def importBrresIntoPac(pacFilePath, brresFilePath):
-	BrawlAPI.OpenFile(pacFilePath)
-	
-	# STGRESULT.pac > Root > 2 ARC > MiscData120 brres
-	if "result" in BrawlAPI.RootNode.Name.lower() and isinstance(BrawlAPI.RootNode, ARCNode):
-		node = getChildFromName(BrawlAPI.RootNode.Children[1], "Misc Data [120]")
-	
-	# sc_selcharacter.pac > Root > MiscData90 brres
-	elif "selcharacter" in BrawlAPI.RootNode.Name.lower() and isinstance(BrawlAPI.RootNode, ARCNode):
-		node = getChildFromName(BrawlAPI.RootNode, "Misc Data [90]")
-	
-	node.Replace(brresFilePath)
-
 ## End helper functions
 ## Start loader functions
 
-# Text shown before running the plug-in
-INIT_PROMPT_TEXT = "Export stock icon data from this file to STGRESULT.pac, StockFaceTex.brres, and sc_selcharacter.pac.\n\nPress OK to continue."
+START_MSG = "Export stock icon data from this file to STGRESULT.pac, StockFaceTex.brres, and sc_selcharacter.pac.\n\nPress OK to continue."
 
 # Base info.pac RootNode function to isolate the MiscData 30 brres, then call main()
 def export_stocks_from_info_arc(sender, event_args):
-	if BrawlAPI.ShowOKCancelPrompt(INIT_PROMPT_TEXT, SCRIPT_NAME):
-		main(getChildFromName(BrawlAPI.SelectedNode, "Misc Data [30]"))
+	if BrawlAPI.ShowOKCancelPrompt(START_MSG, SCRIPT_NAME):
+		main(BrawlAPI.SelectedNode.FindChild("Misc Data [30]"))
 
 # Base MiscData30 function, from selectedNode call main()
 def export_stocks_from_miscdata30(sender, event_args):
-	if BrawlAPI.ShowOKCancelPrompt(INIT_PROMPT_TEXT, SCRIPT_NAME):
+	if BrawlAPI.ShowOKCancelPrompt(START_MSG, SCRIPT_NAME):
 		main(BrawlAPI.SelectedNode)
 
 ## End loader functions
@@ -124,42 +84,54 @@ def export_stocks_from_miscdata30(sender, event_args):
 
 # Given the MiscData30 node, export/import data to the other files
 def main(node):
-	INFO_PAC_PATH = BrawlAPI.RootNode.FilePath
+	infoPac_Path = BrawlAPI.RootNode.FilePath
 	
 	# Derive file paths from the open info.pac file
-	PF_FOLDER = str(INFO_PAC_PATH).split("\info2\info.pac")[0]
-	STOCKFACETEX_BRRES_PATH = PF_FOLDER + "\menu\common\StockFaceTex.brres"
-	RESULTS_PAC_PATH = PF_FOLDER + "\stage\melee\STGRESULT.pac"
-	SELCHARACTER_PAC_PATH = PF_FOLDER + "\menu2\sc_selcharacter.pac"
+	pf_Dir = str(infoPac_Path).split("\info2\info.pac")[0]
+	stockFaceTex_Path = pf_Dir + "\menu\common\StockFaceTex.brres"
+	results_Path = pf_Dir + "\stage\melee\STGRESULT.pac"
+	selcharacter_Path = pf_Dir + "\menu2\sc_selcharacter.pac"
 	
-	node.ExportUncompressed(STOCKFACETEX_BRRES_PATH)
+	node.ExportUncompressed(stockFaceTex_Path)
 	
 	# Close info.pac and open StockFaceTex brres
-	BrawlAPI.OpenFile(STOCKFACETEX_BRRES_PATH)
+	BrawlAPI.OpenFile(stockFaceTex_Path)
 	
-	# With StockFaceTex brres open, export stockface pat0 animation as a temp, and clear out any non-stocks data
-	exportStockfacePat0()
-	purgeAllExceptStocks()
+	# Find pat0 group inside file
+	pat0Group = BrawlAPI.RootNode.FindChild(PAT_GROUP)
+	
+	# Find Stockface pat0 and export to temp file
+	stockfacePAT0 = pat0Group.FindChild(STOCKFACE_PAT0_NAME)
+	stockfacePAT0.Export(STOCKS_PAT0_PATH)
+	
+	purgeAllExceptStocks(BrawlAPI.RootNode)
 	BrawlAPI.SaveFile()
 	
 	# Open STGRESULT, and import pat0 and new brres (file 2 of 3)
-	importBrresIntoPac(RESULTS_PAC_PATH, STOCKFACETEX_BRRES_PATH)
-	importStockfaceIntoSTGRESULTpac()
+	BrawlAPI.OpenFile(results_Path)
+	brres = BrawlAPI.RootNode.Children[1].FindChild("Misc Data [120]")
+	brres.Replace(stockFaceTex_Path)
+	
+	brres = BrawlAPI.RootNode.Children[1].FindChild("Misc Data [110]")
+	pat0 = brres.FindChild(PAT_GROUP).FindChild(STOCKFACE_PAT0_NAME)
+	pat0.Replace(STOCKS_PAT0_PATH)
 	BrawlAPI.SaveFile()
 	
 	# Open selcharacter and import brres (file 3 of 3)
-	importBrresIntoPac(SELCHARACTER_PAC_PATH, STOCKFACETEX_BRRES_PATH)
+	BrawlAPI.OpenFile(selcharacter_Path)
+	brres = BrawlAPI.RootNode.FindChild("Misc Data [90]")
+	brres.Replace(stockFaceTex_Path)
 	BrawlAPI.SaveFile()
 	
 	# Re-open info.pac after all other files are handled
-	BrawlAPI.OpenFile(INFO_PAC_PATH)
+	BrawlAPI.OpenFile(infoPac_Path)
 	
 	# Delete temp files
-	File.Delete(TEMP_STOCKS_PAT0_PATH)
+	File.Delete(STOCKS_PAT0_PATH)
 	
-	# Script complete!
-	msg = "Stock tex0, plt0, and pat0 successfully exported from info.pac to: \n\n" + \
-	STOCKFACETEX_BRRES_PATH + "\n\n" + RESULTS_PAC_PATH + "\n\n" + SELCHARACTER_PAC_PATH
+	# Results
+	msg = "Stock tex0, plt0, and pat0 successfully exported from info.pac to: \n\n"
+	msg += stockFaceTex_Path + "\n\n" + results_Path + "\n\n" + selcharacter_Path
 	BrawlAPI.ShowMessage(msg, "Success!")
 
 ## End main function
