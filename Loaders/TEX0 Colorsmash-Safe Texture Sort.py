@@ -9,29 +9,28 @@ from BrawlLib.Internal.Windows.Forms import ProgressWindow
 from mawwwkLib import *
 
 SCRIPT_NAME = "Color Smash-safe Texture Sort"
-moveCount = 0
-
 TEXTURE_GROUP_ERROR_TEXT = "Error: expand the Textures(NW4R) group within the BRRES so that the green texture nodes are visible, then try the plug-in again."
+moveCount = 0
 
 ## Start enable check functions
 
 # Check to ensure that the BRESGroup is a Texture group that contains more than 1 TEX0
 # Wrapper: BRESGroupWrapper
 def EnableCheckBRESGroup(sender, event_args):
-	group = BrawlAPI.SelectedNode
-	sender.Enabled = (group is not None and group.HasChildren and len(group.Children) > 1)
+	node = BrawlAPI.SelectedNode
+	sender.Enabled = (node and node.HasChildren and "Textures" in node.Name and len(node.Children) > 1)
 
 # Check to ensure that the BRES contains a Texture group that contains more than 1 TEX0
 # Wrapper: BRESWrapper
 def EnableCheckBRES(sender, event_args):
-	group = BrawlAPI.SelectedNode
+	node = BrawlAPI.SelectedNode
 	
-	if group is not None:
-		textureGroup = getChildFromName(group, "Texture")
+	if node:
+		textureGroup = node.FindChild(TEX_GROUP)
 	else:
 		textureGroup = 0
-		
-	sender.Enabled = (group is not None and textureGroup and textureGroup.HasChildren and len(textureGroup.Children) > 1)
+	
+	sender.Enabled = (node and textureGroup and textureGroup.HasChildren and len(textureGroup.Children) > 1)
 	
 ## End enable check functions
 ## Start helper functions
@@ -51,18 +50,18 @@ def moveUpWrapper(wrapper):
 	wrapper.MoveUp(False)
 
 # Helper function to sort textures given the list of wrappers
-def sortTextures(textureWrappers, AUTO_SAVE):
+def sortTextures(textureWrappers, doAutoSave):
 	sharesDataMoveUpCount = 0
 	tex0MovedCount = 1
 	inSharesDataGroup = False
 	progressBar = ProgressWindow()
 	progressBar.Begin(0, len(textureWrappers), 0)
 	
-	# Iterate through textures
-	for i in range(1, len(textureWrappers), 1):
+	# Loop through textures
+	for i in range(len(textureWrappers)):
 	
 		# Auto-save if enabled, and only if not amid a colorsmash group
-		if AUTO_SAVE and not inSharesDataGroup and tex0MovedCount >= 13:
+		if doAutoSave and not inSharesDataGroup and tex0MovedCount >= 13:
 			BrawlAPI.SaveFile()
 			tex0MovedCount = tex0MovedCount % 13
 		
@@ -101,7 +100,7 @@ def sortTextures(textureWrappers, AUTO_SAVE):
 				tex0MovedCount += 1
 				
 			# Preserve the colorsmash group. Move up x times, per sharesDataMoveUpCount
-			for j in range (0, sharesDataMoveUpCount, 1):
+			for j in range (sharesDataMoveUpCount):
 				progressBar.Update((float(j)/sharesDataMoveUpCount) * len(textureWrappers)) # Update progress bar with current tex0 sort
 				moveUpWrapper(currentWrapper)
 				
@@ -143,7 +142,9 @@ def colorsmash_safe_sort_bresgroup(sender, event_args):
 	main(BrawlAPI.SelectedNodeWrapper)
 
 def colorsmash_safe_sort_bres(sender, event_args):
-
+	BrawlAPI.SelectedNodeWrapper.Expand()
+	
+	# This shouldn't happen anymore
 	if str(BrawlAPI.SelectedNodeWrapper.Nodes[0]) == "TreeNode: ":
 		BrawlAPI.ShowError(TEXTURE_GROUP_ERROR_TEXT, "Error")
 		return
@@ -154,38 +155,44 @@ def colorsmash_safe_sort_bres(sender, event_args):
 ## Start main function
 
 def main(parentGroupWrapper):
-	TEXTURE_WRAPPERS = parentGroupWrapper.Nodes
+	global moveCount
+	moveCount = 0
+	parentGroupWrapper.Expand()
+	texWrapperList = parentGroupWrapper.Nodes
 	
-	# If type is null, don't run the script
-	if str(TEXTURE_WRAPPERS[0]) == "TreeNode: ":
+	# If type is null, don't run the script (This shouldn't happen anymore)
+	if str(texWrapperList[0]) == "TreeNode: ":
 		BrawlAPI.ShowError(TEXTURE_GROUP_ERROR_TEXT, "Error")
 		return
 	
 	# User prompt to run
-	message = "Sort textures while preserving Color Smash groups.\n\n"
-	message += "This process may take 15-30 minutes OR LONGER depending on the amount of sorting needed.\n\n"
-	message += "BrawlCrate may appear unresponsive in the meantime.\n\nPress OK to continue."
-	if not BrawlAPI.ShowOKCancelPrompt(message, SCRIPT_NAME):
+	START_MSG = "Sort textures while preserving Color Smash groups.\n\n"
+	START_MSG += "This process may take 15-30 minutes OR LONGER depending on the amount of sorting needed.\n\n"
+	START_MSG += "BrawlCrate may appear unresponsive in the meantime.\n\nPress OK to continue."
+	if not BrawlAPI.ShowOKCancelPrompt(START_MSG, SCRIPT_NAME):
 		return
 	
 	# User prompt to auto-save
 	message = "The script can automatically save the file after every 12 sorts.\n\nEnable auto-saving? (Recommended for first run.)"
-	AUTO_SAVE = BrawlAPI.ShowYesNoPrompt(message, SCRIPT_NAME)
+	doAutoSave = BrawlAPI.ShowYesNoPrompt(message, SCRIPT_NAME)
 	
 	# If 2 or more textures, start the sort. (This is in EnableCheck already, but verify the wrapper count to be double-sure)
-	if len(TEXTURE_WRAPPERS) >= 2:
-		sortTextures(TEXTURE_WRAPPERS, AUTO_SAVE)
+	if len(texWrapperList) >= 2:
+		sortTextures(texWrapperList, doAutoSave)
 		
 		if moveCount == 0:
-			BrawlAPI.ShowMessage("Sort complete: no resorting done.", SCRIPT_NAME)
+			BrawlAPI.ShowMessage("Sort finished -  no resorting done.", SCRIPT_NAME)
 		else:
 			BrawlAPI.ShowMessage("Sort complete! (" + str(moveCount) + " total moves performed)", "Success!")
 
 ## End main function
 ## Start context menu add
 
+LONG_TEXT = "Sort textures in order while preserving color smash sets"
+SHORT_TEXT = "Sort textures (color smash-safe)"
+
 # From Textures group
-BrawlAPI.AddContextMenuItem(BRESGroupWrapper, "", "Sort textures in order while preserving color smash sets", EnableCheckBRESGroup, ToolStripMenuItem("Sort Textures (Color Smash-safe)", None, colorsmash_safe_sort_bresgroup))
+BrawlAPI.AddContextMenuItem(BRESGroupWrapper, "", LONG_TEXT, EnableCheckBRESGroup, ToolStripMenuItem(SHORT_TEXT, None, colorsmash_safe_sort_bresgroup))
 
 # From parent BRRES
-BrawlAPI.AddContextMenuItem(BRESWrapper, "", "Sort textures in order while preserving color smash sets", EnableCheckBRES, ToolStripMenuItem("Sort Textures (Color Smash-safe)", None, colorsmash_safe_sort_bres))
+BrawlAPI.AddContextMenuItem(BRESWrapper, "", LONG_TEXT, EnableCheckBRES, ToolStripMenuItem(SHORT_TEXT, None, colorsmash_safe_sort_bres))
