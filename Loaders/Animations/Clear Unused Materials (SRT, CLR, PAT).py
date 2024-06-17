@@ -10,12 +10,12 @@ SCRIPT_NAME = "Clear Unused Material Entries"
 
 def EnableCheckANIM(sender, event_args):
 	node = BrawlAPI.SelectedNode
-	sender.Enabled = (node and node.Children)
+	sender.Enabled = (node and node.HasChildren)
 
 def clear_unused_mats(sender, event_args):
 	selNode = BrawlAPI.SelectedNode
-	brresNode = BrawlAPI.SelectedNode.Parent.Parent
-	allMatNames = []
+	brresNode = selNode.Parent.Parent
+	allMaterialNames = []
 	entriesToDelete = []
 	
 	modelsGroup = brresNode.FindChild(MDL_GROUP)
@@ -24,19 +24,16 @@ def clear_unused_mats(sender, event_args):
 		BrawlAPI.ShowMessage("No models found in this BRRES. No entries removed.")
 		return
 	
-	# Populate list of all materials
+	# Populate allMaterialNames[]
 	for mdl0 in modelsGroup.Children:
 		matsGroup = mdl0.FindChild("Materials")
-		
-		if not matsGroup:
-			continue
-		
-		for mat in matsGroup.Children:
-			allMatNames.append(mat.Name)
+		if matsGroup:
+			for mat in matsGroup.Children:
+				allMaterialNames.append(mat.Name)
 	
 	# Populate list of unused animation entries
 	for mat in selNode.Children:
-		if mat.Name not in allMatNames:
+		if mat.Name not in allMaterialNames:
 			entriesToDelete.append(mat)
 	
 	# Dialog box confirming list of names to delete, if any

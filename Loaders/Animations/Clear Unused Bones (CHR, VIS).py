@@ -12,7 +12,7 @@ SCRIPT_NAME = "Clear Unused Bone Entries"
 # Wrapper: CHR0Wrapper, VIS0Wrapper
 def EnableCheckANIM(sender, event_args):
 	node = BrawlAPI.SelectedNode
-	sender.Enabled = (node and node.Children)
+	sender.Enabled = (node and node.HasChildren)
 
 ## End enable check functions
 ## Start of main script
@@ -20,7 +20,7 @@ def EnableCheckANIM(sender, event_args):
 def clear_unused_bones(sender, event_args):
 	# Get parent brres
 	selNode = BrawlAPI.SelectedNode
-	brresNode = BrawlAPI.SelectedNode.Parent.Parent
+	brresNode = selNode.Parent.Parent
 	allBoneNames = []
 	entriesToDelete = []
 	
@@ -30,15 +30,12 @@ def clear_unused_bones(sender, event_args):
 		BrawlAPI.ShowMessage("No models found in this BRRES. No entries removed.")
 		return
 	
-	# Populate list of all bones
+	# Populate allBoneNames[]
 	for mdl0 in modelsGroup.Children:
 		bonesGroup = mdl0.FindChild("Bones")
-		
-		if not bonesGroup:
-			continue
-		
-		for bone in bonesGroup.GetChildrenRecursive():
-			allBoneNames.append(bone.Name)
+		if bonesGroup:
+			for bone in bonesGroup.GetChildrenRecursive():
+				allBoneNames.append(bone.Name)
 	
 	# Populate list of unused bone references in anim
 	for animEntry in selNode.Children:
