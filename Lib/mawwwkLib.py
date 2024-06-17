@@ -133,7 +133,7 @@ def findChildByName(node, nameStr, EXACT_NEEDED=False):
 
 # getChildWrapperFromName()
 # Given any nodeWrapper, return its child wrapper whose Resource.Name contains the given nameStr
-def getChildWrapperFromName(wrapper, nameStr, EXACT_NEEDED=False):
+def findChildWrapperByName(wrapper, nameStr, EXACT_NEEDED=False):
 	if wrapper.Nodes:
 		for child in wrapper.Nodes:
 			if EXACT_NEEDED and child.Resource.Name == str(nameStr):
@@ -141,9 +141,6 @@ def getChildWrapperFromName(wrapper, nameStr, EXACT_NEEDED=False):
 			elif str(nameStr) in child.Resource.Name:
 				return child
 	return 0	# If not found, return 0
-
-def getChildWrapperByName(wrapper, nameStr, EXACT_NEEDED=False):
-	return getChildWrapperFromName(wrapper, nameStr, EXACT_NEEDED)
 
 # nodeListToString()
 # Return a string containing the names of nodes inside the given list, one per line

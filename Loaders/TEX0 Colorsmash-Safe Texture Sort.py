@@ -149,7 +149,7 @@ def colorsmash_safe_sort_bres(sender, event_args):
 		BrawlAPI.ShowError(TEXTURE_GROUP_ERROR_TEXT, "Error")
 		return
 	else:	
-		main(getChildWrapperFromName(BrawlAPI.SelectedNodeWrapper, "Textures"))
+		main(findChildWrapperByName(BrawlAPI.SelectedNodeWrapper, "Textures"))
 	
 ## End loader functions
 ## Start main function
