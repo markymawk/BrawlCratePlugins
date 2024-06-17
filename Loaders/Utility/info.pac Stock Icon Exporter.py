@@ -49,8 +49,8 @@ def purgeAllExceptStocks(parentBRRES):
 	# Generate lists of tex0 and plt0 nodes that aren't stocks
 	unusedTEX0List = []
 	unusedPLT0List = []
-	tex0Group = parentBRRES.FindChild("Textures")
-	plt0Group = parentBRRES.FindChild("Palettes")
+	tex0Group = parentBRRES.FindChild(TEX_GROUP)
+	plt0Group = parentBRRES.FindChild(PLT_GROUP)
 	
 	for tex0 in tex0Group.Children:
 		if not tex0.Name.startswith("InfStc."):

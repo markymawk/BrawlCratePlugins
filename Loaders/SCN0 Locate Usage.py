@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
@@ -15,12 +15,13 @@ SCRIPT_NAME = "Detect SCN0 Usage"
 # LightSet check: selected node is a LightSet node with a Parent.Parent of type SCN0Node
 # Wrapper: GenericWrapper
 def enableCheckLightSet(sender, event_args):
-	sender.Enabled = (BrawlAPI.SelectedNode is not None \
-	and isinstance(BrawlAPI.SelectedNode, SCN0LightSetNode) \
-	and BrawlAPI.SelectedNode.Parent is not None \
-	and BrawlAPI.SelectedNode.Parent.Parent is not None \
-	and isinstance(BrawlAPI.SelectedNode.Parent.Parent, SCN0Node) \
-	and "LightSet" in BrawlAPI.SelectedNode.Parent.Name)
+	node = BrawlAPI.SelectedNode
+	sender.Enabled = (node \
+	and isinstance(node, SCN0LightSetNode) \
+	and node.Parent \
+	and node.Parent.Parent \
+	and isinstance(node.Parent.Parent, SCN0Node) \
+	and "LightSet" in node.Parent.Name)
 
 # Fog check: nothing specific
 # Wrapper: SCN0FogWrapper
@@ -28,66 +29,61 @@ def enableCheckFog(sender, event_args):
 	sender.Enabled = (BrawlAPI.SelectedNode is not None)
 
 ## End enable check functions
-## Start helper functions
-
-# Given the SCN0 realIndex value, parse all MDL0s for the materials inside.
-# If the material uses the given SCN0 data, add it to a list, then return that list
-def buildUsedMaterialsList(SCN0Index, isLightSet):
-	usedMaterialsList = []
-	MDL0List = BrawlAPI.NodeListOfType[MDL0Node]()
-	
-	for mdl0 in BrawlAPI.NodeListOfType[MDL0Node]():
-		matsGroup = getChildFromName(mdl0,"Material")
-		if matsGroup:
-			for material in matsGroup.Children:
-				if isLightSet and material.LightSetIndex == SCN0Index:
-					usedMaterialsList.append(material)
-				elif (not isLightSet) and material.FogIndex == SCN0Index:
-					usedMaterialsList.append(material)
-	
-	return usedMaterialsList
-	
-## End helper functions
 ## Start main functions
 
-def checkLightSetUse(sender, event_args):
+def check_LightSet_use(sender, event_args):
 	lightSetIndex = BrawlAPI.SelectedNode.RealIndex
 	lightSetName = BrawlAPI.SelectedNode.Name
 	
 	# Build list of materials that use the matching index
-	usedMaterialsList = buildUsedMaterialsList(lightSetIndex, True)
+	usedMaterialsList = []
+	for mat in BrawlAPI.NodeListOfType[MDL0MaterialNode]():
+		if mat.LightSetIndex == lightSetIndex:
+			usedMaterialsList.append(mat)
 	
 	# Results
 	# If LightSet used, list all materials used, formatted as brres/MDL0Name/MaterialName
 	if len(usedMaterialsList):
 		msg = "LightSet " + lightSetName + " used by " + str(len(usedMaterialsList)) + " material(s):\n"
 		
+		# Generate output message
+		outputList = []
 		for mat in usedMaterialsList:
 			mdl0 = mat.Parent.Parent
 			brres = mat.Parent.Parent.Parent.Parent
-			msg += brres.Name + "/" + mdl0.Name + "/" + mat.Name + "\n"
+			outputList.append(brres.Name + "/" + mdl0.Name + "/" + mat.Name)
+		
+		msg += listToString(outputList, 20)
 		
 		BrawlAPI.ShowMessage(msg, "SCN0 LightSet Usage")
+	
 	# If LightSet unused, show unused message
 	else:
 		BrawlAPI.ShowMessage("LightSet " + lightSetName + " not used by any materials.", "SCN0 LightSet Unused")
 
-def checkFogUse(sender, event_args):
+def check_fog_use(sender, event_args):
 	fogIndex = BrawlAPI.SelectedNode.RealIndex
 	fogName = BrawlAPI.SelectedNode.Name
 	
 	# Build list of materials that use the matching index
-	usedMaterialsList = buildUsedMaterialsList(fogIndex, False)
+	usedMaterialsList = []
+	for mat in BrawlAPI.NodeListOfType[MDL0MaterialNode]():
+		if mat.FogIndex == fogIndex:
+			usedMaterialsList.append(mat)
 	
 	# Results
 	# If fog used, list all materials used, formatted as brres/MDL0Name/MaterialName
 	if len(usedMaterialsList):
 		msg = "Fog " + fogName + " used by " + str(len(usedMaterialsList)) + " material(s):\n"
 		
+		# Generate output message
+		outputList = []
 		for mat in usedMaterialsList:
 			mdl0 = mat.Parent.Parent
 			brres = mat.Parent.Parent.Parent.Parent
-			msg += brres.Name + "/" + mdl0.Name + "/" + mat.Name + "\n"
+			outputList.append(brres.Name + "/" + mdl0.Name + "/" + mat.Name)
+		
+		msg += listToString(outputList, 20)
 		
 		BrawlAPI.ShowMessage(msg, "SCN0 Fog Usage")
 		
@@ -99,7 +95,7 @@ def checkFogUse(sender, event_args):
 ## Start context menu add
 
 # LightSet uses GenericWrapper
-BrawlAPI.AddContextMenuItem(GenericWrapper, "", "Detect SCN0 LightSet usage in materials", enableCheckLightSet, ToolStripMenuItem("Locate SCN0 LightSet usage", None, checkLightSetUse))
+BrawlAPI.AddContextMenuItem(GenericWrapper, "", "Detect SCN0 LightSet usage in materials", enableCheckLightSet, ToolStripMenuItem("Locate SCN0 LightSet usage", None, check_LightSet_use))
 
 # Fog check
-BrawlAPI.AddContextMenuItem(SCN0FogWrapper, "", "Detect SCN0 fog usage in materials", enableCheckFog, ToolStripMenuItem("Locate SCN0 fog usage", None, checkFogUse))
+BrawlAPI.AddContextMenuItem(SCN0FogWrapper, "", "Detect SCN0 fog usage in materials", enableCheckFog, ToolStripMenuItem("Locate SCN0 fog usage", None, check_fog_use))
