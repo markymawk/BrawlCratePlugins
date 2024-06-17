@@ -115,13 +115,14 @@ def reverseResourceList(nodeList):
 	nodeListReverse.reverse()
 	return nodeListReverse
 
-# getChildFromName()
-# Given any node, return its child node whose name contains the given nameStr
+# findChildByName()
+# Given any node, search for a child node whose name contains the given nameStr
 # params:
 #	node: Parent node to search within
 #	nameStr: Name of child to search for
 # 	EXACT_NEEDED: bool, whether or not name should match exactly
-def getChildFromName(node, nameStr, EXACT_NEEDED=False):
+# 
+def findChildByName(node, nameStr, EXACT_NEEDED=False):
 	if node.Children:
 		for child in node.Children:
 			if EXACT_NEEDED and child.Name == str(nameStr):
@@ -129,9 +130,6 @@ def getChildFromName(node, nameStr, EXACT_NEEDED=False):
 			elif not EXACT_NEEDED and str(nameStr) in child.Name:
 				return child
 	return 0	# If not found, return 0
-
-def getChildByName(node, nameStr, EXACT_NEEDED=False):
-	return getChildFromName(node, nameStr, EXACT_NEEDED)
 
 # getChildWrapperFromName()
 # Given any nodeWrapper, return its child wrapper whose Resource.Name contains the given nameStr

@@ -23,7 +23,7 @@ def EnableCheck_menumain_RuleARC(sender, event_args):
 # Run from menumain root ARC 
 def EnableCheck_menumain_RootARC(sender, event_args):
 	node = BrawlAPI.SelectedNode
-	sender.Enabled = node and "mu_menumain" in node.Name and node.Children and getChildFromName(node, "MenuRule_")
+	sender.Enabled = node and "mu_menumain" in node.Name and node.Children and findChildByName(node, "MenuRule_")
 
 # Run from selcharacter2 MenuRule ARC
 def EnableCheck_selchar2_RuleARC(sender, event_args):
@@ -33,7 +33,7 @@ def EnableCheck_selchar2_RuleARC(sender, event_args):
 # Run from selcharacter2 root ARC
 def EnableCheck_selchar2_rootARC(sender, event_args):
 	node = BrawlAPI.SelectedNode
-	sender.Enabled = node and "sc_selcharacter2_" in node.Name and node.Children and getChildFromName(node,"MenuRule_")
+	sender.Enabled = node and "sc_selcharacter2_" in node.Name and node.Children and findChildByName(node,"MenuRule_")
 
 ## End enable check functions
 ## Start loader functions
@@ -44,7 +44,7 @@ def export_menumain_menurule(sender, event_args):
 
 # Loader from MenuMain ARC (root node)
 def export_menumain_rootnode(sender, event_args):
-	menuRuleNode = getChildFromName(BrawlAPI.SelectedNode, "MenuRule_")
+	menuRuleNode = findChildByName(BrawlAPI.SelectedNode, "MenuRule_")
 	if menuRuleNode and isinstance(menuRuleNode, ARCNode):
 		main_menumain(node)
 	else:
@@ -52,7 +52,7 @@ def export_menumain_rootnode(sender, event_args):
 
 # Loader from selchar2 (root node)
 def export_selchar2_rootnode(sender, event_args):
-	menuRuleNode = getChildFromName(BrawlAPI.SelectedNode, "MenuRule_")
+	menuRuleNode = findChildByName(BrawlAPI.SelectedNode, "MenuRule_")
 	if menuRuleNode and isinstance(menuRuleNode, ARCNode):
 		main_selchar2(menuRuleNode)
 	else:
@@ -113,7 +113,7 @@ def main_selchar2(node):
 	
 	# Replace node in menumain
 	BrawlAPI.OpenFile(menumain_path)
-	menuRuleNode = getChildFromName(BrawlAPI.RootNode, "MenuRule")
+	menuRuleNode = findChildByName(BrawlAPI.RootNode, "MenuRule")
 	menuRuleNode.Replace(TEMP_ARC_PATH)
 	BrawlAPI.SaveFile()
 	
