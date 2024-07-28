@@ -182,7 +182,7 @@ Rename the selected texture, along with a given number of TEX0 nodes above it, b
 List all materials to which the selected LightSet index or Fog index is assigned.
 
 ## 4.12 Trim CHR Animation
-**Usage: ** Right-click a CHR0 animation or CHR0 entry node
+**Usage:** Right-click a CHR0 animation or CHR0 entry node
 
 Set a new start and end frame for the selected CHR0 animation, trimming it to the set length
 </details>
