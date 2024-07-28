@@ -1,4 +1,4 @@
-﻿version = "1.5.6"
+﻿version = "1.5.7"
 # mawwwkLib
 # Common functions for use with BrawlAPI scripts
 
@@ -258,7 +258,26 @@ def getMDL0FromBone(bone):
 		return bone.Parent
 	else:
 		return getMDL0FromBone(bone.Parent)
+
+# getWrapperFromNode()
+# Given a node, return its corresponding wrapper by navigating index values from the RootNode
+def getWrapperFromNode(node):
+	indexList = []
+
+	# Append node index to list
+	while node.Parent and node.Index > -1:
+		indexList.append(node.Index)
+		node = node.Parent
 	
+	# Reverse list so it goes in order of parent to child
+	indexList.reverse()
+	
+	wrapper = BrawlAPI.RootNodeWrapper
+	for i in range(len(indexList)):
+		childIndex = indexList[i]
+		wrapper = wrapper.Nodes[childIndex]
+	return wrapper
+
 ## End node functions
 ## Start file operation functions
 
