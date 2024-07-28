@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.3"
+__version__ = "1.4"
 
 from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import * # GenericWrapper, STEXWrapper
@@ -7,6 +7,7 @@ from BrawlLib.SSBB.ResourceNodes import *
 from BrawlLib.SSBB.ResourceNodes.ProjectPlus import STEXNode
 from System.Windows.Forms import ToolStripMenuItem
 from System.IO import File
+from mawwwkLib import *
 
 ## Start enable check functions
 # Single PAC enable check: if StageName is not empty && no children exist
@@ -38,34 +39,34 @@ def EnableCheckASLEntry(sender, event_args):
 # Function to open single stage PAC file
 def open_stage_pac(sender, event_args):
 	selNode = BrawlAPI.SelectedNode
-	PAC_FILE_PATH = str(BrawlAPI.RootNode.FilePath).split("\stageinfo\\")[0] + "\melee\\STG" + selNode.StageName + ".pac"
+	stagePac_Path = getParentFolderPath(BrawlAPI.RootNode.FilePath) + "\melee\\STG" + selNode.StageName + ".pac"
 	
-	if File.Exists(PAC_FILE_PATH):
-		BrawlAPI.OpenFile(PAC_FILE_PATH)
+	if File.Exists(stagePac_Path):
+		BrawlAPI.OpenFile(stagePac_Path)
 	else:
 		BrawlAPI.ShowError("STG" + selNode.StageName + ".pac" + " not found.", "Error")
 
 # Function to open substage PAC file
 def open_substage_pac(sender, event_args):
 	selNode = BrawlAPI.SelectedNode
-	STAGE_MELEE_DIR_PATH = str(selNode.FilePath).split("\stageinfo\\")[0] + "\melee\\"
+	stageMelee_Path = getParentFolderPath(BrawlAPI.RootNode.FilePath) + "\melee\\"
 	
 	# Attempt 1: try combining (stage)_(substage) with an underscore
-	PAC_FILE_PATH = STAGE_MELEE_DIR_PATH + "STG" + selNode.StageName + "_" + selNode.Name + ".pac"
-	if File.Exists(PAC_FILE_PATH):
-		BrawlAPI.OpenFile(PAC_FILE_PATH)
+	stagePac_Path = stageMelee_Path + "STG" + selNode.Parent.StageName + "_" + selNode.Name + ".pac"
+	if File.Exists(stagePac_Path):
+		BrawlAPI.OpenFile(stagePac_Path)
 		return
 	
 	# Attempt 2: try (stage)(substage) with no underscore (i.e. Smashville substages)
-	PAC_FILE_PATH = STAGE_MELEE_DIR_PATH + "STG" + selNode.StageName + selNode.Name + ".pac"
-	if File.Exists(PAC_FILE_PATH):
-		BrawlAPI.OpenFile(PAC_FILE_PATH)
+	stagePac_Path = stageMelee_Path + "STG" + selNode.Parent.StageName + selNode.Name + ".pac"
+	if File.Exists(stagePac_Path):
+		BrawlAPI.OpenFile(stagePac_Path)
 		return
 		
 	# Attempt 3: try just the substage name (DualLoad i.e. Castle Siege)
-	PAC_FILE_PATH = STAGE_MELEE_DIR_PATH + "STG" + selNode.Name + ".pac"
-	if File.Exists(PAC_FILE_PATH):
-		BrawlAPI.OpenFile(PAC_FILE_PATH)
+	stagePac_Path = stageMelee_Path + "STG" + selNode.Name + ".pac"
+	if File.Exists(stagePac_Path):
+		BrawlAPI.OpenFile(stagePac_Path)
 	
 	# If no attempts have worked, show error
 	else:
