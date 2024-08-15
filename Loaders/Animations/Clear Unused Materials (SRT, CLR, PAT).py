@@ -1,10 +1,11 @@
 __author__ = "mawwwk"
-__version__ = "1.0.2"
+__version__ = "1.0.3"
 
 from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
 from BrawlLib.SSBB.ResourceNodes import *
 from System.Windows.Forms import ToolStripMenuItem
+from mawwwkLib import *
 
 SCRIPT_NAME = "Clear Unused Material Entries"
 
