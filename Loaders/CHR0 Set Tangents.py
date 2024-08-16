@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0.1"
+__version__ = "1.1"
 
 from System.Windows.Forms import ToolStripMenuItem # Needed for all loaders
 from BrawlCrate.API import *
@@ -59,22 +59,34 @@ def set_tangents_chr0entry(sender, event_args):
 ## Start main function
 
 def setTangents(node, newTangent):
-	for k in range(node.FrameCount):
-	
-		# Loop through scale, rotation, translation
-		for i in range (0, 9):
+	# Loop through scale, rotation, translation
+	for i in range (9):
+		for k in range(node.FrameCount):
+			
+			# Don't change tangents for 1-frame animations
+			isMultipleFrames = False
+			
 			frame = node.GetKeyframe(i, k)
 			
 			# If keyframe is empty, skip
 			if "None" in str(type(frame)):
 				continue
+			
+			# Store tangent of first frame
+			if k == 0:
+				frame0Tangent = frame._tangent
+			
+			isMultipleFrames = (k > 0)
 			frame._tangent = newTangent
+		
+		# If only 1 frame in the animation, restore its original tangent
+		firstFrame = node.GetKeyframe(i, 0)
+		if not isMultipleFrames and firstFrame:
+			firstFrame._tangent = frame0Tangent
 	
-	# Mark file as changed
 	node.IsDirty = True
 
 ## End main function
-
 ## Start context menu add
 
 # From CHR0 node
