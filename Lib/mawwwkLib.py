@@ -1,4 +1,4 @@
-﻿version = "1.5.7"
+﻿version = "1.5.8"
 # mawwwkLib
 # Common functions for use with BrawlAPI scripts
 
@@ -95,8 +95,9 @@ transZ = 8
 MDL_GROUP = "3DModels(NW4R)"
 CHR_GROUP = "AnmChr(NW4R)"
 VIS_GROUP = "AnmVis(NW4R)"
+CLR_GROUP = "AnmClr(NW4R)"
 PAT_GROUP = "AnmTexPat(NW4R)"
-SRT_GROUP = "AnmTxSrt(NW4R)"
+SRT_GROUP = "AnmTexSrt(NW4R)"
 TEX_GROUP = "Textures(NW4R)"
 PLT_GROUP = "Palettes(NW4R)"
 
