@@ -13,14 +13,14 @@ SCRIPT_NAME = "Output Nodes to Text"
  
 # getNodeProperties():
 # Get specific node properties depending on the node's type, and return as string
-def getNodeProperties(node):
+def getNodeProperties(node, doIncludeMD5):
 	nodeStr = ""
 	nodeType = node.NodeType.split(".")[-1]
 	nodeHash = node.MD5Str()
 	uncompressedSize = node.UncompressedSize
 	
 	# Show MD5 if exists
-	if len(nodeHash):
+	if doIncludeMD5 and len(nodeHash):
 		nodeStr += "\nMD5: " + nodeHash[:8]
 	
 	# TEX0Node info
@@ -85,15 +85,15 @@ def getNodeProperties(node):
 
 # writeOutput():
 # Recursive method to write node info to text file, then call for each child node
-def writeOutput(node, textFile, prefixStr=""):
+def writeOutput(node, textFile, doIncludeMD5, prefixStr=""):
 	writeStr = prefixStr + node.Name + "\n" + node.NodeType.split(".")[-1]
-	writeStr += getNodeProperties(node)
+	writeStr += getNodeProperties(node, doIncludeMD5)
 	# Replace redirect arrow, has ascii issues
 	textFile.write(writeStr.replace("→",">") + "\n")
 	# Recursively check child nodes
 	if node.HasChildren:
 		for child in node.Children:
-			writeOutput(child, textFile, prefixStr + node.Name + "/")
+			writeOutput(child, textFile, doIncludeMD5, prefixStr + node.Name + "/")
 
 def main():
 	if BrawlAPI.SelectedNode is None:
@@ -113,14 +113,22 @@ def main():
 	selNode = BrawlAPI.SelectedNode
 	
 	# Filename stuff: Remove spaces, brackets, parentheses
-	outputTextFileName = selNode.Name.translate({ ord(c): None for c in " []()→" })
+	defaultName = selNode.Name.translate({ ord(c): None for c in " []()→" })
 	
 	# Use first 10 chars of filename + first 13 chars of selected node (Enough for ModelDataXXX and TextureDataXX)
-	outputTextFileName = BrawlAPI.RootNode.FileName[:10] + "_" + outputTextFileName[:13] + "_md5.txt"
+	suggestedFileName = BrawlAPI.RootNode.FileName[:10] + "_" + defaultName[:13] + "_md5.txt"
+	outputTextFileName = BrawlAPI.UserStringInput("Enter output .txt file name", suggestedFileName)
+	
+	if not outputTextFileName.endswith(".txt"):
+		outputTextFileName += ".txt"
+	
+	msg = "Include MD5 checksums in output?"
+	doIncludeMD5 = BrawlAPI.ShowYesNoPrompt(msg, SCRIPT_NAME)
+	
 	FULL_TEXT_FILE_PATH = str(OUTPUT_DIR) + "\\" + outputTextFileName
 	TEXT_FILE = open(FULL_TEXT_FILE_PATH,"w+", encoding="utf-8")
 
-	writeOutput(selNode, TEXT_FILE)
+	writeOutput(selNode, TEXT_FILE, doIncludeMD5)
 	
 	TEXT_FILE.close()
 	
