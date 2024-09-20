@@ -1,4 +1,4 @@
-﻿version = "1.5.8"
+﻿version = "1.6"
 # mawwwkLib
 # Common functions for use with BrawlAPI scripts
 
@@ -192,6 +192,37 @@ def getParentFolderPath(filepath):
 ## End list functions
 ## Start node functions
 
+def clearTangents(chr0Entry):
+	# If a CHR0 animation, run on all children
+	if isinstance(chr0Entry, CHR0Node) and chr0Entry.HasChildren:
+		for entry in chr0Entry.Children:
+			clearTangents(entry)
+		return
+	chr0 = chr0Entry.Parent
+	for i in range(9):
+		for k in range(chr0.FrameCount):
+			frame = chr0Entry.GetKeyframe(i, k)
+			if "None" in str(type(frame)):
+				continue
+			frame._tangent = 0
+			
+# clearCHR()
+# Remove all keyframes from a CHR0 or CHR0Entry node
+def clearCHR0(chr0Entry):
+	# If a CHR0 animation, run on all children
+	if isinstance(chr0Entry, CHR0Node) and chr0Entry.HasChildren:
+		for entry in chr0Entry.Children:
+			clearCHR0(entry)
+		return
+	
+	# Clear keyframes from entry nodes
+	
+	frameCount = chr0Entry.Parent.FrameCount
+	if chr0Entry.Parent.Loop:
+		frameCount += 1
+	for i in range(frameCount):
+		chr0Entry.RemoveKeyframe(i)
+
 # removeChildNodes()
 # Given a list of nodes with the same parent, delete those nodes using RemoveChild()
 # use reverse() to avoid top-down errors
@@ -383,7 +414,17 @@ def RGB2HSV(colorNode):
 
 # setColorGradient()
 # Set a gradient color blend in a given color node, using frame start/end indices, and start/end ARGBPixel colors
-def setColorGradient(node, startFrame, endFrame, startColor, endColor):
+def setColorGradient(node, startFrame, endFrame, startColor, endColor=-1):
+	# If given a CLR0Node, run on all children
+	if isinstance(node, CLR0Node):
+		for clr0Material in node.Children:
+			for clr0MatEntry in clr0Material.Children:
+				setColorGradient(clr0MatEntry, startFrame, endFrame, startColor, endColor)
+		return
+	
+	# If endColor not set, match startColor
+	if endColor == -1:
+		endColor = startColor
 	count = endFrame - startFrame
 	
 	# Calculate color change per frame
