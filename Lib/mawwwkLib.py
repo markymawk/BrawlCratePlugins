@@ -1,4 +1,4 @@
-﻿version = "1.6"
+﻿version = "1.7"
 # mawwwkLib
 # Common functions for use with BrawlAPI scripts
 
@@ -9,6 +9,7 @@ from BrawlLib.SSBB.ResourceNodes import *
 from BrawlCrate.UI import MainForm
 from BrawlLib import * # Imaging
 from BrawlLib.Imaging import * # Imaging, ARGBPixel
+from BrawlLib.SSBB.Types import * # BoneFlags
 import math
 
 ## Start constants
@@ -193,19 +194,56 @@ def getParentFolderPath(filepath):
 ## Start node functions
 
 def clearTangents(chr0Entry):
+	setAllTangents(chr0Entry, 0)
+			
+def setAllTangents(chr0Entry, newTangent=0):
 	# If a CHR0 animation, run on all children
 	if isinstance(chr0Entry, CHR0Node) and chr0Entry.HasChildren:
 		for entry in chr0Entry.Children:
-			clearTangents(entry)
+			setAllTangents(entry, newTangent)
 		return
-	chr0 = chr0Entry.Parent
 	for i in range(9):
-		for k in range(chr0.FrameCount):
-			frame = chr0Entry.GetKeyframe(i, k)
-			if "None" in str(type(frame)):
-				continue
-			frame._tangent = 0
-			
+		setSingleTangent(chr0Entry, i, newTangent)
+
+# setSingleTangent()
+# Applies given value to all frames, only for a given index (translation X, rot Y, etc.)
+def setSingleTangent(chr0Entry, tangentIndex, newTangent=0):
+	
+	# If a CHR0 animation, run on all children
+	if isinstance(chr0Entry, CHR0Node) and chr0Entry.HasChildren:
+		for entry in chr0Entry.Children:
+			setSingleTangent(entry, tangentIndex, newTangent)
+		return
+	
+	chr0 = chr0Entry.Parent
+	if chr0.Loop:
+		frameCount = chr0.FrameCount + 1
+	else:
+		frameCount = chr0.FrameCount
+	
+	# Don't change tangents for 1-frame animations
+	isMultipleFrames = False
+	for k in range(frameCount):
+		
+		frame = chr0Entry.GetKeyframe(tangentIndex, k)
+		
+		if "None" in str(type(frame)):
+			continue
+		
+		# Store tangent of first frame
+		if k == 0:
+			frame0Tangent = frame._tangent
+		isMultipleFrames = (k > 0)
+		frame._tangent = newTangent
+		
+	# If only 1 frame in the animation, restore its original tangent
+	firstFrame = chr0Entry.GetKeyframe(tangentIndex, 0)
+	
+	if isMultipleFrames:
+		chr0Entry.IsDirty = True
+	elif firstFrame:
+		firstFrame._tangent = frame0Tangent
+
 # clearCHR()
 # Remove all keyframes from a CHR0 or CHR0Entry node
 def clearCHR0(chr0Entry):
@@ -240,6 +278,8 @@ def removeChildNodes(nodeList):
 def removeNode(node):
 	node.Parent.RemoveChild(node)
 
+def clearBoneFlags(bone):
+	bone._boneFlags = bone._boneFlags and BoneFlags.Visible
 # getParentArc()
 # Return the "2" ARC of stage file, or 0 if not found
 def getParentArc():
