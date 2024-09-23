@@ -112,7 +112,7 @@ Check materials and TEX0 nodes in the currently opened stage .pac file. Any mate
 Delete any Normal or Vertex nodes unused by any objects within models. The result should always be tested in-game, with a backup .pac file saved.
 
 ## 3.4 Delete Unused Bones
-**Usage:** Plugins menu > PAC File Optimization
+**Usage:** Plugins menu > PAC File Optimization, or right-click any MDL0 containing bones and objects
 
 Delete any bones unused by objects or collisions. Out of caution, this doesn't affect any models that use non-SingleBind objects (objects bound to multiple bones).
 
@@ -120,6 +120,11 @@ Delete any bones unused by objects or collisions. Out of caution, this doesn't a
 **Usage:** Plugins menu > PAC File Optimization
 
 Improve readability of stage .pac files by converting "Static" BRRES nodes (nodes where the only entry is a Static model) to Redirect nodes at the end of the file. The result should always be tested in-game, with a backup .pac file saved.
+
+## 3.6 BRRES Repair Group Names
+**Usage:** Right-click a BRRES node containing an invalid group (folder) name
+
+Renames invalid or corrupt BRRES groups according to the group's children nodes.
 
 </details>
 <details>
