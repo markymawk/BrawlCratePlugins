@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0.3"
+__version__ = "1.0.4"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
@@ -68,7 +68,7 @@ def add_brstms_to_tracklist(sender, event_args):
 		tlstNode.AddChild(track)
 		
 		# Set name based on brstm name
-		track.Name = filePath.rsplit("/",1)[1].rsplit(".brstm",1)[0]
+		track.Name = filePath.rsplit("/", 1)[1].rsplit(".brstm", 1)[0]
 		
 		# Set volume and frequency to default values
 		track.Volume = 80
@@ -88,10 +88,10 @@ def add_brstms_to_tracklist(sender, event_args):
 		
 		# If "strm" isn't in filepath, add user-defined prefix to the beginning (i.e. "../../")
 		else:
-			fileName = filePath.rsplit("/",1)[1]
+			fileName = filePath.rsplit("/", 1)[1]
 		
-		# Remove extension
-		fileName = fileName.rsplit(".brstm",1)[0]
+		# Set SongFileName without extension
+		fileName = fileName.rsplit(".brstm", 1)[0]
 		fileName = filePathPrefix + fileName
 		track.SongFileName = fileName
 

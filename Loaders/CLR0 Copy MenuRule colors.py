@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0"
+__version__ = "1.0.1"
 
 from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
@@ -23,24 +23,25 @@ def EnableCheckCLR0(sender, event_args):
 
 def menurule_color_copy(sender, event_args):
 	selNode = BrawlAPI.SelectedNode
-	CLR0_SUFFIX = selNode.Name[-3:]
+	animSuffix = selNode.Name[-3:]
 	
+	# Populate list of clr0 nodes to update
 	nodesToChange = []
 	for node in selNode.Parent.Children:	
-		if node.Name.startswith("MenMainIcon0") and node.Name.endswith(CLR0_SUFFIX):
+		if node.Name.startswith("MenMainIcon0") and node.Name.endswith(animSuffix):
 			nodesToChange.append(node)
 	
+	# Confirmation prompt
 	msg = "Copying the selected animation to " + str(len(nodesToChange))
-	msg += " CLR animations ending in " + CLR0_SUFFIX + "\n\nPress OK to continue."
-	
+	msg += " CLR animations ending in " + animSuffix + "\n\nPress OK to continue."
 	if not showMsg(msg, SCRIPT_NAME, 1):
 		return
 	
+	# Update clr0 nodes
 	for node in nodesToChange:
 		node.Replace(selNode)
 	
 ## End loader functions
 ## Start context menu add
 
-# Reset frequency
 BrawlAPI.AddContextMenuItem(CLR0Wrapper, "", "Copy this CLR animation to its matching nodes", EnableCheckCLR0, ToolStripMenuItem("Copy MenuRule colors", None, menurule_color_copy))

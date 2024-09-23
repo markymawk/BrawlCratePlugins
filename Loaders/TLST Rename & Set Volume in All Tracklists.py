@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.1.2"
+__version__ = "1.1.3"
 
 from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
@@ -34,7 +34,7 @@ def rename_in_all_tracklists(sender, event_args):
 	if newTrackName == "":
 		return
 	
-	isVanillaBrawlTrack = (selNode.SongID < 0xF000) # 0xF000
+	isVanillaBrawlTrack = (selNode.SongID < 0xF000)
 	trackID = selNode.SongID
 	
 	# If tracklist folder isn't already open from a previous use, open it. Otherwise, prompt to continue within opened folder
@@ -47,12 +47,12 @@ def rename_in_all_tracklists(sender, event_args):
 		# If tracklist is Credits or Results, ignore song titles
 		if track.Parent.Name in ["Credits", "Results"]:
 			continue
-			
+		
 		tracklistFileName = track.Parent.Name + ".tlst"
 		
 		# If track is a vBrawl song, check only SongID and skip SongFileName
 		if isVanillaBrawlTrack:
-		
+			
 			# If song ID matches...
 			if track.SongID == trackID:
 			
@@ -67,7 +67,7 @@ def rename_in_all_tracklists(sender, event_args):
 		
 		# If custom brstm
 		else:
-		
+			
 			# If file path matches the original track's, check the name
 			if str(track.SongFileName).lower() != "none" and track.SongFileName.lower() == originalTrackPath:
 				
@@ -81,10 +81,11 @@ def rename_in_all_tracklists(sender, event_args):
 					tracklistsUsedDiffName.append(tracklistFileName)
 	
 	# Results
-	
 	# If no other uses (total track uses == 1)
 	if len(tracklistsUsedSameName + tracklistsUsedDiffName) == 1:
 		msg = "No other track uses found"
+	
+	# If any tracks modified
 	else:
 		msg = ""
 		
@@ -121,7 +122,7 @@ def match_volume_in_all_tracklists(sender, event_args):
 	
 	# Loop through all track nodes in opened tracklist folder
 	for track in BrawlAPI.NodeListOfType[TLSTEntryNode]():
-	
+		
 		# If file path matches the original track's, check the name
 		if str(track.SongFileName).lower() != "none" and track.SongFileName.lower() == originalTrackPath:
 			tracklistFileName = track.Parent.Name + ".tlst"
@@ -136,10 +137,11 @@ def match_volume_in_all_tracklists(sender, event_args):
 				tracklistsUsedDiffVolume.append(tracklistFileName)
 	
 	# Results
-	
 	# If no other uses (total track uses == 1)
 	if len(tracklistsUsedSameVolume + tracklistsUsedDiffVolume) == 1:
 		msg = "No other track uses found"
+	
+	# If any tracks modified
 	else:
 		msg = ""
 		

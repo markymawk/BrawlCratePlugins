@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.1.1"
+__version__ = "1.1.2"
 
 from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
@@ -338,14 +338,14 @@ def export_data_stpmEntryNode(sender, event_args):
 def main(brresNode, stpm_node):
 	
 	# Prompt for filename substring to check for
-	stageString = BrawlAPI.UserStringInput("Enter stage substring (e.g. \"_BF\")")
+	stageString = BrawlAPI.UserStringInput("Enter stage substring (e.g. \"_BF_\")")
 	if stageString == "" or stageString == None:
 		return
 	
 	# Export stgPosition brres to temp brres file
 	brresNode.ExportUncompressed(TEMP_BRRES_PATH)
 	
-	# Store STPM camera values
+	# Store source STPM camera values in originalSTPMCameraProperties[]
 	originalSTPMCameraProperties = getSTPMCameraValueList(stpm_node)
 	
 	# Get list of stage pacs in the same folder as the opened file
