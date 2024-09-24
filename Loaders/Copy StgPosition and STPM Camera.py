@@ -404,7 +404,7 @@ def main(brresNode, stpm_node):
 		msg += listToString(filesModified)
 	
 	# Otherwise, no mismatches found
-	elif len(filesFound):
+	elif matchingFilesCount:
 		msg += "\nNo mismatching " + MODELDATA_BRRES_NAME + " or STPM data found"
 	
 	BrawlAPI.ShowMessage(msg, SCRIPT_NAME)
