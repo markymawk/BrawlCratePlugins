@@ -1,4 +1,4 @@
-﻿version = "1.7"
+﻿version = "1.7.1"
 # mawwwkLib
 # Common functions for use with BrawlAPI scripts
 
@@ -490,6 +490,23 @@ def setColorGradient(node, startFrame, endFrame, startColor, endColor=-1):
 	# Force last frame to ignore calculations and match endColor exactly
 	node.SetColor(endFrame, endFrame, endColor)
 
+# setMirrorGradient()
+# Set a gradient color blend that goes ColorA > ColorB > Color A
+def setMirrorGradient(node, startColor, endColor):
+	# If given a CLR0Node, run on all children
+	if isinstance(node, CLR0Node):
+		for clr0Material in node.Children:
+			for clr0MatEntry in clr0Material.Children:
+				setMirrorGradient(clr0MatEntry, startColor, endColor)
+		return
+	
+	# Determine middle and ending points
+	length = node.Parent.Parent.FrameCount
+	midPoint = int((length - 1)/2) 
+	
+	setColorGradient(node, 0, midPoint, startColor, endColor)
+	setColorGradient(node, midPoint, length-1, endColor, startColor)
+	
 # formatHex()
 # Given dec value, returns formatted hex value (17 -> 0x0011)
 # Uses lowercase 0x prefix with uppercase hex digits
