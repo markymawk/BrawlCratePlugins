@@ -34,6 +34,9 @@ def getModelUsage(modelsGroup, tex0Name):
 			# Materials names, for entry[1]
 			materialsList = getUsedMaterials(mdl0TexturesGroup, tex0Name)
 			
+			# If materials list is empty, skip this entry
+			if len(materialsList) == 0:
+				continue
 			# Objects names, for entry[2]
 			objectsNamesList = getUsedObjectsList(mdl0, materialsList)
 			
