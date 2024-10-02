@@ -9,7 +9,7 @@ from System.Windows.Forms import ToolStripMenuItem
 from mawwwkLib import *
 
 SCRIPT_NAME = "Repair BRRES group names"
-VALID_GROUP_NAMES = ["3DModels(NW4R)", "AnmChr(NW4R)", "AnmVis(NW4R)", "AnmClr(NW4R)", "AnmTexPat(NW4R)", "AnmTexSrt(NW4R)", "Textures(NW4R)", "Palettes(NW4R)"]
+VALID_GROUP_NAMES = ["3DModels(NW4R)", "AnmChr(NW4R)", "AnmVis(NW4R)", "AnmClr(NW4R)", "AnmTexPat(NW4R)", "AnmTexSrt(NW4R)", "Textures(NW4R)", "Palettes(NW4R)", "AnmShp(NW4R)"]
 
 ## Start enable check functions
 

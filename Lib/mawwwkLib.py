@@ -101,6 +101,7 @@ PAT_GROUP = "AnmTexPat(NW4R)"
 SRT_GROUP = "AnmTexSrt(NW4R)"
 TEX_GROUP = "Textures(NW4R)"
 PLT_GROUP = "Palettes(NW4R)"
+SHP_GROUP = "AnmShp(NW4R)"
 
 BLACK = ARGBPixel(255, 0, 0, 0)
 WHITE = ARGBPixel(255, 255, 255, 255)
