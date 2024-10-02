@@ -142,7 +142,7 @@ def main():
 	if cullAllMatCount:
 		message = "Cull_All materials found:\n\n"
 		
-		for i in range(0, cullAllMatCount, 1):
+		for i in range(cullAllMatCount):
 			message += "Model: " + str(cullAllMDL0NamesList[i]) + "\nMaterial: " + str(cullAllMatsNamesList[i]) + "\n\n"
 		BrawlAPI.ShowMessage(message, "Possible unused materials found")
 

@@ -1,4 +1,4 @@
-﻿version = "1.7.1"
+﻿version = "1.7.2"
 # mawwwkLib
 # Common functions for use with BrawlAPI scripts
 
@@ -102,6 +102,8 @@ SRT_GROUP = "AnmTexSrt(NW4R)"
 TEX_GROUP = "Textures(NW4R)"
 PLT_GROUP = "Palettes(NW4R)"
 
+BLACK = ARGBPixel(255, 0, 0, 0)
+WHITE = ARGBPixel(255, 255, 255, 255)
 ## End constants
 ## Start list functions
 
@@ -280,13 +282,16 @@ def removeNode(node):
 
 def clearBoneFlags(bone):
 	bone._boneFlags = bone._boneFlags and BoneFlags.Visible
+
 # getParentArc()
 # Return the "2" ARC of stage file, or 0 if not found
 def getParentArc():
-	if BrawlAPI.RootNode and BrawlAPI.RootNode.HasChildren:
-		for i in BrawlAPI.RootNode.Children:
-			if i.Name == "2" and isinstance(i, ARCNode):
-				return i
+	root = BrawlAPI.RootNode
+	if root and root.HasChildren:
+		nodesNamed2 = root.FindChildrenByName("2")
+		for node in nodesNamed2:
+			if isinstance(node, ARCNode):
+				return node
 	
 	# If not found, show an error and return 0
 	BrawlAPI.ShowError("2 ARC not found. Verify the open file is a stage .pac", "Error")
