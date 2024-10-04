@@ -295,9 +295,9 @@ def rotateHueForAllFrames(node, hueToAdd):
 		else:
 			frame = node.SolidColor
 		
-		HSV_as_List = RGB2HSV(frame)	# Get color as HSV value
-		HSV_as_List[0] += hueToAdd		# Set hue to new
-		new_RGB = HSV2RGB(HSV_as_List)	# Convert back to RGB
+		hsvList = RGB2HSV(frame)	# Get color as HSV value
+		hsvList[0] += hueToAdd		# Set hue to new
+		new_RGB = HSV2RGB(hsvList)	# Convert back to RGB
 	
 		# Set frame color to new RGB
 		newColor = ARGBPixel(frame.A, new_RGB[0], new_RGB[1], new_RGB[2])
@@ -314,9 +314,9 @@ def setHueForAllFrames(node, newHue):
 		else:
 			frame = node.SolidColor
 		
-		HSV_as_List = RGB2HSV(frame)	# Get color as HSV value
-		HSV_as_List[0] = newHue			# Set hue to new
-		new_RGB = HSV2RGB(HSV_as_List)	# Convert back to RGB
+		hsvList = RGB2HSV(frame)	# Get color as HSV value
+		hsvList[0] = newHue			# Set hue to new
+		new_RGB = HSV2RGB(hsvList)	# Convert back to RGB
 		
 		# Set frame color to new RGB
 		newColor = ARGBPixel(frame.A, new_RGB[0], new_RGB[1], new_RGB[2])
@@ -332,9 +332,9 @@ def adjustValForAllFrames(node, valToAdd):
 		else:
 			frame = node.SolidColor
 		
-		HSV_as_List = RGB2HSV(frame)	# Get color as HSV value
-		HSV_as_List[2] += valToAdd		# Set value to new
-		new_RGB = HSV2RGB(HSV_as_List)	# Convert back to RGB
+		hsvList = RGB2HSV(frame)	# Get color as HSV value
+		hsvList[2] += valToAdd		# Set value to new
+		new_RGB = HSV2RGB(hsvList)	# Convert back to RGB
 		
 		# Set frame color to new RGB
 		newColor = ARGBPixel(frame.A, new_RGB[0], new_RGB[1], new_RGB[2])
@@ -350,9 +350,9 @@ def adjustSatForAllFrames(node, valToAdd):
 		else:
 			frame = node.SolidColor
 		
-		HSV_as_List = RGB2HSV(frame)	# Get color as HSV value
-		HSV_as_List[1] += valToAdd		# Set value to new
-		new_RGB = HSV2RGB(HSV_as_List)	# Convert back to RGB
+		hsvList = RGB2HSV(frame)	# Get color as HSV value
+		hsvList[1] += valToAdd		# Set value to new
+		new_RGB = HSV2RGB(hsvList)	# Convert back to RGB
 		
 		# Set frame color to new RGB
 		newColor = ARGBPixel(frame.A, new_RGB[0], new_RGB[1], new_RGB[2])
