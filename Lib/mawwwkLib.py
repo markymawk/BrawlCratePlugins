@@ -424,7 +424,7 @@ def HSV2RGB(colorList):
 	blue = round((blue + mValue) * 255.0)
 	
 	return [red, green, blue]
-	
+
 # RGB2HSV()
 # Given a color node (frame), return a list of 3 floats corresponding to the HSV values
 def RGB2HSV(colorNode):
@@ -529,20 +529,6 @@ def formatHex(value, MIN_DIGIT_COUNT=4):
 ## End conversion functions
 ## Start misc. / debug functions
 
-# showMessage(), showMsg()
-# Easy OK/Cancel prompt. 
-def showMessage(msg, title="", ShowOK=0):
-	# OK Prompt
-	if ShowOK == 0:
-		return BrawlAPI.ShowMessage(msg, title)
-	
-	# OK Cancel Prompt
-	else:
-		return BrawlAPI.ShowOKCancelPrompt(msg, title)
-
-def showMsg(msg, title="", ShowOK=0):
-	return showMessage(msg, title, ShowOK)
-
 def savePreviewSettings():
 	return [MainForm.Instance.ShowBRRESPreviews, MainForm.Instance.ShowARCPreviews]
 
@@ -551,7 +537,7 @@ def restorePreviewSettings(settings):
 	MainForm.Instance.ShowARCPreviews = settings[1]
 	
 # dmsg()
-# Easy debug message
+# Easy message
 
 def dmsg(msg, title=""):
 	BrawlAPI.ShowMessage(str(msg), title)

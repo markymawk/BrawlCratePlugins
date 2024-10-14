@@ -1,10 +1,9 @@
 __author__ = "mawwwk"
-__version__ = "1.0"
+__version__ = "1.0.1"
 
-from BrawlCrate.API import *
 from mawwwkLib import *
 
 if BrawlAPI.SelectedNode is not None:
-	showMsg(BrawlAPI.SelectedNode.MD5Str()[:8],"MD5 Checksum")
+	BrawlAPI.ShowMessage(BrawlAPI.SelectedNode.MD5Str()[:8], "MD5 of Selected Node")
 else:
-	showMsg("No node selected")
+	BrawlAPI.ShowMessage("No node selected")

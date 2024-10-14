@@ -116,6 +116,6 @@ def main():
 	# If any non-SingleBind models were skipped, list them for clarity
 	if len(nonSingleBindModels):
 		msg += "\n\nSkipped " + str(len(nonSingleBindModels)) + " models from having non-SingleBind objects:\n" + listToString(nonSingleBindModels)
-	showMsg(msg, SCRIPT_NAME)
+	BrawlAPI.ShowMessage(msg, SCRIPT_NAME)
 	
 main()

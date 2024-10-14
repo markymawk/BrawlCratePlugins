@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*- 
 # Fixes redirect arrow character
 __author__ = "mawwwk"
-__version__ = "1.1"
+__version__ = "1.1.1"
 
 from BrawlCrate.API import *
 from BrawlCrate.UI import MainForm
@@ -97,12 +97,12 @@ def writeOutput(node, textFile, doIncludeMD5, prefixStr=""):
 
 def main():
 	if BrawlAPI.SelectedNode is None:
-		showMsg("No file opened", "Error")
+		BrawlAPI.ShowMessage("No file opened", "Error")
 		return
 	
 	# Show user prompt and get output directory
 	msg = "Write properties of the selected node and all child nodes to a text file.\n\nPress OK to choose a folder."
-	prompt = showMsg(msg, SCRIPT_NAME, 1)
+	prompt = BrawlAPI.ShowOKCancelPrompt(msg, SCRIPT_NAME)
 	if not prompt:
 		return
 	

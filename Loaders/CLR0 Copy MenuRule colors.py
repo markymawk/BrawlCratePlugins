@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
@@ -34,13 +34,13 @@ def menurule_color_copy(sender, event_args):
 	# Confirmation prompt
 	msg = "Copying the selected animation to " + str(len(nodesToChange))
 	msg += " CLR animations ending in " + animSuffix + "\n\nPress OK to continue."
-	if not showMsg(msg, SCRIPT_NAME, 1):
+	if not BrawlAPI.ShowOKCancelPrompt(msg, SCRIPT_NAME):
 		return
 	
 	# Update clr0 nodes
 	for node in nodesToChange:
 		node.Replace(selNode)
-	
+
 ## End loader functions
 ## Start context menu add
 
