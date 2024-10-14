@@ -367,7 +367,7 @@ def main(brresNode, stpm_node):
 			BrawlAPI.OpenFile(file.FullName)
 			
 			# Find Model Data 100 node
-			parentARC = getParentArc()
+			parentARC = BrawlAPI.RootNode.FindChild("2")
 			if not parentARC:
 				continue
 			newBRRES = parentARC.FindChild(MODELDATA_BRRES_NAME)

@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "2.0"
+__version__ = "2.0.1"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
@@ -21,7 +21,7 @@ def main():
 	texturesInPat0NamesList = []
 	
 	# Check for intended file structure
-	if not getParentArc():
+	if not BrawlAPI.RootNode.FindChild("2"):
 		msg = "2 ARC not found.\nThis script may still be run, but with unintended behavior. Continue?"
 		if not BrawlAPI.ShowYesNoDialog(msg, SCRIPT_NAME):
 			return

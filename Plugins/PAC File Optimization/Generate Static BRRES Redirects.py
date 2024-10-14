@@ -1,43 +1,26 @@
 __author__ = "mawwwk"
-__version__ = "1.3"
+__version__ = "1.4"
 
-from BrawlCrate.API import *
-from BrawlLib.SSBB.ResourceNodes import *
 from BrawlLib.SSBB import * #Types.ARCFileType?
-from BrawlLib.SSBB.Types import * #Types.ARCFileType
-from BrawlCrate.UI import MainForm
-from BrawlLib.Internal import *
 from mawwwkLib import *
 
 SCRIPT_NAME = "Generate Static Redirects"
 
-## Begin helper methods
-	
-# Create a new redirect ARCEntryNode given the FileIndex and RedirectIndex values
-def createRedirect(baseIndex, newRedirectIndex, parentARC):
-	newNode = ARCEntryNode()
-	
-	parentARC.AddChild(newNode)
-	newNode.FileType = ARCFileType.ModelData
-	newNode.FileIndex = baseIndex
-	newNode.RedirectIndex = newRedirectIndex
-
-## End helper methods
 ## Start of main method
 
 def main():
-	PARENT_2_ARC = getParentArc()
-	if not PARENT_2_ARC:
+	arc_2 = BrawlAPI.RootNode.FindChild("2")
+	if not arc_2:
+		BrawlAPI.ShowError("2 ARC not found.", SCRIPT_NAME)
 		return
 	
 	hashIndexDict = {}		# MD5 to AbsoluteIndex key-value dict
-	redirectCount = 0		# Number of redirect nodes created
 	convertedNodes = []		# List of BRRES nodes converted, to delete later
 	
-	# Iterate through all brres nodes
-	for i in range(0,len(PARENT_2_ARC.Children),1):
+	# Loop through all brres nodes
+	for i in range(len(arc_2.Children)):
 	
-		node = PARENT_2_ARC.Children[i]
+		node = arc_2.Children[i]
 		nodeHash = node.MD5Str()
 		
 		# If a static brres is found, check if a matching hash exists
@@ -46,8 +29,13 @@ def main():
 			# If matching hash exists...
 			if nodeHash in hashIndexDict.keys():
 				# ...create a redirect
-				createRedirect(node.FileIndex, hashIndexDict[nodeHash], PARENT_2_ARC)
-				redirectCount += 1
+				newNode = ARCEntryNode()
+				arc_2.AddChild(newNode)
+				
+				# Set redirect properties
+				newNode.FileType = ARCFileType.ModelData
+				newNode.FileIndex = node.FileIndex
+				newNode.RedirectIndex = hashIndexDict[nodeHash]
 				
 				# Mark the BRRES to delete later
 				convertedNodes.append(node)
@@ -57,6 +45,7 @@ def main():
 				hashIndexDict[nodeHash] = node.AbsoluteIndex
 	
 	# Delete all converted BRRES nodes
+	redirectCount = len(convertedNodes)
 	removeChildNodes(convertedNodes)
 		
 	# Results dialog

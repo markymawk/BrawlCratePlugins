@@ -62,7 +62,7 @@ def main():
 	msg = "Delete bones in this model that aren't used by objects or collisions.\nSave a backup file, and test any edits in-game!\n\nPress OK to continue."
 
 	# Check parent 2 ARC to verify the open file is a stage, and show prompt
-	if not getParentArc() or not showMsg(msg, SCRIPT_NAME, 1):
+	if not BrawlAPI.RootNode.FindChild("2") or not BrawlAPI.ShowOKCancelPrompt(msg, SCRIPT_NAME):
 		return
 	
 	# Get list of bone nodes used by collisions
