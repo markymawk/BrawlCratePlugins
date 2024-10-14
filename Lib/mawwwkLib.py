@@ -1,4 +1,4 @@
-﻿version = "1.7.2"
+﻿version = "1.7.3"
 # mawwwkLib
 # Common functions for use with BrawlAPI scripts
 
@@ -9,6 +9,7 @@ from BrawlLib.SSBB.ResourceNodes import *
 from BrawlCrate.UI import MainForm
 from BrawlLib import * # Imaging
 from BrawlLib.Imaging import * # Imaging, ARGBPixel
+from BrawlLib.Internal import * # Vector3 etc
 from BrawlLib.SSBB.Types import * # BoneFlags
 import math
 
@@ -379,36 +380,41 @@ def addLeadingZeros(value, count):
 	
 	return str(value)
 
+# HSVtoARGBPixel()
+# Given a list of 3 numbers as HSV, return an ARGBPixel object containing RGB values with 255 alpha
+def HSVtoARGBPixel(h, s, v, alpha=255):
+	RGBColors = HSV2RGB([h, s, v])
+	return ARGBPixel(alpha, RGBColors[0], RGBColors[1], RGBColors[2])
+
 # HSV2RGB()
 # Given a list of 3 numbers as HSV, return a list of 3 ints corresponding to the RGB values
 # Hue in [0, 359], sat in [0,100], val in [0,100]
 def HSV2RGB(colorList):
-	[HUE, SAT, VAL] = colorList
+	[hue, sat, val] = colorList
 	
 	# Keep brightness and sat values in [0, 100 range]
-
-	SAT = min(max(SAT, 0), 100)
-	VAL = min(max(VAL, 0), 100)
+	sat = min(max(sat, 0), 100)
+	val = min(max(val, 0), 100)
 	
 	# Keep hue value in [0, 359] range
-	while HUE < 0:
-		HUE = HUE + 360
-	HUE = HUE % 360
+	while hue < 0:
+		hue = hue + 360
+	hue = hue % 360
 	
 	# Misc formula calculations
-	cValue = float(VAL * SAT) / 10000.0
-	xValue = cValue * (1.0 - abs((HUE / 60.0) % 2 - 1.0))
-	mValue = VAL/100.0 - cValue
+	cValue = float(val * sat) / 10000.0
+	xValue = cValue * (1.0 - abs((hue / 60.0) % 2 - 1.0))
+	mValue = val/100.0 - cValue
 	
-	if HUE >= 0 and HUE < 60:
+	if hue >= 0 and hue < 60:
 		[red, green, blue] = [cValue, xValue, 0]
-	elif HUE >= 60 and HUE < 120:
+	elif hue >= 60 and hue < 120:
 		[red, green, blue] = [xValue, cValue, 0]
-	elif HUE >= 120 and HUE < 180:
+	elif hue >= 120 and hue < 180:
 		[red, green, blue] = [0, cValue, xValue]
-	elif HUE >= 180 and HUE < 240:
+	elif hue >= 180 and hue < 240:
 		[red, green, blue] = [0, xValue, cValue]
-	elif HUE >= 240 and HUE < 300:
+	elif hue >= 240 and hue < 300:
 		[red, green, blue] = [xValue, 0, cValue]
 	else:
 		[red, green, blue] = [cValue, 0, xValue]
@@ -418,36 +424,30 @@ def HSV2RGB(colorList):
 	blue = round((blue + mValue) * 255.0)
 	
 	return [red, green, blue]
-
-# HSVtoARGBPixel()
-# Given a list of 3 numbers as HSV, return an ARGBPixel object containing RGB values with 255 alpha
-def HSVtoARGBPixel(h, s, v, alpha=255):
-	RGBColors = HSV2RGB([h, s, v])
-	return ARGBPixel(alpha, RGBColors[0], RGBColors[1], RGBColors[2])
 	
 # RGB2HSV()
 # Given a color node (frame), return a list of 3 floats corresponding to the HSV values
 def RGB2HSV(colorNode):
-	RED = colorNode.R / 255.0
-	BLUE = colorNode.B / 255.0
-	GREEN = colorNode.G / 255.0
-	colorMax = max(RED, BLUE, GREEN)
-	colorMin = min(RED, BLUE, GREEN)
+	red = colorNode.R / 255.0
+	blue = colorNode.B / 255.0
+	green = colorNode.G / 255.0
+	colorMax = max(red, blue, green)
+	colorMin = min(red, blue, green)
 	colorDiff = colorMax - colorMin
 	
-	# If hue not 0, calculate hue as value [0, 360)
+	# Calculate hue as value [0, 360)
 	if colorDiff == 0:
 		hue = 0
-	elif colorMax == RED:
-		hue = ((GREEN - BLUE) / colorDiff) % 6
-	elif colorMax == GREEN:
-		hue = ((BLUE - RED) / colorDiff) + 2.0
+	elif colorMax == red:
+		hue = ((green - blue) / colorDiff) % 6
+	elif colorMax == green:
+		hue = ((blue - red) / colorDiff) + 2.0
 	else:
-		hue = ((RED - GREEN) / colorDiff) + 4.0
+		hue = ((red - green) / colorDiff) + 4.0
 
 	hue = (hue * 60.0) % 360
 	
-	# Calculate saturation as [0,100]
+	# Calculate saturation as [0, 100]
 	if colorMax > 0:
 		sat = colorDiff / colorMax * 100
 	else:
