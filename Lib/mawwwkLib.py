@@ -11,6 +11,7 @@ from BrawlLib import * # Imaging
 from BrawlLib.Imaging import * # Imaging, ARGBPixel
 from BrawlLib.Internal import * # Vector3 etc
 from BrawlLib.SSBB.Types import * # BoneFlags
+from BrawlLib.Wii.Animations import * # KeyframeCollection
 import math
 
 ## Start constants
@@ -286,18 +287,14 @@ def clearBoneFlags(bone):
 	bone._boneFlags = bone._boneFlags and BoneFlags.Visible
 
 # getParentArc()
-# Return the "2" ARC of stage file, or 0 if not found
-def getParentArc():
-	root = BrawlAPI.RootNode
-	if root and root.HasChildren:
-		nodesNamed2 = root.FindChildrenByName("2")
-		for node in nodesNamed2:
-			if isinstance(node, ARCNode):
-				return node
-	
-	# If not found, show an error and return 0
-	BrawlAPI.ShowError("2 ARC not found. Verify the open file is a stage .pac", "Error")
-	return 0
+# Return the parent ARCNode of the given node, or the RootNode if reached
+def getParentArc(node):
+	if node == BrawlAPI.RootNode:
+		return node
+	if isinstance(node.Parent, ARCNode):
+		return node.Parent
+	else:
+		return getParentArc(node.Parent)
 
 # getChildNames()
 # Return list containing group.Children node names
