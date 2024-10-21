@@ -133,6 +133,6 @@ def main():
 	TEXT_FILE.close()
 	
 	msg = "Node data written to\n" + FULL_TEXT_FILE_PATH
-	showMsg(msg, "Success!")
+	BrawlAPI.ShowMessage(msg, "Success!")
 
 main()

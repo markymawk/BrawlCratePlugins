@@ -114,7 +114,7 @@ def main(chr0Node):
 	
 	# Results
 	msg = "CHR " + chr0Node.Name + " trimmed from frames " + str(startFrame+1) + "-" + str(endFrame+1) + "."
-	dmsg(msg)
+	BrawlAPI.ShowMessage(msg, "")
 
 ## End loader functions
 ## Start context menu add

@@ -14,7 +14,7 @@ TRACK_FREQUENCY = 40
 # Wrapper: TLSTWrapper
 def EnableCheckTLST(sender, event_args):
 	node = BrawlAPI.SelectedNode
-	sender.Enabled = (node and node.HasChildren)
+	sender.Enabled = node and node.HasChildren
 
 ## End enable check functions
 ## Start loader functions

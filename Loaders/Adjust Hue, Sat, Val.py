@@ -259,7 +259,7 @@ def adjust_sat(sender, event_args):
 		return
 	
 	BrawlAPI.ShowMessage(resultsMsg, "Success")
-	
+
 ## End loader functions
 ## Start main functions
 

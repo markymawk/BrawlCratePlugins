@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0"
+__version__ = "1.0.1"
 
 from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
@@ -39,35 +39,30 @@ def enableCheckBRES(sender, event_args):
 ## Start main functions
 
 def repair_brres_groups(sender, event_args):
-	brres = BrawlAPI.SelectedNode
-	
-	for group in brres.Children:
+	for group in BrawlAPI.SelectedNode.Children:
 		if not group.HasChildren:
 			continue
 		
 		# Check group type
 		groupType = group.Children[0].NodeType
 		if "CHR0" in groupType:
-			name = CHR_GROUP
+			group.Name = CHR_GROUP
 		elif "MDL0" in groupType:
-			name = MDL_GROUP
+			group.Name = MDL_GROUP
 		elif "VIS0" in groupType:
-			name = VIS_GROUP
+			group.Name = VIS_GROUP
 		elif "CLR0" in groupType:
-			name = CLR_GROUP
+			group.Name = CLR_GROUP
 		elif "PAT0" in groupType:
-			name = PAT_GROUP
+			group.Name = PAT_GROUP
 		elif "SRT0" in groupType:
-			name = SRT_GROUP
+			group.Name = SRT_GROUP
 		elif "TEX0" in groupType:
-			name = TEX_GROUP
+			group.Name = TEX_GROUP
 		elif "PLT0" in groupType:
-			name = PLT_GROUP
+			group.Name = PLT_GROUP
 		else:
-			name = group.Name
-		
-		# Set name
-		group.Name = name
+			group.Name = group.Name
 	
 ## End main functions
 ## Start context menu add
