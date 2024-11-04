@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "3.2"
+__version__ = "3.3"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
@@ -39,7 +39,7 @@ def checkBRSTMFilePath(trackNode):
 	brstmString = ""
 	
 	# If file path is empty (track is from ISO)
-	if str(trackNode.SongFileName) == "None":
+	if str(trackNode.SongFileName) == "None" and trackNode.SongID < 0xA000:
 	
 		# Append Brawl track to tracklist string using static BrawlCrate dict
 		brawlBrstmFilePath = trackNode.BrawlBRSTMs[trackNode.SongID] + ".brstm"
@@ -154,7 +154,7 @@ def main():
 			# If not a duplicate, add to songIDs list
 			else:
 				tracklistSongIDs.append(trackNode.SongID)
-				
+			
 			# Check track name and filepath, and store in a string (regardless of file write)
 			currentTracklist += "\t" + str(trackNode.Name) + "\n"
 			currentTracklist += "\t" + checkBRSTMFilePath(trackNode) + "\n"
