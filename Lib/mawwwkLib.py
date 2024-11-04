@@ -165,6 +165,12 @@ def listNoDuplicates(list):
 			newList.append(item)
 	return newList
 
+def getNodeNames(nodeList):
+	newList = []
+	for node in nodeList:
+		newList.append(node.Name)
+	
+	return newList
 # listToString()
 # Return a string containing the (str) items of the given list, one per line
 def listToString(list, max=0):
@@ -200,7 +206,7 @@ def getParentFolderPath(filepath):
 
 def clearTangents(chr0Entry):
 	setAllTangents(chr0Entry, 0)
-			
+
 def setAllTangents(chr0Entry, newTangent=0):
 	# If a CHR0 animation, run on all children
 	if isinstance(chr0Entry, CHR0Node) and chr0Entry.HasChildren:
@@ -494,7 +500,7 @@ def setColorGradient(node, startFrame, endFrame, startColor, endColor=-1):
 	node.SetColor(endFrame, endFrame, endColor)
 
 # setMirrorGradient()
-# Set a gradient color blend that goes ColorA > ColorB > Color A
+# Set a gradient color blend that goes Color A > Color B > Color A
 def setMirrorGradient(node, startColor, endColor):
 	# If given a CLR0Node, run on all children
 	if isinstance(node, CLR0Node):
@@ -505,7 +511,7 @@ def setMirrorGradient(node, startColor, endColor):
 	
 	# Determine middle and ending points
 	length = node.Parent.Parent.FrameCount
-	midPoint = int((length - 1)/2) 
+	midPoint = int((length - 1)/2)
 	
 	setColorGradient(node, 0, midPoint, startColor, endColor)
 	setColorGradient(node, midPoint, length-1, endColor, startColor)
