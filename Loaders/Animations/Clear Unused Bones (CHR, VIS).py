@@ -1,9 +1,7 @@
 __author__ = "mawwwk"
-__version__ = "1.0.3"
+__version__ = "1.0.4"
 
-from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
-from BrawlLib.SSBB.ResourceNodes import *
 from System.Windows.Forms import ToolStripMenuItem
 from mawwwkLib import *
 
@@ -46,20 +44,20 @@ def clear_unused_bones(sender, event_args):
 	# Dialog box confirming list of names to delete, if any
 	unusedCount = len(entriesToDelete)
 	if unusedCount:
-		msg = str(unusedCount) + " unused bone entries found: \n\n"
-		msg += listToString(entriesToDelete, 15)
+		msg = str(unusedCount) + " unused entries found: \n\n"
+		msg += nodeListToString(entriesToDelete, 15)
 		msg += "\nPress OK to delete."
 		
-		# If user selects OK, delete bones
+		# If user selects OK, delete entries
 		if BrawlAPI.ShowOKCancelPrompt(msg, SCRIPT_NAME):
-			for b in reverseResourceList(bonesToDeleteList):
-				b.Remove()
+			for i in reverseResourceList(entriesToDelete):
+				i.Remove()
 	
-	# If no bones to delete
+	# If no entries to delete
 	else:
-		BrawlAPI.ShowMessage("No unused bone entries found.", SCRIPT_NAME)
+		BrawlAPI.ShowMessage("No unused entries found.", SCRIPT_NAME)
 
-LONG_TEXT = "Clear any bone entries not used in this brres node"
+LONG_TEXT = "Clear any entries not used in this brres node"
 
 BrawlAPI.AddContextMenuItem(CHR0Wrapper, "", LONG_TEXT, EnableCheckANIM, ToolStripMenuItem("Clear unused entries", None, clear_unused_bones))
 BrawlAPI.AddContextMenuItem(VIS0Wrapper, "", LONG_TEXT, EnableCheckANIM, ToolStripMenuItem("Clear unused entries", None, clear_unused_bones))

@@ -1,9 +1,7 @@
 __author__ = "mawwwk"
-__version__ = "1.0.3"
+__version__ = "1.0.4"
 
-from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
-from BrawlLib.SSBB.ResourceNodes import *
 from System.Windows.Forms import ToolStripMenuItem
 from mawwwkLib import *
 
@@ -41,7 +39,7 @@ def clear_unused_mats(sender, event_args):
 	unusedCount = len(entriesToDelete)
 	if unusedCount:
 		msg = str(unusedCount) + " unused material entries found: \n\n"
-		msg += listToString(entriesToDelete, 15)
+		msg += nodeListToString(entriesToDelete, 15)
 		msg += "\nPress OK to delete."
 		
 		# If user selects OK, delete mats
