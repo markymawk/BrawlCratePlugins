@@ -1,4 +1,4 @@
-﻿version = "1.7.3"
+﻿version = "1.7.4"
 # mawwwkLib
 # Common functions for use with BrawlAPI scripts
 
@@ -151,12 +151,9 @@ def findChildWrapperByName(wrapper, nameStr, EXACT_NEEDED=False):
 
 # nodeListToString()
 # Return a string containing the names of nodes inside the given list, one per line
-def nodeListToString(list):
-	message = ""
-	for item in list:
-		message += item.Name + "\n"
-	
-	return message
+def nodeListToString(nodeList, max=0):
+	nodeNames = getNodeNames(nodeList)
+	return listToString(nodeNames, max)
 
 def listNoDuplicates(list):
 	newList = []
@@ -474,6 +471,10 @@ def setColorGradient(node, startFrame, endFrame, startColor, endColor=-1):
 	# If endColor not set, match startColor
 	if endColor == -1:
 		endColor = startColor
+	
+	# If endFrame is -1, set to last frame
+	if endFrame == -1:
+		endFrame = node.Parent.Parent.FrameCount - 1
 	count = endFrame - startFrame
 	
 	# Calculate color change per frame
