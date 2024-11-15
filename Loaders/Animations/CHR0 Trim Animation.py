@@ -22,7 +22,7 @@ def EnableCheckCHR0Entry(sender, event_args):
 ## End enable check functions
 ## Start helper functions
 
-# Move keyframe and force-include empty non-set values
+# Move keyframe and copy values that might be empty otherwise
 def forceMoveKeyframe(chr0Entry, newIndex, originalIndex):
 	# Loop through scale, rot, trans
 	for i in range(9):
@@ -34,8 +34,11 @@ def moveKeyframe(chr0Entry, newIndex, originalIndex):
 	# Loop through scale, rot, trans
 	for i in range(9):
 		value = chr0Entry.GetKeyframe(i, originalIndex)
+		
+		# Skip blank frames
 		if value is None:
 			continue
+		
 		# If set, then assign at new frame index
 		chr0Entry.SetKeyframe(i, newIndex, value._value)
 		
@@ -59,13 +62,15 @@ def trim_chr_entry(sender, event_args):
 def main(chr0Node):
 	selNodeFrameCount = chr0Node.FrameCount
 	
+	if chr0Node.Loop:
+		selNodeFrameCount += 1
 	# Prompt for starting frame index
 	startFrame = BrawlAPI.UserStringInput("Enter starting frame")
 	if not startFrame:
 		return
 	
 	startFrame = int(startFrame)
-	if startFrame not in range (1, selNodeFrameCount):
+	if startFrame not in range (1, selNodeFrameCount+1):
 		BrawlAPI.ShowMessage("Input out of range or invalid", SCRIPT_TITLE)
 		return
 	
@@ -75,7 +80,7 @@ def main(chr0Node):
 		return
 	
 	endFrame = int(endFrame)
-	if endFrame not in range (1, selNodeFrameCount) or endFrame < startFrame:
+	if endFrame not in range (1, selNodeFrameCount+1) or endFrame < startFrame:
 		BrawlAPI.ShowMessage("Input out of range or invalid", SCRIPT_TITLE)
 		return
 	
