@@ -381,18 +381,6 @@ def getChildNodes(node):
 		return childrenList
 	return 0
 
-# isStaticBRRES()
-# Return true if given node is a brres, of exactly 640 bytes, and has exactly one MDL0 node
-def isStaticBRRES(node):
-	modelsGroup = node.FindChild("3DModels(NW4R)")
-	
-	if node.UncompressedSize == 640 \
-	and isinstance(node, BRRESNode) \
-	and modelsGroup and modelsGroup.HasChildren and len(modelsGroup.Children) == 1:
-		return True
-	else:
-		return False
-
 # getModelFromBone()
 # Given a bone node, return its parent MDL0 node
 def getMDL0FromBone(bone):
@@ -574,11 +562,10 @@ def setMirrorGradient(node, startColor, endColor):
 		return
 	
 	# Determine middle and ending points
-	length = node.Parent.Parent.FrameCount
 	midPoint = int((length - 1)/2)
 	
 	setColorGradient(node, 0, midPoint, startColor, endColor)
-	setColorGradient(node, midPoint, length-1, endColor, startColor)
+	setColorGradient(node, midPoint, -1, endColor, startColor)
 	
 # formatHex()
 # Given dec value, returns formatted hex value (17 -> 0x0011)

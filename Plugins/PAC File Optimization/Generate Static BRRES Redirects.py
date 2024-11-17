@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.4"
+__version__ = "1.4.1"
 
 from BrawlLib.SSBB import * #Types.ARCFileType?
 from mawwwkLib import *
@@ -17,14 +17,18 @@ def main():
 	hashIndexDict = {}		# MD5 to AbsoluteIndex key-value dict
 	convertedNodes = []		# List of BRRES nodes converted, to delete later
 	
+	# Store childCount early, as it may change after adding redirect nodes
+	childCount = len(arc_2.Children)
+	
 	# Loop through all brres nodes
-	for i in range(len(arc_2.Children)):
+	for i in range(childCount):
 	
 		node = arc_2.Children[i]
 		nodeHash = node.MD5Str()
 		
+		isStaticBRRES = (node.UncompressedSize == 640 and isinstance(node, BRRESNode) and modelsGroup and modelsGroup.HasChildren and len(modelsGroup.Children) == 1)
 		# If a static brres is found, check if a matching hash exists
-		if isStaticBRRES(node):
+		if isStaticBRRES:
 		
 			# If matching hash exists...
 			if nodeHash in hashIndexDict.keys():
