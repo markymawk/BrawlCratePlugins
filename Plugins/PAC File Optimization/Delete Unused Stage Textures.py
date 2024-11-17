@@ -1,13 +1,9 @@
 __author__ = "mawwwk"
-__version__ = "2.0.1"
+__version__ = "2.0.2"
 
-from BrawlCrate.API import *
-from BrawlLib.SSBB.ResourceNodes import *
-from BrawlCrate.UI import MainForm
-from BrawlLib.Internal import *
 from mawwwkLib import *
 
-SCRIPT_NAME = "Locate Unused Stage Textures"
+SCRIPT_NAME = "Delete Unused Stage Textures"
 # Relatively safe to use, but WILL break Hanenbow based stages.
 
 def main():
@@ -39,7 +35,7 @@ def main():
 	# Build list of tex0 nodes used in Texture Data brres
 	for brresNode in brresNodeList:
 		if "Texture Data" in brresNode.Name and brresNode.HasChildren:
-			textureGroup = brresNode.FindChild("Textures(NW4R)")
+			textureGroup = brresNode.FindChild(TEX_GROUP)
 			for tex0 in textureGroup.Children:
 				tex0NodeList.append(tex0)
 		
@@ -50,7 +46,7 @@ def main():
 		if "Model Data" in brresNode.Name:
 			
 			# Check 3DModels brres group
-			modelsGroup = brresNode.FindChild("3DModels(NW4R)")
+			modelsGroup = brresNode.FindChild(MDL_GROUP)
 			if modelsGroup:
 				
 				# Loop through models
@@ -85,7 +81,7 @@ def main():
 								texRef.Remove()
 			
 			# Check PAT0 brres group
-			pat0Group = brresNode.FindChild("AnmTexPat(NW4R)")
+			pat0Group = brresNode.FindChild(PAT_GROUP)
 			if pat0Group:
 				for pat0 in pat0Group.Children:
 					for material in pat0.Children:
@@ -95,7 +91,7 @@ def main():
 								texturesInPat0NamesList.append(frame.Name)
 			
 			# Check Textures brres group
-			modelDataTexturesGroup = brresNode.FindChild("Textures(NW4R)")
+			modelDataTexturesGroup = brresNode.FindChild(TEX_GROUP)
 			if modelDataTexturesGroup:
 				for tex0 in modelDataTexturesGroup.Children:
 					# Remove any found ModelData textures from being checked against the "global" TextureData list
