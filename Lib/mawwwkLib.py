@@ -269,6 +269,69 @@ def clearCHR0(chr0Entry):
 	for i in range(frameCount):
 		chr0Entry.RemoveKeyframe(i)
 
+# Return the first brres with a FileIndex matching the given id
+def getBRRES(parentNode, id):
+	for child in parentNode.Children:
+		if child.FileIndex == id:
+			return child
+	
+	return 0
+
+# Create a new CHR with the new frame count, then replace the source CHR with that new one
+def resizeCHR(chr0Node, newFrameCount):
+
+	# If run on a brres, run on the topmost CHR0 node
+	if isinstance(chr0Node, BRRESNode):
+		wrapper = getWrapperFromNode(chr0Node)
+		wrapper.Expand()
+		chr0Node = chr0Node.FindChild(CHR_GROUP).Children[0]
+	# If run on CHR0 entry node, change to parent
+	elif isinstance(chr0Node, CHR0EntryNode):
+		chr0Node = chr0Node.Parent
+	
+	# Expand wrappers
+	wrapper = getWrapperFromNode(chr0Node.Parent)
+	wrapper.Expand()
+	# Set frame count, but quit if no resize is done
+	oldFrameCount = chr0Node.FrameCount
+	if newFrameCount == oldFrameCount:
+		return
+	
+	# Duplicate CHR0 node
+	chr0Wrapper = getWrapperFromNode(chr0Node)
+	newCHR0 = chr0Wrapper.Duplicate()
+	newCHR0.Name = chr0Node.Name
+	newCHR0.FrameCount = newFrameCount
+	
+	# Add loop frame
+	if chr0Node.Loop:
+		oldFrameCount += 1
+		newFrameCount += 1
+	
+	ratio = newFrameCount / oldFrameCount
+	
+	# Loop through entries in source CHR0
+	for sourceEntry in chr0Node.Children:
+		
+		# Get destination entry in new CHR0 and clear keyframes
+		destEntry = newCHR0.FindChild(sourceEntry.Name)
+		for i in range(newFrameCount):
+			destEntry.RemoveKeyframe(i)
+		
+		# Loop through source frames
+		for frameIndex in range(oldFrameCount):
+			newFrame = round(frameIndex * ratio)
+			
+			# Loop through array indices
+			for i in range(9):
+				keyframe = sourceEntry.GetKeyframe(i, frameIndex)
+				
+				if keyframe:
+					destEntry.SetKeyframe(i, newFrame, keyframe._value)
+	
+	chr0Node.Replace(newCHR0)
+	removeNode(newCHR0)
+
 # removeChildNodes()
 # Given a list of nodes with the same parent, delete those nodes using RemoveChild()
 # use reverse() to avoid top-down errors
