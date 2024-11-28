@@ -160,33 +160,38 @@ Set each frame's palette within a PAT0 entry to match the name of the texture on
 
 Set all tangents to a given value in a CHR0 animation, or for a specific bone within.
 
-## 4.7 Set All Game & Watch Colors
+## 4.7 Clean CHR0 Animation
+**Usage:** Right-click any CHR0 animation or CHR0 entry node
+
+Remove any redundant keyframes within a margin of 0.001 of whatever the value is without that keyframe. Can be run on an entire CHR0 animation, or any single entry.
+
+## 4.8 Set All Game & Watch Colors
 **Usage:** Right-click a CLR0 animation inside FitGameWatch00.pac, or the corresponding ColorRegister0 entry
 
 Replace all matching ColorRegister0 entries with the selected color sequence inside the FitGamewatch00 file. Must be ran separately for fill and border entries.
 
-## 4.8 Locate Texture Usage
+## 4.9 Locate Texture Usage
 **Usage:** Right-click a TEX0 node inside a stage .pac file
 
 List all models, materials, objects, and PAT animations using the selected texture.
 
-## 4.9 Rename TEX0 & Preserve References
+## 4.10 Rename TEX0 & Preserve References
 **Usage:** Right-click a TEX0 node within any BRRES
 
 Rename the selected texture and any material references and PAT0 entries where the texture is used. If the selected TEX0 is renamed over an already-existing TEX0, then the selected TEX0 will be deleted, and all references to the selected texture will instead direct to the new texture.
 For TEX0s within a MiscData or ModelData, only that BRRES will be affected. For TEX0s within a TextureData, references within the whole file will be checked.
 
-## 4.10 Increment TEX0 Names
+## 4.11 Increment TEX0 Names
 **Usage**: Right-click a TEX0 whose name ends in a digit
 
 Rename the selected texture, along with a given number of TEX0 nodes above it, by automatically incrementing a numbered suffix by 1. Helpful for adding cosmetics in the middle of a set.
 
-## 4.11 Locate SCN0 LightSet/Fog Usage
+## 4.12 Locate SCN0 LightSet/Fog Usage
 **Usage:** Right-click a LightSet or Fog node
 
 List all materials to which the selected LightSet index or Fog index is assigned.
 
-## 4.12 Trim CHR Animation
+## 4.13 Trim CHR Animation
 **Usage:** Right-click a CHR0 animation or CHR0 entry node
 
 Set a new start and end frame for the selected CHR0 animation, trimming it to the set length
