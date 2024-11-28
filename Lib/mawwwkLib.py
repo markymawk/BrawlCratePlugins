@@ -254,11 +254,11 @@ def setSingleTangent(chr0Entry, tangentIndex, newTangent=0):
 
 # clearCHR()
 # Remove all keyframes from a CHR0 or CHR0Entry node
-def clearCHR0(chr0Entry):
+def clearCHR(chr0Entry):
 	# If a CHR0 animation, run on all children
 	if isinstance(chr0Entry, CHR0Node) and chr0Entry.HasChildren:
 		for entry in chr0Entry.Children:
-			clearCHR0(entry)
+			clearCHR(entry)
 		return
 	
 	# Clear keyframes from entry nodes
