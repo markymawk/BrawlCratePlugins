@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "2.0"
+__version__ = "2.0.1"
 
 from System.Windows.Forms import ToolStripMenuItem # Needed for all loaders
 from BrawlCrate.API import *
@@ -9,11 +9,12 @@ from mawwwkLib import *
 SCRIPT_TITLE = "Set Tangents"
 
 ## Start enable check functions
-# Wrapper: MDL0Wrapper
+# Wrapper: CHR0Wrapper
 def EnableCheckCHR0(sender, event_args):
 	node = BrawlAPI.SelectedNode
 	sender.Enabled = (node and node.HasChildren)
 
+# Wrapper: CHR0EntryWrapper
 def EnableCheckCHR0Entry(sender, event_args):
 	node = BrawlAPI.SelectedNode
 	sender.Enabled = node is not None
