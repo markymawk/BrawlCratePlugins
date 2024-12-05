@@ -1,8 +1,7 @@
 __author__ = "mawwwk"
-__version__ = "1.0.1"
+__version__ = "1.1"
 
 from BrawlCrate.NodeWrappers import *
-from BrawlLib.SSBB.ResourceNodes import *
 from System.Windows.Forms import ToolStripMenuItem
 from mawwwkLib import *
 
@@ -71,17 +70,17 @@ def main(chr0Node):
 	
 	startFrame = int(startFrame)
 	if startFrame not in range (1, selNodeFrameCount+1):
-		BrawlAPI.ShowMessage("Input out of range or invalid", SCRIPT_TITLE)
+		BrawlAPI.ShowError("Input out of range or invalid", SCRIPT_TITLE)
 		return
 	
 	# Prompt for ending frame index
-	endFrame = BrawlAPI.UserStringInput("Enter ending frame")
+	endFrame = BrawlAPI.UserStringInput("Enter ending frame", str(selNodeFrameCount))
 	if not endFrame:
 		return
 	
 	endFrame = int(endFrame)
 	if endFrame not in range (1, selNodeFrameCount+1) or endFrame < startFrame:
-		BrawlAPI.ShowMessage("Input out of range or invalid", SCRIPT_TITLE)
+		BrawlAPI.ShowError("Input out of range or invalid", SCRIPT_TITLE)
 		return
 	
 	# Subtract 1 to match zero-indexed syntax
