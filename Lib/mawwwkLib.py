@@ -278,8 +278,14 @@ def getBRRES(parentNode, id):
 	return 0
 
 # Create a new CHR with the new frame count, then replace the source CHR with that new one
-def resizeCHR(chr0Node, newFrameCount):
-
+def resizeCHR(chr0Node, newFrameCount=-1):
+	
+	# If no frame count entered, prompt for one
+	if newFrameCount == -1:
+		newFrameCount = BrawlAPI.UserIntegerInput("Resize CHR0", "New frame count:")
+		if newFrameCount == 0:
+			return
+	
 	# If run on a brres, run on the topmost CHR0 node
 	if isinstance(chr0Node, BRRESNode):
 		wrapper = getWrapperFromNode(chr0Node)
@@ -561,8 +567,9 @@ def setMirrorGradient(node, startColor, endColor):
 				setMirrorGradient(clr0MatEntry, startColor, endColor)
 		return
 	
+	
 	# Determine middle and ending points
-	midPoint = int((length - 1)/2)
+	midPoint = (node.Parent.Parent.FrameCount - 1)//2
 	
 	setColorGradient(node, 0, midPoint, startColor, endColor)
 	setColorGradient(node, midPoint, -1, endColor, startColor)
