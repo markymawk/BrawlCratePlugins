@@ -1,11 +1,7 @@
 __author__ = "mawwwk"
-__version__ = "1.2"
+__version__ = "1.2.1"
 
-from BrawlCrate.API import *
-from BrawlLib.SSBB.ResourceNodes import *
 from BrawlLib.SSBB.ResourceNodes.ProjectPlus import *
-from BrawlCrate.UI import MainForm
-from BrawlLib.Internal import *
 from System.IO import *
 from BrawlLib.Internal.Windows.Forms import ProgressWindow
 from mawwwkLib import *
@@ -57,10 +53,14 @@ def getPinchTrackIndex(track):
 	trackName = str(track.SongFileName).lower() + "_b.brstm"
 	trackName = trackName.replace("\\", "/")
 	
+	# Return index inside brstmFiles
 	for i in range(0, len(brstmFiles), 1):
 		fileName = brstmFiles[i].lower()
 		if trackName == fileName.lower():
 			return i
+	
+	# If not present, return -1
+	return -1
 
 ## End helper methods
 ## Start of main script
