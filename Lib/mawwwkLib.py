@@ -1,4 +1,4 @@
-﻿version = "1.7.4"
+﻿version = "1.7.5"
 # mawwwkLib
 # Common functions for use with BrawlAPI scripts
 
@@ -213,6 +213,37 @@ def setAllTangents(chr0Entry, newTangent=0):
 	for i in range(9):
 		setSingleTangent(chr0Entry, i, newTangent)
 
+# animSharpTangents()
+# Create keyframes in a chr0 entry with straight tangents, by adding keyframes at indices (startFrame+1) and (endFrame-1)
+def animSharpTangents(chr0Entry, arrayIndex, startFrame, endFrame, startVal, endVal):
+	if (endFrame - startFrame <= 1):
+		dmsg("Lib animSharpTangents: No frame difference")
+		return
+	
+	# If CHR0 node, run on all children
+	if isinstance(chr0Entry, CHR0Node):
+		for entry in chr0Entry.Children:
+			animSharpTangents(entry, arrayIndex, startFrame, endFrame, startVal, endVal)
+		return
+	# Value change per frame
+	tangent = (endVal - startVal) / (endFrame - startFrame)
+	
+	# Start and end keyframes
+	kfStart = chr0Entry.SetKeyframe(arrayIndex, startFrame, startVal, True) # True forceNoGenTans
+	kfEnd = chr0Entry.SetKeyframe(arrayIndex, endFrame, endVal, True)
+	
+	# Create keyframe at startFrame+1
+	val = startVal + tangent
+	kf1 = chr0Entry.SetKeyframe(arrayIndex, startFrame+1, val, True)
+	
+	# Create keyframe at endFrame-1
+	val = endVal - tangent
+	kf2 = chr0Entry.SetKeyframe(arrayIndex, endFrame-1, val, True)
+	kf2._tangent = tangent
+	
+	for kf in [kfStart, kfEnd, kf1, kf2]:
+		kf._tangent = tangent
+	
 # setSingleTangent()
 # Applies given value to all frames, only for a given index (translation X, rot Y, etc.)
 def setSingleTangent(chr0Entry, tangentIndex, newTangent=0):
@@ -276,6 +307,14 @@ def getBRRES(parentNode, id):
 			return child
 	
 	return 0
+
+# Return the CHR at index 0 of the given brres ID
+def getCHR(parentNode, brresID, chrID=0):
+	brres = getBRRES(parentNode, brresID)
+	if brres and brres.FindChild(CHR_GROUP):
+		return brres.FindChild(CHR_GROUP).Children[chrID]
+	else:
+		return 0
 
 # Create a new CHR with the new frame count, then replace the source CHR with that new one
 def resizeCHR(chr0Node, newFrameCount=-1):
