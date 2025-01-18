@@ -27,7 +27,7 @@ def EnableCheckCHR0Entry(sender, event_args):
 def main(entry):
 	frameCount = entry.Parent.FrameCount
 	entry._generateTangents = False
-	
+	entry.IsDirty = True
 	# Loop through CHR array indices (scale, rot, trans)
 	for i in range(9):
 		
