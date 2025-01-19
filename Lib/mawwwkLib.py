@@ -297,6 +297,48 @@ def clearCHR(chr0Entry):
 	for i in range(frameCount):
 		chr0Entry.RemoveKeyframe(i)
 
+# cleanCHR()
+# Remove redundant keyframes within a given interval
+def cleanCHR(entry, interval=0.001):
+	
+	# If parameter is CHR0 node, run on all child entries
+	if isinstance (entry, CHR0Node):
+		for chr0Entry in entry.Children:
+			cleanCHR(chr0Entry, interval)
+		return
+	
+	frameCount = entry.Parent.FrameCount
+	entry._generateTangents = False
+	entry.IsDirty = True
+	
+	# Loop through CHR array indices (scale, rot, trans)
+	for i in range(9):
+		
+		# Loop through frames
+		for frameIndex in range(1, frameCount+1):
+			keyframe = entry.GetKeyframe(i, frameIndex)
+			
+			# Ignore blank keyframes
+			if keyframe == None:
+				continue
+			
+			# Save value then remove it
+			tangent = keyframe._tangent
+			value = keyframe._value
+			entry.RemoveKeyframe(i, frameIndex)
+			
+			blankValue = entry.GetFrameValue(i, frameIndex)
+			minVal = blankValue - interval
+			maxVal = blankValue + interval
+			
+			inRemovableRange = value >= minVal and value <= maxVal
+			
+			# If value differs too greatly, restore the keyframe value
+			if not inRemovableRange:
+				# Last true = don't regenerate tangents
+				restoredKeyframe = entry.SetKeyframe(i, frameIndex, value, True)
+				restoredKeyframe._tangent = tangent
+
 # Return the first brres with a FileIndex matching the given id
 def getBRRES(parentNode, id):
 	for child in parentNode.Children:
