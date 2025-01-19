@@ -83,7 +83,7 @@ BRAWL_MODULES = [
  "st_village.rel"
 ]
 
-## Misc CHR GetKeyframe() ArrayIndex shortcuts
+## CHR keyframe ArrayIndex shortcuts
 scaleX = 0
 scaleY = 1
 scaleZ = 2
@@ -94,7 +94,7 @@ transX = 6
 transY = 7
 transZ = 8
 
-# Misc brres group name shortcuts
+# BRRES group name shortcuts
 MDL_GROUP = "3DModels(NW4R)"
 CHR_GROUP = "AnmChr(NW4R)"
 VIS_GROUP = "AnmVis(NW4R)"
@@ -124,11 +124,7 @@ def reverseResourceList(nodeList):
 
 # findChildByName()
 # Given any node, search for a child node whose name contains the given nameStr
-# params:
-#	node: Parent node to search within
-#	nameStr: Name of child to search for
-# 	EXACT_NEEDED: bool, whether or not name should match exactly
-# 
+ 
 def findChildByName(node, nameStr, EXACT_NEEDED=False):
 	if node.Children:
 		for child in node.Children:
@@ -168,6 +164,7 @@ def getNodeNames(nodeList):
 		newList.append(node.Name)
 	
 	return newList
+
 # listToString()
 # Return a string containing the (str) items of the given list, one per line
 def listToString(list, max=0):
@@ -484,7 +481,7 @@ def HSVtoARGBPixel(h, s, v, alpha=255):
 
 # HSV2RGB()
 # Given a list of 3 numbers as HSV, return a list of 3 ints corresponding to the RGB values
-# Hue in [0, 359], sat in [0,100], val in [0,100]
+# Hue in [0, 359], sat in [0, 100], val in [0, 100]
 def HSV2RGB(colorList):
 	[hue, sat, val] = colorList
 	
