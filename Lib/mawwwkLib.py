@@ -1,4 +1,4 @@
-﻿version = "1.7.5"
+﻿version = "1.7.6"
 # mawwwkLib
 # Common functions for use with BrawlAPI scripts
 
@@ -252,10 +252,9 @@ def setSingleTangent(chr0Entry, tangentIndex, newTangent=0):
 		return
 	
 	chr0 = chr0Entry.Parent
+	frameCount = chr0.FrameCount
 	if chr0.Loop:
-		frameCount = chr0.FrameCount + 1
-	else:
-		frameCount = chr0.FrameCount
+		frameCount = frameCount + 1
 	
 	# Don't change tangents for 1-frame animations
 	isMultipleFrames = False
@@ -301,11 +300,13 @@ def clearCHR(chr0Entry):
 # Remove redundant keyframes within a given interval
 def cleanCHR(entry, interval=0.001):
 	
+	keyframesRemovedCount = 0
+	
 	# If parameter is CHR0 node, run on all child entries
 	if isinstance (entry, CHR0Node):
 		for chr0Entry in entry.Children:
-			cleanCHR(chr0Entry, interval)
-		return
+			keyframesRemovedCount += cleanCHR(chr0Entry, interval)
+		return keyframesRemovedCount
 	
 	frameCount = entry.Parent.FrameCount
 	entry._generateTangents = False
@@ -333,11 +334,16 @@ def cleanCHR(entry, interval=0.001):
 			
 			inRemovableRange = value >= minVal and value <= maxVal
 			
+			if inRemovableRange:
+				keyframesRemovedCount += 1
 			# If value differs too greatly, restore the keyframe value
-			if not inRemovableRange:
+			else:
 				# Last true = don't regenerate tangents
 				restoredKeyframe = entry.SetKeyframe(i, frameIndex, value, True)
 				restoredKeyframe._tangent = tangent
+	
+	return keyframesRemovedCount
+			
 
 # Return the first brres with a FileIndex matching the given id
 def getBRRES(parentNode, id):
@@ -352,6 +358,14 @@ def getCHR(parentNode, brresID, chrID=0):
 	brres = getBRRES(parentNode, brresID)
 	if brres and brres.FindChild(CHR_GROUP):
 		return brres.FindChild(CHR_GROUP).Children[chrID]
+	else:
+		return 0
+
+# Return the CLR at index 0 of the given brres ID
+def getCLR(parentNode, brresID, clrID=0):
+	brres = getBRRES(parentNode, brresID)
+	if brres and brres.FindChild(CLR_GROUP):
+		return brres.FindChild(CLR_GROUP).Children[clrID]
 	else:
 		return 0
 
