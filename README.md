@@ -163,7 +163,7 @@ Set all tangents to a given value in a CHR0 animation, or for a specific bone wi
 ## 4.7 Clean CHR0 Animation
 **Usage:** Right-click any CHR0 animation or CHR0 entry node
 
-Remove any redundant keyframes within a margin of 0.001 of whatever the value is without that keyframe. Can be run on an entire CHR0 animation, or any single entry.
+Remove any redundant keyframes within a selected margin. Can be run on an entire CHR0 animation, or any single entry.
 
 ## 4.8 Set All Game & Watch Colors
 **Usage:** Right-click a CLR0 animation inside FitGameWatch00.pac, or the corresponding ColorRegister0 entry
