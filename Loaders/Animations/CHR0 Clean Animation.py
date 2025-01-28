@@ -8,7 +8,7 @@ from mawwwkLib import *
 SCRIPT_TITLE = "Clean CHR0 Animation"
 
 # Maximum value that a keyframe can differ by to be cleared
-ACCEPTED_INTERVAL = 0.001
+DEFAULT_INTERVAL = 0.001
 
 ## Start enable check functions
 # Wrapper: CHR0Wrapper
@@ -25,13 +25,28 @@ def EnableCheckCHR0Entry(sender, event_args):
 ## Start helper functions
 
 def clean_chr0_animation(sender, event_args):
-	# Show start prompt
-	START_MSG = "Remove redundant keyframes within an interval of " + str(ACCEPTED_INTERVAL) + "\n\nTHIS PLUG-IN IS EXPERIMENTAL! Save back-ups of any affected files.\n\nPress OK to continue."
+	selNode = BrawlAPI.SelectedNode
 	
+	# Show start prompt
+	START_MSG = "Remove redundant keyframes within a selected interval.\n\nTHIS PLUG-IN IS EXPERIMENTAL! Save back-ups of any affected files.\n\nPress OK to continue."
 	if not BrawlAPI.ShowOKCancelWarning(START_MSG, SCRIPT_TITLE):
 		return
 	
-	cleanCHR(BrawlAPI.SelectedNode, ACCEPTED_INTERVAL) # Lib function
+	# Get clean range interval from user
+	interval = BrawlAPI.UserFloatInput("Enter interval", "Remove values in:", DEFAULT_INTERVAL, 0) # Minimum 0
+	if not interval:
+		return
+	
+	# Run Lib function
+	keyframesRemovedCount = cleanCHR(BrawlAPI.SelectedNode, interval) # Lib function
+	
+	# Results msg
+	if isinstance(selNode, CHR0Node):
+		msg = str(keyframesRemovedCount) + " keyframes cleaned in CHR0 animation " + selNode.Name
+	else:
+		msg = str(keyframesRemovedCount) + " keyframes cleaned in CHR0 entry " + selNode.Name
+	
+	BrawlAPI.ShowMessage(msg, SCRIPT_TITLE)
 
 # From CHR0 node
 BrawlAPI.AddContextMenuItem(CHR0Wrapper, "", "Remove redundant keyframes from CHR0", EnableCheckCHR0, ToolStripMenuItem("Clean animation", None, clean_chr0_animation))
