@@ -1,8 +1,7 @@
 __author__ = "mawwwk"
-__version__ = "1.4"
+__version__ = "1.5"
 
 from System.Windows.Forms import ToolStripMenuItem # Needed for all loaders
-from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
 from mawwwkLib import *
 
@@ -51,6 +50,7 @@ def import_model_settings(sender, event_args):
 	if source_ShaderCount < dest_ShaderCount:
 		BrawlAPI.ShowWarning("Source model has more shaders than selected model.\nSome shaders may be unaffected.", SCRIPT_NAME)
 		dest_ShaderCount = source_ShaderCount
+	
 	# If dest model has fewer shaders than source model, add shaders to the destination model until the amount of shaders is equal between each
 	else:
 		while dest_ShaderCount < source_ShaderCount:
@@ -92,6 +92,18 @@ def import_model_settings(sender, event_args):
 		# Copy draw pass settings (XLU/OBJ) to each object
 		if sourceObj and destObj._drawCalls:
 			destObj._drawCalls[0].DrawPass = sourceObj._drawCalls[0].DrawPass
+			destObj._drawCalls[0].Material = sourceObj._drawCalls[0].Material
+			destObj._drawCalls[0].VisibilityBone = sourceObj._drawCalls[0].VisibilityBone
+			destObj._drawCalls[0].DrawPriority = sourceObj._drawCalls[0].DrawPriority
+	
+	# Find unused materials
+	unassignedMaterials = []
+	for destMat in destination_MatGroup.Children:
+		sourceMat = source_MatGroup.FindChild(destMat.Name)
+		
+		# If source mat is used and destMat isn't, add to list
+		if len(sourceMat._objects) and not len(destMat._objects):
+			unassignedMaterials.append(destMat)
 	
 	# Delete temp mdl0 
 	removeNode(sourceModel)
@@ -99,16 +111,14 @@ def import_model_settings(sender, event_args):
 	# Select destination mdl0 node again. (This may seem redundant, but Index is preserved from before)
 	selNode.Parent.SelectChildAtIndex(selNode.Index)
 	
-	# Number of materials imported that are not assigned to any objects
-	EMPTY_MATS_COUNT = len(sourceMatsList)
-	
 	# I don't know what this does but it was requested
 	selNode.Rebuild(True)
 	
 	message = "Materials and shaders imported successfully!"
 	
-	if EMPTY_MATS_COUNT:
-		message += "\n\n" + str(EMPTY_MATS_COUNT) + " materials unassigned to objects (may be incorrectly assigned, or unused)"
+	if len(unassignedMaterials):
+		message += "\n\n" + str(len(unassignedMaterials)) + " materials unassigned to objects (may be incorrectly assigned, or unused):\n\n"
+		message += nodeListToString(unassignedMaterials)
 		
 	BrawlAPI.ShowMessage(message, SCRIPT_NAME)
 
