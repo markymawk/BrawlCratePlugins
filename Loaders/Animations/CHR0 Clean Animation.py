@@ -5,7 +5,7 @@ from System.Windows.Forms import ToolStripMenuItem # Needed for all loaders
 from BrawlCrate.NodeWrappers import *
 from mawwwkLib import *
 
-SCRIPT_TITLE = "Clean CHR0 Animation"
+SCRIPT_NAME = "Clean CHR0 Animation"
 
 # Maximum value that a keyframe can differ by to be cleared
 DEFAULT_INTERVAL = 0.001
@@ -29,7 +29,7 @@ def clean_chr0_animation(sender, event_args):
 	
 	# Show start prompt
 	START_MSG = "Remove redundant keyframes within a selected interval.\n\nTHIS PLUG-IN IS EXPERIMENTAL! Save back-ups of any affected files.\n\nPress OK to continue."
-	if not BrawlAPI.ShowOKCancelWarning(START_MSG, SCRIPT_TITLE):
+	if not BrawlAPI.ShowOKCancelWarning(START_MSG, SCRIPT_NAME):
 		return
 	
 	# Get clean range interval from user
@@ -46,7 +46,7 @@ def clean_chr0_animation(sender, event_args):
 	else:
 		msg = str(keyframesRemovedCount) + " keyframes cleaned in CHR0 entry " + selNode.Name
 	
-	BrawlAPI.ShowMessage(msg, SCRIPT_TITLE)
+	BrawlAPI.ShowMessage(msg, SCRIPT_NAME)
 
 # From CHR0 node
 BrawlAPI.AddContextMenuItem(CHR0Wrapper, "", "Remove redundant keyframes from CHR0", EnableCheckCHR0, ToolStripMenuItem("Clean animation", None, clean_chr0_animation))

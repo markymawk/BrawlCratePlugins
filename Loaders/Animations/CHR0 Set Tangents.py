@@ -6,7 +6,7 @@ from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
 from mawwwkLib import *
 
-SCRIPT_TITLE = "Set Tangents"
+SCRIPT_NAME = "Set Tangents"
 
 ## Start enable check functions
 # Wrapper: CHR0Wrapper
@@ -41,7 +41,7 @@ def set_tangents(sender, event_args):
 	setAllTangents(node, newTangent)
 	
 	# Results
-	BrawlAPI.ShowMessage("All tangents in " + node.Name + " set to " + str(newTangent), SCRIPT_TITLE)
+	BrawlAPI.ShowMessage("All tangents in " + node.Name + " set to " + str(newTangent), SCRIPT_NAME)
 
 ## End loader functions
 ## Start context menu add

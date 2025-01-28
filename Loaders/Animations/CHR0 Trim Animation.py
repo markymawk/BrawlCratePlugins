@@ -5,7 +5,7 @@ from BrawlCrate.NodeWrappers import *
 from System.Windows.Forms import ToolStripMenuItem
 from mawwwkLib import *
 
-SCRIPT_TITLE = "Trim CHR0 Animation"
+SCRIPT_NAME = "Trim CHR0 Animation"
 
 ## Start enable check functions
 # Wrapper: CHR0Wrapper
@@ -70,7 +70,7 @@ def main(chr0Node):
 	
 	startFrame = int(startFrame)
 	if startFrame not in range (1, selNodeFrameCount+1):
-		BrawlAPI.ShowError("Input out of range or invalid", SCRIPT_TITLE)
+		BrawlAPI.ShowError("Input out of range or invalid", SCRIPT_NAME)
 		return
 	
 	# Prompt for ending frame index
@@ -80,7 +80,7 @@ def main(chr0Node):
 	
 	endFrame = int(endFrame)
 	if endFrame not in range (1, selNodeFrameCount+1) or endFrame < startFrame:
-		BrawlAPI.ShowError("Input out of range or invalid", SCRIPT_TITLE)
+		BrawlAPI.ShowError("Input out of range or invalid", SCRIPT_NAME)
 		return
 	
 	# Subtract 1 to match zero-indexed syntax
