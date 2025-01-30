@@ -90,7 +90,7 @@ def import_model_settings(sender, event_args):
 		sourceObj = source_Objects.FindChild(destObj.Name)
 		
 		# Copy draw pass settings (XLU/OBJ) to each object
-		if sourceObj and destObj._drawCalls:
+		if sourceObj and sourceObj._drawCalls and destObj._drawCalls:
 			destObj._drawCalls[0].DrawPass = sourceObj._drawCalls[0].DrawPass
 			destObj._drawCalls[0].Material = sourceObj._drawCalls[0].Material
 			destObj._drawCalls[0].VisibilityBone = sourceObj._drawCalls[0].VisibilityBone
@@ -102,7 +102,7 @@ def import_model_settings(sender, event_args):
 		sourceMat = source_MatGroup.FindChild(destMat.Name)
 		
 		# If source mat is used and destMat isn't, add to list
-		if len(sourceMat._objects) and not len(destMat._objects):
+		if sourceMat and len(sourceMat._objects) and not len(destMat._objects):
 			unassignedMaterials.append(destMat)
 	
 	# Delete temp mdl0 
