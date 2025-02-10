@@ -1,59 +1,54 @@
 __author__ = "mawwwk"
-__version__ = "2.1"
+__version__ = "3.0"
 
-from BrawlCrate.API import *
-from BrawlLib.SSBB.ResourceNodes import *
-from BrawlCrate.UI import MainForm
-from BrawlLib.Internal import *
 from mawwwkLib import *
 
-SCRIPT_NAME = "Clear Unused Vertices and Normals"
+SCRIPT_NAME = "Clean MDL0 Data Entries"
 
 def main():
 	# Confirmation prompt
-	startMsg = "Detect and remove any unused Vertex or Normal nodes inside models.\n\n"
+	startMsg = "Detect and remove any unused Vertex, Normal, and UV nodes inside models.\n\n"
 	startMsg += "DISCLAIMER: Always check the final results in-game!\n"
 	if not BrawlAPI.ShowOKCancelPrompt(startMsg, SCRIPT_NAME):
 		return
 	
-	deletedNodeCount = 0
-	sizeCount = 0					# Sum of deleted nodes file size, in uncompressed bytes
-	affectedModelsNames = []		# All mdl0s that contain nodes deleted during the script
+	nodesToRemove = []
+	MDL0_GROUPS = ["Vertices", "Normals", "UVs"] 
 	
 	# Loop through models
 	for mdl0 in BrawlAPI.NodeListOfType[MDL0Node]():
-		unusedNodesFound = False
-		brresName = mdl0.Parent.Parent.Name
-		
-		for group in [mdl0.FindChild("Vertices"), mdl0.FindChild("Normals")]:
+		for groupName in MDL0_GROUPS:
+			group = mdl0.FindChild(groupName)
 			if not group:
 				continue
 			
-			# Loop through Vertex & normal nodes
-			nodeList = reverseResourceList(group.Children)
-			for node in nodeList:
+			# Loop through nodes
+			for node in group.Children:
 				# If object count == 0, delete the node
 				if len(node._objects) == 0:
-					sizeCount += node.UncompressedSize
-					node.Remove()
-					deletedNodeCount += 1
-					unusedNodesFound = True
-		
-		# If any unused vertices or normals found, append brres name and mdl0 name to "affected" list
-		if unusedNodesFound:
-			affectedModelsNames.append(brresName + "/" + mdl0.Name)
+					nodesToRemove.append(node)
 	
 	# Results
 	# If no nodes deleted
-	if deletedNodeCount == 0:
-		BrawlAPI.ShowMessage("No unused normals or vertex nodes found", SCRIPT_NAME)
+	if len(nodesToRemove) == 0:
+		BrawlAPI.ShowMessage("No unused vertex, normal, or UV nodes found", SCRIPT_NAME)
 	
-	# If one or more unused nodes found and deleted
+	# If one or more unused nodes found, show a list
 	else:
-		message = str(deletedNodeCount) + " unused node(s) found and deleted.\n\n"
-		message += listToString(affectedModelsNames)
-		message += "\n" + str(sizeCount) + " bytes"
+		msgList = []
+		sizeCount = 0
+		for node in nodesToRemove:
+			mdl0 = node.Parent.Parent
+			msgList.append(mdl0.Name + "/" + node.Parent.Name + "/" + node.Name)
+			sizeCount += node.UncompressedSize
 		
-		BrawlAPI.ShowMessage(message, SCRIPT_NAME)
+		resultsMsg = str(len(nodesToRemove)) + " unused node(s) found. Delete these?\n"
+		resultsMsg += str(sizeCount) + " bytes\n\n"
+		resultsMsg += listToString(msgList, 15)
+		
+		if not BrawlAPI.ShowYesNoPrompt(resultsMsg, SCRIPT_NAME):
+			return
+		for node in nodesToRemove:
+			node.Remove()
 
 main()
