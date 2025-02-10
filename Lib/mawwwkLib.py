@@ -212,11 +212,13 @@ def setAllTangents(chr0Entry, newTangent=0):
 
 # animSharpTangents()
 # Create keyframes in a chr0 entry with straight tangents, by adding keyframes at indices (startFrame+1) and (endFrame-1)
-def animSharpTangents(chr0Entry, arrayIndex, startFrame, endFrame, startVal, endVal):
+def animSharpTangents(chr0Entry, arrayIndex, startFrame, endFrame, startVal, endVal=None):
 	if (endFrame - startFrame <= 1):
 		dmsg("Lib animSharpTangents: No frame difference")
 		return
 	
+	if endVal == None:
+		endVal = startVal
 	# If CHR0 node, run on all children
 	if isinstance(chr0Entry, CHR0Node):
 		for entry in chr0Entry.Children:
