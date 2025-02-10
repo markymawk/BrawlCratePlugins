@@ -89,12 +89,19 @@ def import_model_settings(sender, event_args):
 	for destObj in destination_Objects.Children:
 		sourceObj = source_Objects.FindChild(destObj.Name)
 		
+		if not sourceObj:
+			continue
+		
 		# Copy draw pass settings (XLU/OBJ) to each object
-		if sourceObj and sourceObj._drawCalls and destObj._drawCalls:
+		if sourceObj._drawCalls and destObj._drawCalls:
 			destObj._drawCalls[0].DrawPass = sourceObj._drawCalls[0].DrawPass
 			destObj._drawCalls[0].Material = sourceObj._drawCalls[0].Material
 			destObj._drawCalls[0].VisibilityBone = sourceObj._drawCalls[0].VisibilityBone
 			destObj._drawCalls[0].DrawPriority = sourceObj._drawCalls[0].DrawPriority
+		
+		# Check TexCoord0 and make empty if source obj is empty
+		if sourceObj.TexCoord0 is None:
+			destObj.TexCoord0 = None
 	
 	# Find unused materials
 	unassignedMaterials = []
