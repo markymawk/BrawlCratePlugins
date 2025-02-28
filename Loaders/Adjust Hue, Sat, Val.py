@@ -1,13 +1,9 @@
 __author__ = "mawwwk"
-__version__ = "2.1"
+__version__ = "2.1.1"
 
-from BrawlCrate.API import *
 from BrawlCrate.API.BrawlAPI import AppPath
 from BrawlCrate.NodeWrappers import *
-from BrawlLib.SSBB.ResourceNodes import *
 from System.Windows.Forms import ToolStripMenuItem
-from BrawlLib import * # Imaging
-from BrawlLib.Imaging import * # Imaging
 from System.IO import *
 from mawwwkLib import *
 
