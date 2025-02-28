@@ -106,10 +106,12 @@ Check CHR0, VIS0, SRT0, CLR0, and PAT0 animations in the currently opened stage 
 
 Check materials and TEX0 nodes in the currently opened stage .pac file. Any materials that are unused by objects, PAT0 animations, or SRT0 animations, along with any textures unused by materials or PAT0 animations, will all be deleted. Any Cull_All materials, unused Normals, and unused Vertex nodes are also listed, but not deleted. **WILL break Hanenbow-based stages**, and may have untested, undesired effects on others (be wary of Star Fox or Shadow Moses-based stages). The result should always be tested in-game, with a backup .pac file saved.
 
-## 3.3 Delete Unused Vertices and Normals
-**Usage:** Plugins menu > PAC File Optimization
+## 3.3 Clean MDL0 Data Entries  
+**Usage:** Plugins menu > PAC File Optimization  
+*(Formerly "Delete Unused Vertices and Normals")*  
 
-Delete any Normal or Vertex nodes unused by any objects within models. The result should always be tested in-game, with a backup .pac file saved.
+Delete any Normal, Vertex, and UV nodes unused by any objects within models. The result should always be tested in-game, with a backup .pac file saved.  
+
 
 ## 3.4 Delete Unused Bones
 **Usage:** Plugins menu > PAC File Optimization, or right-click any MDL0 containing bones and objects
@@ -195,6 +197,11 @@ List all materials to which the selected LightSet index or Fog index is assigned
 **Usage:** Right-click a CHR0 animation or CHR0 entry node
 
 Set a new start and end frame for the selected CHR0 animation, trimming it to the set length
+
+## 4.14 Vertex color brightness to alpha
+**Usage:** Right-click a vertex color node in a MDL0
+
+Set each color's alpha to its respective brightness. Ideal for setting vertex alpha on imports.
 </details>
 <details>
 <summary><h1>5. Generic node operations</h1></summary>
