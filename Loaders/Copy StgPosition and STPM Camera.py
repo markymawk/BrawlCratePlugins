@@ -1,41 +1,75 @@
 __author__ = "mawwwk"
-__version__ = "1.1.2"
+__version__ = "2.0"
 
-from BrawlCrate.API import *
+from BrawlCrate.UI import * # MainForm CompabibilityMode
 from BrawlCrate.NodeWrappers import *
 from BrawlCrate.API.BrawlAPI import AppPath
-from BrawlLib.SSBB.ResourceNodes import *
 from System.Windows.Forms import ToolStripMenuItem
 from System.IO import *
 from mawwwkLib import *
 
 SCRIPT_NAME = "Copy StgPosition and STPM Camera"
-MODELDATA_BRRES_NAME = "Model Data [100]"
-TEMP_BRRES_PATH = AppPath + "\ModelData100.brres"
+TEMP_BRRES_PATH = AppPath + "\ModelDataStgPosition.brres"
 TEMP_STPM_PATH = AppPath + "\STPM.stpm"
+# MODELDATA_BRRES_NAME used only when run via STPM; runs on selected BRRES otherwise
+MODELDATA_BRRES_NAME = "Model Data [100]" 
+
+STPM_PROP_NAME_LIST = [
+	"CameraFOV",
+	"MinimumZ",
+	"MaximumZ",
+	"HorizontalRotationFactor",
+	"VerticalRotationFactor",
+	"CharacterBubbleBufferMultiplier",
+	"CameraSpeed",
+	"StarKOCamTilt",
+	"FinalSmashCamTilt",
+	"CameraRight",
+	"CameraLeft",
+	"PauseCamX",
+	"PauseCamY",
+	"PauseCamZ",
+	"PauseCamAngle",
+	"PauseCamZoomIn",
+	"PauseCamZoomDefault",
+	"PauseCamZoomOut",
+	"PauseCamRotYMin",
+	"PauseCamRotYMax",
+	"PauseCamRotXMin",
+	"PauseCamRotXMax",
+	"FixedCamX",
+	"FixedCamY",
+	"FixedCamZ",
+	"FixedCamFOV",
+	"OlimarFinalCamAngle",
+	"IceClimbersFinalPosX",
+	"IceClimbersFinalPosY",
+	"IceClimbersFinalPosZ",
+	"IceClimbersFinalScaleX",
+	"IceClimbersFinalScaleY",
+	"PitFinalPalutenaScale"
+	]
 
 ## Start enable check function
 
-# Check to ensure that the BRES is a ModelData 100 within a stage pac
+# Check to ensure that the BRES is a ModelData that contains a StagePosition mdl0
 # Wrapper: BRESWrapper
 def EnableCheckBRES(sender, event_args):
 	node = BrawlAPI.SelectedNode
-	sender.Enabled = (node and node.Name == MODELDATA_BRRES_NAME \
-	and node.Parent and node.Parent.Name == "2")
+	sender.Enabled = node and node.HasChildren and node.FindChild(MDL_GROUP) and node.FindChild(MDL_GROUP).HasChildren and node.FindChild(MDL_GROUP).Children[0].IsStagePosition
 
-# Check to ensure that the BRES is a ModelData 100 within a stage pac
+# Check to ensure that the MDL0 is a stagePosition
 # Wrapper: MDL0Wrapper
 def EnableCheckMDL0(sender, event_args):
 	node = BrawlAPI.SelectedNode
-	sender.Enabled = (node and node.IsStagePosition and node.Parent \
-	and node.Parent.Parent and node.Parent.Parent.Name == MODELDATA_BRRES_NAME)
+	sender.Enabled = (node and node.IsStagePosition)
 
 # Wrapper: STPMWrapper
 def EnableCheckSTPM(sender, event_args):
 	node = BrawlAPI.SelectedNode
 	sender.Enabled = (node and node.Parent and node.HasChildren)
 
-# Wrapper: GenericWrapper
+# Wrapper: GenericWrapper (from STPMEntryNode)
 def EnableCheckSTPMEntry(sender, event_args):
 	node = BrawlAPI.SelectedNode
 	sender.Enabled = (node and node.Parent and isinstance(node.Parent, STPMNode) and node.Parent.Parent)
@@ -52,246 +86,22 @@ def getSTPMEntryNode():
 	else:
 		return 0
 
-def setSTPMCameraValues(stpm_node, cameraValList):
-	stpmChanged = []
+def setSTPMCameraValues(stpm_node, sourceSTPMValues):
+	isSTPMChanged = False
 	
-	listIndex = 0
-	# Set FOV
-	if (stpm_node.CameraFOV != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.CameraFOV = cameraValList[listIndex]
-	
-	listIndex += 1
-	# Set MinimumZ
-	if (stpm_node.MinimumZ != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.MinimumZ = cameraValList[listIndex]
-	
-	listIndex += 1
-	# Set MaximumZ
-	if (stpm_node.MaximumZ != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.MaximumZ = cameraValList[listIndex]
-	
-	listIndex += 1
-	# Set HorizontalRotationFactor
-	if (stpm_node.HorizontalRotationFactor != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.HorizontalRotationFactor = cameraValList[listIndex]
+	# Loop through property names
+	for i in range(len(STPM_PROP_NAME_LIST)):
+		# Get property of destination file (file being changed)
+		destProperty = eval("stpm_node." + STPM_PROP_NAME_LIST[i])
+		# Compare to property of source file (original file being copied from)
+		sourceVal = sourceSTPMValues[i]
 		
-	listIndex += 1
-	# Set VerticalRotationFactor
-	if (stpm_node.VerticalRotationFactor != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.VerticalRotationFactor = cameraValList[listIndex]
+		# If different, update the destination value
+		if destProperty != sourceVal:
+			exec("stpm_node." + STPM_PROP_NAME_LIST[i] + " = " + str(sourceVal))
+			isSTPMChanged = True
 	
-	listIndex += 1
-	# Set CharacterBubbleBufferMultiplier
-	if (stpm_node.CharacterBubbleBufferMultiplier != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.CharacterBubbleBufferMultiplier = cameraValList[listIndex]
-	
-	listIndex += 1
-	# Set CameraSpeed
-	if (stpm_node.CameraSpeed != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.CameraSpeed = cameraValList[listIndex]
-	
-	listIndex += 1
-	# Set StarKOCamTilt
-	if (stpm_node.StarKOCamTilt != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.StarKOCamTilt = cameraValList[listIndex]
-	
-	listIndex += 1
-	# Set FinalSmashCamTilt
-	if (stpm_node.FinalSmashCamTilt != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.FinalSmashCamTilt = cameraValList[listIndex]
-	
-	listIndex += 1
-	# Set CameraRight
-	if (stpm_node.CameraRight != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.CameraRight = cameraValList[listIndex]
-	
-	listIndex += 1
-	# Set CameraLeft
-	if (stpm_node.CameraLeft != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.CameraLeft = cameraValList[listIndex]
-	
-	listIndex += 1
-	# Set PauseCamX
-	if (stpm_node.PauseCamX != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.PauseCamX = cameraValList[listIndex]
-	
-	listIndex += 1
-	# Set PauseCamY
-	if (stpm_node.PauseCamY != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.PauseCamY = cameraValList[listIndex]
-		
-	listIndex += 1
-	# Set PauseCamZ
-	if (stpm_node.PauseCamZ != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.PauseCamZ = cameraValList[listIndex]
-	
-	listIndex += 1
-	# Set PauseCamAngle
-	if (stpm_node.PauseCamAngle != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.PauseCamAngle = cameraValList[listIndex]
-	
-	listIndex += 1
-	# Set PauseCamZoomIn
-	if (stpm_node.PauseCamZoomIn != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.PauseCamZoomIn = cameraValList[listIndex]
-	
-	listIndex += 1
-	# Set PauseCamZoomDefault
-	if (stpm_node.PauseCamZoomDefault != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.PauseCamZoomDefault = cameraValList[listIndex]
-		
-	listIndex += 1
-	# Set PauseCamZoomOut
-	if (stpm_node.PauseCamZoomOut != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.PauseCamZoomOut = cameraValList[listIndex]
-	
-	listIndex += 1
-	# Set PauseCamRotYMin
-	if (stpm_node.PauseCamRotYMin != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.PauseCamRotYMin = cameraValList[listIndex]
-	
-	listIndex += 1
-	# Set PauseCamRotYMax
-	if (stpm_node.PauseCamRotYMax != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.PauseCamRotYMax = cameraValList[listIndex]
-	
-	listIndex += 1
-	# Set PauseCamRotXMin
-	if (stpm_node.PauseCamRotXMin != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.PauseCamRotXMin = cameraValList[listIndex]
-	
-	listIndex += 1
-	# Set PauseCamRotXMax
-	if (stpm_node.PauseCamRotXMax != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.PauseCamRotXMax = cameraValList[listIndex]
-	
-	listIndex += 1
-	# Set FixedCamX
-	if (stpm_node.FixedCamX != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.FixedCamX = cameraValList[listIndex]
-	
-	listIndex += 1
-	# Set FixedCamY
-	if (stpm_node.FixedCamY != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.FixedCamY = cameraValList[listIndex]
-	
-	listIndex += 1
-	# Set FixedCamZ
-	if (stpm_node.FixedCamZ != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.FixedCamZ = cameraValList[listIndex]
-	
-	listIndex += 1
-	# Set FixedCamFOV
-	if (stpm_node.FixedCamFOV != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.FixedCamFOV = cameraValList[listIndex]
-	
-	listIndex += 1
-	# Set OlimarFinalCamAngle
-	if (stpm_node.OlimarFinalCamAngle != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.OlimarFinalCamAngle = cameraValList[listIndex]
-	
-	listIndex += 1
-	# Set IceClimbersFinalPosX
-	if (stpm_node.IceClimbersFinalPosX != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.IceClimbersFinalPosX = cameraValList[listIndex]
-	
-	listIndex += 1
-	# Set IceClimbersFinalPosY
-	if (stpm_node.IceClimbersFinalPosY != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.IceClimbersFinalPosY = cameraValList[listIndex]
-	
-	listIndex += 1
-	# Set IceClimbersFinalPosZ
-	if (stpm_node.IceClimbersFinalPosZ != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.IceClimbersFinalPosZ = cameraValList[listIndex]
-	
-	listIndex += 1
-	# Set IceClimbersFinalScaleX
-	if (stpm_node.IceClimbersFinalScaleX != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.IceClimbersFinalScaleX = cameraValList[listIndex]
-	
-	listIndex += 1
-	# Set IceClimbersFinalScaleY
-	if (stpm_node.IceClimbersFinalScaleY != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.IceClimbersFinalScaleY = cameraValList[listIndex]
-	
-	listIndex += 1
-	# Set PitFinalPalutenaScale
-	if (stpm_node.PitFinalPalutenaScale != cameraValList[listIndex]):
-		stpmChanged.append(listIndex)
-		stpm_node.PitFinalPalutenaScale = cameraValList[listIndex]
-	
-	return stpmChanged
-
-def getSTPMCameraValueList(stpm_node):
-	cameraValList = [
-		stpm_node.CameraFOV,
-		stpm_node.MinimumZ,
-		stpm_node.MaximumZ,
-		stpm_node.HorizontalRotationFactor,
-		stpm_node.VerticalRotationFactor,
-		stpm_node.CharacterBubbleBufferMultiplier,
-		stpm_node.CameraSpeed,
-		stpm_node.StarKOCamTilt,
-		stpm_node.FinalSmashCamTilt,
-		stpm_node.CameraRight,
-		stpm_node.CameraLeft,
-		stpm_node.PauseCamX,
-		stpm_node.PauseCamY,
-		stpm_node.PauseCamZ,
-		stpm_node.PauseCamAngle,
-		stpm_node.PauseCamZoomIn,
-		stpm_node.PauseCamZoomDefault,
-		stpm_node.PauseCamZoomOut,
-		stpm_node.PauseCamRotYMin,
-		stpm_node.PauseCamRotYMax,
-		stpm_node.PauseCamRotXMin,
-		stpm_node.PauseCamRotXMax,
-		stpm_node.FixedCamX,
-		stpm_node.FixedCamY,
-		stpm_node.FixedCamZ,
-		stpm_node.FixedCamFOV,
-		stpm_node.OlimarFinalCamAngle,
-		stpm_node.IceClimbersFinalPosX,
-		stpm_node.IceClimbersFinalPosY,
-		stpm_node.IceClimbersFinalPosZ,
-		stpm_node.IceClimbersFinalScaleX,
-		stpm_node.IceClimbersFinalScaleY,
-		stpm_node.PitFinalPalutenaScale
-	]
-	return cameraValList
+	return isSTPMChanged
 
 ## End helper functions
 ## Start loader function
@@ -320,7 +130,6 @@ def export_data_stpmnode(sender, event_args):
 		main(brresNode, selNode.Children[0])
 	else:
 		BrawlAPI.ShowError("Error finding StgPosition brres", "Error")
-		
 
 # Loader function from STPMEntryNode
 def export_data_stpmEntryNode(sender, event_args):
@@ -335,23 +144,27 @@ def export_data_stpmEntryNode(sender, event_args):
 ## End loader function
 ## Start main function
 
-def main(brresNode, stpm_node):
+def main(brresNode, stpmEntryNode):
 	
 	# Prompt for filename substring to check for
 	stageString = BrawlAPI.UserStringInput("Enter stage substring (e.g. \"_BF_\")")
 	if stageString == "" or stageString == None:
 		return
 	
-	# Export stgPosition brres to temp brres file
-	brresNode.ExportUncompressed(TEMP_BRRES_PATH)
-	
-	# Store source STPM camera values in originalSTPMCameraProperties[]
-	originalSTPMCameraProperties = getSTPMCameraValueList(stpm_node)
+	# Store source STPM camera values
+	sourceSTPMValues = []
+	for propertyName in STPM_PROP_NAME_LIST:
+		value = eval("stpmEntryNode." + propertyName)
+		sourceSTPMValues.append(value)
 	
 	# Get list of stage pacs in the same folder as the opened file
 	sourceFilePath = str(BrawlAPI.RootNode.FilePath)
 	stageMeleeDirPath = getParentFolderPath(sourceFilePath)
-	stageFilePathList = Directory.CreateDirectory(stageMeleeDirPath).GetFiles()
+	stagePacs = Directory.CreateDirectory(stageMeleeDirPath).GetFiles()
+
+	# Export stgPosition brres to temp brres file
+	brresNode.ExportUncompressed(TEMP_BRRES_PATH)
+	brresID = brresNode.FileIndex
 	
 	# Get hash of selected node, to compare with new nodes
 	originalHash = brresNode.MD5Str()
@@ -359,21 +172,31 @@ def main(brresNode, stpm_node):
 	# List of files found with the given substring
 	matchingFilesCount = 0
 	filesModified = []
+	filesBRRESNotFound = []
+	
+	# Enable compatibility mode to avoid corrupting older imports
+	isCompatibility = MainForm.Instance.CompatibilityMode
+	MainForm.Instance.CompatibilityMode = True
 	
 	# Check each pac file in stage/melee for the given substring
-	for file in stageFilePathList:
+	for file in stagePacs:
 		if stageString in file.Name and file.FullName != sourceFilePath:
 			matchingFilesCount += 1
 			BrawlAPI.OpenFile(file.FullName)
 			
-			# Find Model Data 100 node
+			# Find Model Data brres
 			parentARC = BrawlAPI.RootNode.FindChild("2")
 			if not parentARC:
 				continue
-			newBRRES = parentARC.FindChild(MODELDATA_BRRES_NAME)
+			newBRRES = getBRRES(parentARC, brresID)
 			
-			# If hashes aren't identical, replace the brres and save
-			if newBRRES and not originalHash == newBRRES.MD5Str():
+			# If brres not found, add to list and continue
+			if not newBRRES:
+				filesBRRESNotFound.append(file.Name)
+				continue
+			
+			# If brres hashes aren't identical, replace the brres and save
+			if originalHash != newBRRES.MD5Str():
 				newBRRES.Replace(TEMP_BRRES_PATH)
 				filesModified.append(file.Name)
 				BrawlAPI.SaveFile()
@@ -383,9 +206,21 @@ def main(brresNode, stpm_node):
 			if not newSTPMEntryNode:
 				continue
 			
-			entriesChanged = setSTPMCameraValues(newSTPMEntryNode, originalSTPMCameraProperties)
+			entriesChanged = False
 			
-			if len(entriesChanged):
+			# Loop through property names
+			for i in range(len(STPM_PROP_NAME_LIST)):
+				# Get property of destination file (file being changed)
+				destProperty = eval("stpmEntryNode." + STPM_PROP_NAME_LIST[i])
+				# Compare to property of source file (original file being copied from)
+				sourceVal = sourceSTPMValues[i]
+				
+				# If different, update the destination value
+				if destProperty != sourceVal:
+					exec("stpmEntryNode." + STPM_PROP_NAME_LIST[i] + " = " + str(sourceVal))
+					entriesChanged = True
+			
+			if entriesChanged:
 				if file.Name not in filesModified:
 					filesModified.append(file.Name)
 				BrawlAPI.SaveFile()
@@ -395,19 +230,30 @@ def main(brresNode, stpm_node):
 	
 	# Delete temp brres file
 	File.Delete(TEMP_BRRES_PATH)
+	# Restore compatibility mode setting
+	MainForm.Instance.CompatibilityMode = isCompatibility
 	
-	msg = str(matchingFilesCount) + " stage .pac file(s) found with substring \"" + stageString + "\"\n"
+	# If no mismatches found
+	if len(filesModified) == 0 and len(filesBRRESNotFound) == 0:
+		msg = "\nNo mismatching BRRES " + str(brresID) + " or STPM data found"
+		BrawlAPI.ShowMessage(msg, SCRIPT_NAME)
 	
-	# If any files modified, list them
-	if len(filesModified):
-		msg += str(len(filesModified)) + " file(s) edited:\n\n"
-		msg += listToString(filesModified)
-	
-	# Otherwise, no mismatches found
-	elif matchingFilesCount:
-		msg += "\nNo mismatching " + MODELDATA_BRRES_NAME + " or STPM data found"
-	
-	BrawlAPI.ShowMessage(msg, SCRIPT_NAME)
+	else:
+		msg = ""
+		# List any files modified
+		if len(filesModified):
+			msg += str(matchingFilesCount) + " stage .pac file(s) found with substring \"" + stageString + "\"\n"
+			msg += str(len(filesModified)) + " file(s) edited:\n\n"
+			msg += listToString(filesModified, 20)
+			BrawlAPI.ShowMessage(msg, SCRIPT_NAME)
+		
+		# List any files missing the appropriate BRRES
+		if len(filesBRRESNotFound):
+			if not len(filesModified):
+				msg += str(matchingFilesCount) + " stage .pac file(s) found with substring \"" + stageString + "\"\n"
+			msg += "Files missing BRRES " + str(brresID) + ":\n\n"
+			msg += listToString(filesBRRESNotFound, 20)
+			BrawlAPI.ShowError(msg, SCRIPT_NAME)
 
 ## End main function
 ## Start context menu add
