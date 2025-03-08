@@ -1,9 +1,7 @@
 __author__ = "mawwwk"
-__version__ = "1.0"
+__version__ = "1.0.1"
 
-from BrawlCrate.API import *
-from BrawlCrate.NodeWrappers import * 
-from BrawlLib.SSBB.ResourceNodes import *
+from BrawlCrate.NodeWrappers import *
 from System.Windows.Forms import ToolStripMenuItem
 from BrawlLib.Internal.Windows.Forms import ProgressWindow
 from mawwwkLib import *
@@ -24,12 +22,7 @@ def EnableCheckBRESGroup(sender, event_args):
 # Wrapper: BRESWrapper
 def EnableCheckBRES(sender, event_args):
 	node = BrawlAPI.SelectedNode
-	
-	if node:
-		textureGroup = node.FindChild(TEX_GROUP)
-	else:
-		textureGroup = 0
-	
+	textureGroup = node.FindChild(TEX_GROUP)
 	sender.Enabled = (node and textureGroup and textureGroup.HasChildren and len(textureGroup.Children) > 1)
 	
 ## End enable check functions
