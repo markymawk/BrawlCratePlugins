@@ -50,6 +50,27 @@ STPM_PROP_NAME_LIST = [
 	"PitFinalPalutenaScale"
 	]
 
+STAGE_NAME_SHORTCUTS = {
+	"battlefield" : "BF",
+	"bowsercastle" : "BC",
+	"ceresspacecolony" : "CSC",
+	"delfinosecret" : "DS",
+	"distantplanet" : "DP",
+	"dreamland" : "DL",
+	"finaldestination" : "FD",
+	"fountainofdreams" : "FOD",
+	"frigatehusk" : "FH",
+	"greenhillzone" : "GHZ",
+	"luigismansion" : "LM",
+	"metalcavern" : "MC",
+	"pokemonstadium" : "PS2",
+	"goldentemple" : "GT",
+	"skysanctuary" : "SSZ",
+	"smashville" : "SV",
+	"templeoftime" : "TOT",
+	"warioland" : "WL",
+	"yoshisisland" : "YI"
+}
 ## Start enable check function
 
 # Check to ensure that the BRES is a ModelData that contains a StagePosition mdl0
@@ -146,8 +167,17 @@ def export_data_stpmEntryNode(sender, event_args):
 
 def main(brresNode, stpmEntryNode):
 	
+	# Get default text for prompt based on stage filename (remove STG and .pac)
+	stageName = BrawlAPI.RootNode.FileName[3:-4].lower()
+	if stageName in STAGE_NAME_SHORTCUTS.keys():
+		promptStr = "Enter stage file identifier"
+		defaultText = "_" + STAGE_NAME_SHORTCUTS[stageName] + "_"
+	else:
+		promptStr = "Enter stage file identifier (e.g. \"_BF_\")"
+		defaultText = ""
+	
 	# Prompt for filename substring to check for
-	stageString = BrawlAPI.UserStringInput("Enter stage substring (e.g. \"_BF_\")")
+	stageString = BrawlAPI.UserStringInput(promptStr, defaultText)
 	if stageString == "" or stageString == None:
 		return
 	
