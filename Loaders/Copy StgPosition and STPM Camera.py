@@ -69,7 +69,8 @@ STAGE_NAME_SHORTCUTS = {
 	"smashville" : "SV",
 	"templeoftime" : "TOT",
 	"warioland" : "WL",
-	"yoshisisland" : "YI"
+	"yoshisisland" : "YI",
+	"yoshistory" : "YS"
 }
 ## Start enable check function
 
@@ -170,10 +171,10 @@ def main(brresNode, stpmEntryNode):
 	# Get default text for prompt based on stage filename (remove STG and .pac)
 	stageName = BrawlAPI.RootNode.FileName[3:-4].lower()
 	if stageName in STAGE_NAME_SHORTCUTS.keys():
-		promptStr = "Enter stage file identifier"
+		promptStr = "Enter 1:1 stage file identifier"
 		defaultText = "_" + STAGE_NAME_SHORTCUTS[stageName] + "_"
 	else:
-		promptStr = "Enter stage file identifier (e.g. \"_BF_\")"
+		promptStr = "Enter 1:1 stage file identifier (e.g. \"_BF_\")"
 		defaultText = ""
 	
 	# Prompt for filename substring to check for
