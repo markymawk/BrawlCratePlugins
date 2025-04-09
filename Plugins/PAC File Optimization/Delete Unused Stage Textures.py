@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "2.0.2"
+__version__ = "2.0.3"
 
 from mawwwkLib import *
 
@@ -36,8 +36,9 @@ def main():
 	for brresNode in brresNodeList:
 		if "Texture Data" in brresNode.Name and brresNode.HasChildren:
 			textureGroup = brresNode.FindChild(TEX_GROUP)
-			for tex0 in textureGroup.Children:
-				tex0NodeList.append(tex0)
+			if textureGroup:
+				for tex0 in textureGroup.Children:
+					tex0NodeList.append(tex0)
 		
 	tex0NodeList = reverseResourceList(tex0NodeList)
 	
@@ -79,7 +80,6 @@ def main():
 							# If Texture node isn't used by any materials, delete it
 							else:
 								texRef.Remove()
-			
 			# Check PAT0 brres group
 			pat0Group = brresNode.FindChild(PAT_GROUP)
 			if pat0Group:
