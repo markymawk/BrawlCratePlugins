@@ -23,14 +23,16 @@ def main():
 	duplicateShadowTEX0 = []
 	affectedBRRESName = ""
 	
-	for childNode in parentArc.Children:
-		# Find Texture Data nodes with textures
-		if "Texture Data" not in childNode.Name:
+	for brres in parentArc.Children:
+		if not isinstance(brres, BRRESNode):
 			continue
-		if not childNode.HasChildren:
+		# Find Texture Data nodes with textures
+		if "Texture Data" not in brres.Name:
+			continue
+		if not brres.HasChildren:
 			continue
 		
-		textureGroup = childNode.FindChild(TEX_GROUP)
+		textureGroup = brres.FindChild(TEX_GROUP)
 		
 		if not textureGroup:
 			continue
