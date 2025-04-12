@@ -1,16 +1,25 @@
 __author__ = "mawwwk"
 __version__ = "1.0"
 
+from BrawlCrate.API import *
+from BrawlCrate.NodeWrappers import *
+from BrawlLib.SSBB.ResourceNodes import *
+from System.Windows.Forms import ToolStripMenuItem
 from mawwwkLib import *
-selNode = BrawlAPI.SelectedNode
 
-SCRIPT_NAME = "Update Material Colors"
+SCRIPT_NAME = "Update Shared-Name Material Colors"
 
-def main():
-	if not isinstance(selNode, MDL0MaterialNode):
-		BrawlAPI.ShowError("No material node selected", "")
-		return
-	
+## Start enable check functions
+# Wrapper: MDL0MaterialWrapper
+def EnableCheckMDL0Material(sender, event_args):
+	node = BrawlAPI.SelectedNode
+	sender.Enabled = (node is not None and node.Parent)
+
+## End enable check functions
+## Start loader functions
+
+def update_mats_with_same_name(sender, event_args):
+	selNode = BrawlAPI.SelectedNode
 	matsToUpdate = []
 	for mat in BrawlAPI.NodeListOfType[MDL0MaterialNode]():
 		if mat.Name == selNode.Name:
@@ -36,5 +45,8 @@ def main():
 		mat.ConstantColor0 = selNode.ConstantColor0
 		mat.ConstantColor1 = selNode.ConstantColor1
 		mat.ConstantColor2 = selNode.ConstantColor2
-	
-main()
+
+## End loader functions
+## Start context menu add
+
+BrawlAPI.AddContextMenuItem(MDL0MaterialWrapper, "", "Copy color values from this material to those with the same name", EnableCheckMDL0Material, ToolStripMenuItem("Update shared-name materials", None, update_mats_with_same_name))
