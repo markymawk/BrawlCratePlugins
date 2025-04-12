@@ -40,7 +40,7 @@ Sort textures alphabetically, while keeping colorsmash groups in-tact. Includes 
 Import new palettes from one or more external PLT0 files.
 
 ## 1.7 Check UV Wrap Settings
-**Usage:** Plugins menu
+**Usage:** Plugins menu > PAC File Operations
 
 Check currently opened file for materials that use a texture of a non-power of 2 and whose wrap mode isn't set to Clamp. UWrapMode and VWrapMode are checked separately for width and height, respectively.
 </details>
@@ -49,7 +49,7 @@ Check currently opened file for materials that use a texture of a non-power of 2
 <summary><h1>2. Build & stage management</h1></summary>
 
 ## 2.1 Copy Tracklist Frequencies
-**Usage:** Plugins menu
+**Usage:** Plugins menu > File Checking (P+)
 
 Transfer entire tracklist frequencies across build updates. Select a "source" tracklist folder (typically `Project+/pf/sound/tracklist`) and a "destination" tracklist folder. Song frequency values will be copied from the source to the destination tracklists, based on song name or filename.
 
@@ -92,38 +92,43 @@ Reset all frequency values of tracklist entries to their default value (40).
 Rename or set volume of all instances of the selected track across every tracklist in the same directory. For quick repeat usage, leave the tracklist directory open in BrawlCrate.
 </details>
 <details>
-<summary><h1> 3. File optimization</h1></summary>
+<summary><h1> 3. File operations</h1></summary>
 
 ## 3.1 Delete Unused Animation Data
-**Usage:** Plugins menu > PAC File Optimization
+**Usage:** Plugins menu > PAC File Operations
 
 Check CHR0, VIS0, SRT0, CLR0, and PAT0 animations in the currently opened stage .pac file. Any unused entries will be listed and deleted from the animation. Only recommended for FD, BF, or Palutena-based stages. The result should always be tested in-game, with a backup .pac file saved.
 
 *Alternately can be run per animation, via any individual animation's right-click > plug-ins menu*
 
 ## 3.2 Delete Unused Stage Textures
-**Usage:** Plugins menu > PAC File Optimization
+**Usage:** Plugins menu > PAC File Operations
 
 Check materials and TEX0 nodes in the currently opened stage .pac file. Any materials that are unused by objects, PAT0 animations, or SRT0 animations, along with any textures unused by materials or PAT0 animations, will all be deleted. Any Cull_All materials, unused Normals, and unused Vertex nodes are also listed, but not deleted. **WILL break Hanenbow-based stages**, and may have untested, undesired effects on others (be wary of Star Fox or Shadow Moses-based stages). The result should always be tested in-game, with a backup .pac file saved.
 
-## 3.3 Clean MDL0 Data Entries  
-**Usage:** Plugins menu > PAC File Optimization  
+## 3.3 Delete Unused MDL0 Data Entries  
+**Usage:** Plugins menu > PAC File Operations  
 *(Formerly "Delete Unused Vertices and Normals")*  
 
 Delete any Normal, Vertex, and UV nodes unused by any objects within models. The result should always be tested in-game, with a backup .pac file saved.  
 
-
 ## 3.4 Delete Unused Bones
-**Usage:** Plugins menu > PAC File Optimization, or right-click any MDL0 containing bones and objects
+**Usage:** Plugins menu > PAC File Operations, or right-click any MDL0 containing bones and objects
 
 Delete any bones unused by objects or collisions. Out of caution, this doesn't affect any models that use non-SingleBind objects (objects bound to multiple bones).
 
-## 3.5 Generate Static BRRES Redirects
-**Usage:** Plugins menu > PAC File Optimization
+## 3.5 Optimize TShadow TEX0
+**Usage:** Plugins menu > PAC File Operations
+
+Replace a TShadow texture with a blank square, saving file space in compressed .pac files. Can be run on an entire folder, or the currently open file.
+
+
+## 3.6 Generate Static BRRES Redirects
+**Usage:** Plugins menu > PAC File Operations
 
 Improve readability of stage .pac files by converting "Static" BRRES nodes (nodes where the only entry is a Static model) to Redirect nodes at the end of the file. The result should always be tested in-game, with a backup .pac file saved.
 
-## 3.6 BRRES Repair Group Names
+## 3.7 BRRES Repair Group Names
 **Usage:** Right-click a BRRES node containing an invalid group (folder) name
 
 Renames invalid or corrupt BRRES groups according to the group's children nodes.
@@ -202,6 +207,11 @@ Set a new start and end frame for the selected CHR0 animation, trimming it to th
 **Usage:** Right-click a vertex color node in a MDL0
 
 Set each color's alpha to its respective brightness. Ideal for setting vertex alpha on imports.
+
+## 4.15 Update Material Colors of Same Name
+**Usage:** Right-click a material in a MDL0
+
+Replace LightChannel0 and Shader Block Color data for all materials that share a name with the selected material. 
 </details>
 <details>
 <summary><h1>5. Generic node operations</h1></summary>
