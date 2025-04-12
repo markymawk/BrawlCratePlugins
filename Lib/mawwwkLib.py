@@ -5,6 +5,7 @@
 # i don't like naming things after myself but eh
 
 from BrawlCrate.API import *	# BrawlAPI
+from BrawlCrate.API.BrawlAPI import AppPath
 from BrawlLib.SSBB.ResourceNodes import *
 from BrawlCrate.UI import MainForm
 from BrawlLib import * # Imaging
@@ -12,6 +13,7 @@ from BrawlLib.Imaging import * # Imaging, ARGBPixel
 from BrawlLib.Internal import * # Vector3 etc
 from BrawlLib.SSBB.Types import * # BoneFlags
 from BrawlLib.Wii.Animations import * # KeyframeCollection
+from BrawlLib.SSBB.ResourceNodes.MatTextureMinFilter import * # Mipmaps
 import math
 
 ## Start constants
@@ -107,6 +109,9 @@ SHP_GROUP = "AnmShp(NW4R)"
 
 BLACK = ARGBPixel(255, 0, 0, 0)
 WHITE = ARGBPixel(255, 255, 255, 255)
+
+LINEAR_MIPMAP = MatTextureMinFilter.Linear_Mipmap_Linear
+
 ## End constants
 ## Start list functions
 
@@ -345,7 +350,12 @@ def cleanCHR(entry, interval=0.001):
 				restoredKeyframe._tangent = tangent
 	
 	return keyframesRemovedCount
-			
+
+def setMips(mdl0):
+	if mdl0.FindChild("Materials"):
+		for mat in mdl0.FindChild("Materials").Children:
+			for matEntry in mat.Children:
+				matEntry.MinFilter = LINEAR_MIPMAP
 
 # Return the first brres with a FileIndex matching the given id
 def getBRRES(parentNode, id):
