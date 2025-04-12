@@ -17,9 +17,9 @@ SHADOW_TEX0_PATH = AppPath + "\\BrawlAPI\\Resources\\TShadow1.tex0"
 def main():
 	
 	# Get stage/melee folder
-	if not BrawlAPI.ShowOKCancelPrompt("Select stage/melee folder.", SCRIPT_NAME):
+	if not BrawlAPI.ShowOKCancelPrompt("This replaces TShadow1 texture in all .pac files with one of a blank square for lower file size.\nAlso checks for duplicate TShadow1 textures.\n\nPress OK to continue, then select stage/melee folder.", SCRIPT_NAME):
 		return
-	meleeDir = BrawlAPI.OpenFolderDialog("Select stage/melee folder.")
+	meleeDir = BrawlAPI.OpenFolderDialog("Select stage/melee folder")
 	if not meleeDir:
 		return
 	
@@ -111,7 +111,7 @@ def main():
 	msg = "Complete.\n"
 	msg += str(changedPacsCount) + " file(s) updated"
 	if filesSkippedCount:
-		msg += "\n" + str(filesSkippedCount) + " files skipped (already use selected TEX0, or no TShadow found)"
+		msg += "\n" + str(filesSkippedCount) + " files skipped (already use blank TEX0, or no shadow texture found)"
 	BrawlAPI.ShowMessage(msg, SCRIPT_NAME)
 
 main()

@@ -64,7 +64,7 @@ def main():
 	# Results
 	resultsMsg = ""
 	if newShadowAlreadyExists:
-		resultsMsg += "Black TShadow1 texture already in file. No changes made"
+		resultsMsg += "No changes made.\nBlank TShadow1 texture already in file."
 	elif isShadowFound:
 		resultsMsg += "TShadow1 texture updated in " + affectedBRRESName
 	else:
