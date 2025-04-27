@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
@@ -38,13 +38,14 @@ def increment_tex0_name(sender, event_args):
 	nodeToRename = BrawlAPI.SelectedNode
 	
 	for i in range (0, texturesToRenameCount, 1):
-		oldDigitSuffix = ""
 		
 		# If texture name doesn't end in a number, quit
 		if not nodeToRename.Name[-1].isdigit():
 			return
 		
-		# Otherwise, store the ending digits of the texture name one at a time, and remove them from the name
+		# Store the ending digits of the texture name one at a time,
+		# and remove them from the name
+		digitsOld = ""
 		while nodeToRename.Name[-1].isdigit():
 			digitsOld = str(nodeToRename.Name[-1]) + "" + str(digitsOld) 
 			nodeToRename.Name = nodeToRename.Name[:-1]
