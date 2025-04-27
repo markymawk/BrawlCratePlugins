@@ -35,6 +35,9 @@ def check_LightSet_use(sender, event_args):
 	lightSetIndex = BrawlAPI.SelectedNode.RealIndex
 	lightSetName = BrawlAPI.SelectedNode.Name
 	
+	if lightSetIndex == -1:
+		BrawlAPI.ShowError("LightSet RealIndex is -1.","")
+		return
 	# Build list of materials that use the matching index
 	usedMaterialsList = []
 	for mat in BrawlAPI.NodeListOfType[MDL0MaterialNode]():
@@ -65,6 +68,9 @@ def check_fog_use(sender, event_args):
 	fogIndex = BrawlAPI.SelectedNode.RealIndex
 	fogName = BrawlAPI.SelectedNode.Name
 	
+	if fogIndex == -1:
+		BrawlAPI.ShowError("Fog RealIndex is -1.","")
+		return
 	# Build list of materials that use the matching index
 	usedMaterialsList = []
 	for mat in BrawlAPI.NodeListOfType[MDL0MaterialNode]():
