@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "2.0"
+__version__ = "2.1"
 
 from BrawlCrate.UI import * # MainForm CompabibilityMode
 from BrawlCrate.NodeWrappers import *
@@ -48,7 +48,7 @@ STPM_PROP_NAME_LIST = [
 	"IceClimbersFinalScaleX",
 	"IceClimbersFinalScaleY",
 	"PitFinalPalutenaScale"
-	]
+]
 
 STAGE_NAME_SHORTCUTS = {
 	"battlefield" : "BF",
@@ -62,11 +62,15 @@ STAGE_NAME_SHORTCUTS = {
 	"frigatehusk" : "FH",
 	"greenhillzone" : "GHZ",
 	"luigismansion" : "LM",
-	"metalcavern" : "MC",
+	"metalcavern_00" : "MC",
 	"pokemonstadium" : "PS2",
 	"goldentemple" : "GT",
 	"skysanctuary" : "SSZ",
-	"smashville" : "SV",
+	"smashville_00_morning" : "SV",
+	"smashville_01_noon" : "SV",
+	"smashville_02_dusk" : "SV",
+	"smashville_03_night" : "SV",
+	"smashville_04_midnight" : "SV",
 	"templeoftime" : "TOT",
 	"warioland" : "WL",
 	"yoshisisland" : "YI",
@@ -107,23 +111,6 @@ def getSTPMEntryNode():
 		return stpmParentNode.Children[0]
 	else:
 		return 0
-
-def setSTPMCameraValues(stpm_node, sourceSTPMValues):
-	isSTPMChanged = False
-	
-	# Loop through property names
-	for i in range(len(STPM_PROP_NAME_LIST)):
-		# Get property of destination file (file being changed)
-		destProperty = eval("stpm_node." + STPM_PROP_NAME_LIST[i])
-		# Compare to property of source file (original file being copied from)
-		sourceVal = sourceSTPMValues[i]
-		
-		# If different, update the destination value
-		if destProperty != sourceVal:
-			exec("stpm_node." + STPM_PROP_NAME_LIST[i] + " = " + str(sourceVal))
-			isSTPMChanged = True
-	
-	return isSTPMChanged
 
 ## End helper functions
 ## Start loader function
@@ -242,13 +229,16 @@ def main(brresNode, stpmEntryNode):
 			# Loop through property names
 			for i in range(len(STPM_PROP_NAME_LIST)):
 				# Get property of destination file (file being changed)
-				destProperty = eval("stpmEntryNode." + STPM_PROP_NAME_LIST[i])
+				destProperty = eval("newSTPMEntryNode." + STPM_PROP_NAME_LIST[i])
+				
 				# Compare to property of source file (original file being copied from)
 				sourceVal = sourceSTPMValues[i]
 				
 				# If different, update the destination value
 				if destProperty != sourceVal:
-					exec("stpmEntryNode." + STPM_PROP_NAME_LIST[i] + " = " + str(sourceVal))
+					msg = str(destProperty) + ", " + str(sourceVal)
+					
+					exec("newSTPMEntryNode." + STPM_PROP_NAME_LIST[i] + " = " + str(sourceVal))
 					entriesChanged = True
 			
 			if entriesChanged:
