@@ -26,6 +26,8 @@ def main():
 		node = arc_2.Children[i]
 		nodeHash = node.MD5Str()
 		
+		modelsGroup = node.FindChild(MDL_GROUP)
+		
 		isStaticBRRES = (node.UncompressedSize == 640 and isinstance(node, BRRESNode) and modelsGroup and modelsGroup.HasChildren and len(modelsGroup.Children) == 1)
 		# If a static brres is found, check if a matching hash exists
 		if isStaticBRRES:
