@@ -34,7 +34,7 @@ def checkForBones(anim):
 					affectedAnims.append(anim)
 					sizeCount += animEntry.UncompressedSize
 					
-					animType = str(anim.NodeType)[0:4]
+					animType = anim.Tag
 					affectedAnimNames.append(parentBRRES.Name + "/" + animType + " " + anim.Name + "/" + animEntry.Name)
 
 def checkForMats(anim):
@@ -51,7 +51,7 @@ def checkForMats(anim):
 					affectedAnims.append(anim)
 					sizeCount += animEntry.UncompressedSize
 					
-					animType = str(anim.NodeType)[0:4]
+					animType = anim.Tag
 					affectedAnimNames.append(parentBRRES.Name + "/" + animType + " " + anim.Name + "/" + animEntry.Name)
 
 # Return list of material names in models in this brres
