@@ -69,7 +69,8 @@ def main():
 			if not texturesGroup:
 				continue
 			for tex0 in texturesGroup.Children:
-				if tex0.Name == "TShadow1":
+				if tex0.Name in ["TShadow", "TShadow1"]:
+					
 					# If no TShadow1 found yet, determine whether to replace
 					if not isShadowFound:
 						isShadowFound = True
