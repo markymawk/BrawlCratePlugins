@@ -1,4 +1,4 @@
-﻿version = "1.7.6"
+﻿version = "1.7.7"
 # mawwwkLib
 # Common functions for use with BrawlAPI scripts
 
@@ -14,6 +14,7 @@ from BrawlLib.Internal import * # Vector3 etc
 from BrawlLib.SSBB.Types import * # BoneFlags
 from BrawlLib.Wii.Animations import * # KeyframeCollection
 from BrawlLib.SSBB.ResourceNodes.MatTextureMinFilter import * # Mipmaps
+from BrawlLib.SSBB.ResourceNodes import GXColorSrc # Material colors
 import math
 
 ## Start constants
@@ -676,7 +677,10 @@ def setMirrorGradient(node, startColor, endColor):
 	midPoint = (node.Parent.Parent.FrameCount - 1)//2
 	
 	setColorGradient(node, 0, midPoint, startColor, endColor)
-	setColorGradient(node, midPoint, -1, endColor, startColor)
+	
+	# Get new start color from frames[1]
+	newStartColor = node.GetColor(1, 0)
+	setColorGradient(node, midPoint, -1, endColor, newStartColor)
 	
 # formatHex()
 # Given dec value, returns formatted hex value (17 -> 0x0011)
