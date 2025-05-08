@@ -15,6 +15,7 @@ from BrawlLib.SSBB.Types import * # BoneFlags
 from BrawlLib.Wii.Animations import * # KeyframeCollection
 from BrawlLib.SSBB.ResourceNodes.MatTextureMinFilter import * # Mipmaps
 from BrawlLib.SSBB.ResourceNodes import GXColorSrc # Material colors
+from System.IO import * # File, Directory
 import math
 
 ## Start constants
@@ -200,6 +201,19 @@ def listToStringNoDuplicates(list, max=0):
 def getParentFolderPath(filepath):
 	path = filepath.rsplit("\\",1)[0] + "\\"
 	return path
+
+# Shortcut for System.IO Directory.GetFiles()
+# If fileStr passed, return list[] of files in directory containing given string
+def getFiles(dirPath, fileStr=0):
+	if not fileStr:
+		return Directory.GetFiles(dirPath)
+	
+	fileList = []
+	for fileName in Directory.GetFiles(dirPath):
+		if fileStr and fileStr in fileName:
+			fileList.append(fileName)
+	
+	return fileList
 
 ## End list functions
 ## Start node functions
@@ -674,14 +688,14 @@ def setMirrorGradient(node, startColor, endColor):
 	
 	
 	# Determine middle and ending points
-	midPoint = (node.Parent.Parent.FrameCount - 1)//2
+	midPoint = round((node.Parent.Parent.FrameCount - 1)/2)
 	
 	setColorGradient(node, 0, midPoint, startColor, endColor)
 	
 	# Get new start color from frames[1]
 	newStartColor = node.GetColor(1, 0)
 	setColorGradient(node, midPoint, -1, endColor, newStartColor)
-	
+
 # formatHex()
 # Given dec value, returns formatted hex value (17 -> 0x0011)
 # Uses lowercase 0x prefix with uppercase hex digits
