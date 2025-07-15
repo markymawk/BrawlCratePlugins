@@ -10,7 +10,7 @@ from BrawlLib.SSBB.ResourceNodes import *
 from BrawlCrate.UI import MainForm
 from BrawlLib import * # Imaging
 from BrawlLib.Imaging import * # Imaging, ARGBPixel
-from BrawlLib.Internal import * # Vector3 etc
+from BrawlLib.Internal import * # Vector2, Vector3 etc
 from BrawlLib.SSBB.Types import * # BoneFlags
 from BrawlLib.Wii.Animations import * # KeyframeCollection
 from BrawlLib.SSBB.ResourceNodes.MatTextureMinFilter import * # Mipmaps
@@ -141,7 +141,7 @@ def findChildByName(node, nameStr, EXACT_NEEDED=False):
 				return child
 	return 0	# If not found, return 0
 
-# getChildWrapperFromName()
+# findChildWrapperByName()
 # Given any nodeWrapper, return its child wrapper whose Resource.Name contains the given nameStr
 def findChildWrapperByName(wrapper, nameStr, EXACT_NEEDED=False):
 	if wrapper.Nodes:
@@ -377,8 +377,9 @@ def getBRRES(parentNode, id):
 	for child in parentNode.Children:
 		if child.FileIndex == id:
 			return child
-	
-	return 0
+	else:
+		dmsg("Lib getBRRES() index error")
+		return 0
 
 # Return the CHR at index 0 of the given brres ID
 def getCHR(parentNode, brresID, chrID=0):
@@ -386,6 +387,7 @@ def getCHR(parentNode, brresID, chrID=0):
 	if brres and brres.FindChild(CHR_GROUP):
 		return brres.FindChild(CHR_GROUP).Children[chrID]
 	else:
+		dmsg("Lib getCHR() index error")
 		return 0
 
 # Return the CLR at index 0 of the given brres ID
@@ -394,6 +396,7 @@ def getCLR(parentNode, brresID, clrID=0):
 	if brres and brres.FindChild(CLR_GROUP):
 		return brres.FindChild(CLR_GROUP).Children[clrID]
 	else:
+		dmsg("Lib getCLR() index error")
 		return 0
 
 # Create a new CHR with the new frame count, then replace the source CHR with that new one
@@ -410,6 +413,7 @@ def resizeCHR(chr0Node, newFrameCount=-1):
 		wrapper = getWrapperFromNode(chr0Node)
 		wrapper.Expand()
 		chr0Node = chr0Node.FindChild(CHR_GROUP).Children[0]
+	
 	# If run on CHR0 entry node, change to parent
 	elif isinstance(chr0Node, CHR0EntryNode):
 		chr0Node = chr0Node.Parent
@@ -557,7 +561,7 @@ def addLeadingZeros(value, count):
 	return str(value)
 
 # HSVtoARGBPixel()
-# Given a list of 3 numbers as HSV, return an ARGBPixel object containing RGB values with 255 alpha
+# Given a list of 3 numbers as HSV, return an ARGBPixel object
 def HSVtoARGBPixel(h, s, v, alpha=255):
 	RGBColors = HSV2RGB([h, s, v])
 	return ARGBPixel(alpha, RGBColors[0], RGBColors[1], RGBColors[2])
@@ -577,7 +581,7 @@ def HSV2RGB(colorList):
 		hue = hue + 360
 	hue = hue % 360
 	
-	# Misc formula calculations
+	# RGB formula calculations
 	cValue = float(val * sat) / 10000.0
 	xValue = cValue * (1.0 - abs((hue / 60.0) % 2 - 1.0))
 	mValue = val/100.0 - cValue
