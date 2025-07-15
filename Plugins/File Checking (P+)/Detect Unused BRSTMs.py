@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.2.1"
+__version__ = "1.2.2"
 
 from BrawlLib.SSBB.ResourceNodes.ProjectPlus import *
 from System.IO import *
@@ -171,14 +171,15 @@ def main():
 	if MAX_BRAWL_LIST < len(brawlBrstmFiles):
 		message += "...and " + str((len(brawlBrstmFiles) - MAX_BRAWL_LIST)) + " more\n"
 	
+	unusedFileCount = len(brstmFiles)
 	# List unused brstm files with custom names
-	while customListPrintedCount < MAX_CUSTOM_LIST and customListPrintedCount < len(brstmFiles):
+	while customListPrintedCount < MAX_CUSTOM_LIST and customListPrintedCount < unusedFileCount:
 		name = brstmFiles[customListPrintedCount]
 		message += name + "\n"
 		customListPrintedCount += 1
 	
 	# Truncate list at MAX_CUSTOM_LIST
-	if MAX_CUSTOM_LIST < len(brstmFiles):
+	if MAX_CUSTOM_LIST < unusedFileCount:
 		message += "...and " + str((len(brstmFiles) - MAX_CUSTOM_LIST)) + " more\n"
 	
 	# Prompt to delete unused files
@@ -197,6 +198,6 @@ def main():
 	for fileName in brstmFiles:
 		File.Delete(strmFolderPath + fileName)
 	
-	BrawlAPI.ShowMessage(str(len(fileNameList)) + " unused BRSTM files deleted.", SCRIPT_NAME)
+	BrawlAPI.ShowMessage(str(unusedFileCount) + " unused BRSTM files deleted.", SCRIPT_NAME)
 
 main()
