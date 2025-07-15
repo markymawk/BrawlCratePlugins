@@ -77,11 +77,28 @@ def getPAT0Usage(pat0Group, tex0Name):
 	pat0Uses = []
 	
 	for pat0 in pat0Group.Children:
-		for mat in pat0.Children:
-			for texRef in mat.Children:
-				# If texture exists in the pat0, append to pat0Uses[]
-				if tex0Name in getChildNames(texRef):
-						pat0Uses.append("PAT0: " + pat0.Parent.Parent.Name + "/" + pat0.Name)
+		for pat0Entry in pat0.Children:
+			for pat0TextureNode in pat0Entry.Children:
+			
+				# Loop through texture entry nodes to find frames used
+				framesUsed = []
+				
+				for pat0TextureEntryNode in pat0TextureNode.Children:
+					if pat0TextureEntryNode.Name == tex0Name:
+						framesUsed.append(int(pat0TextureEntryNode.FrameIndex))
+				
+				# If texture used, append to pat0Uses[]
+				if len(framesUsed):
+					usageStr = "PAT0: " + pat0.Parent.Parent.Name + "/" + pat0.Name
+					usageStr += "\n  Frame "
+					
+					# List frames used
+					for i in framesUsed:
+						usageStr += str(i) + ", "
+					
+					usageStr = usageStr[:-2]
+					pat0Uses.append(usageStr)
+					
 	return pat0Uses
 
 ## End helper functions
