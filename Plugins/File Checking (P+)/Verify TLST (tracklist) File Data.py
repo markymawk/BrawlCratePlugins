@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "3.3"
+__version__ = "3.4"
 
 from BrawlCrate.API import *
 from BrawlLib.SSBB.ResourceNodes import *
@@ -58,9 +58,12 @@ def checkBRSTMFilePath(trackNode):
 		if trackNode.rstmPath in existingFilePaths:
 			return brstmString
 		
-		trackExists = trackNode.SongFileName in BRAWL_SONG_ID_LIST or File.Exists(trackNode.rstmPath)
+		# If SongID is in Events-only range, denote it
+		if trackNode.SongID in [0xFE00, 0xFEFF]:
+			brstmString += "\n\t[Event Match exclusive]"
 		
 		# If brstm file exists, add it to existingFilePaths[] for easier checks
+		trackExists = trackNode.SongFileName in BRAWL_SONG_ID_LIST or File.Exists(trackNode.rstmPath)
 		if trackExists:
 			existingFilePaths.append(trackNode.rstmPath)
 		
