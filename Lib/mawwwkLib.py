@@ -1,4 +1,4 @@
-﻿version = "1.7.7"
+﻿version = "1.8"
 # mawwwkLib
 # Common functions for use with BrawlAPI scripts
 
@@ -230,6 +230,32 @@ def setAllTangents(chr0Entry, newTangent=0):
 	for i in range(9):
 		setSingleTangent(chr0Entry, i, newTangent)
 
+# Given source entry, offset all keyframes in destEntry ahead by the amount frameDifference
+# Still experimental
+def shiftAnimation(sourceEntry, destEntry, frameDifference):
+	frameCount = sourceEntry.Parent.FrameCount
+	clearCHR(destEntry)
+	# Set every value on every frame, then clean unused frames later
+	for arrayIndex in range(9):
+		currentTangent = 0
+		
+		for i in range(frameCount):
+			# Get source keyframe
+			sourceKf = sourceEntry.GetKeyframe(arrayIndex, i)
+			# Update tangents if set on current frame
+			if sourceKf:
+				currentTangent = sourceKf._tangent
+				
+			# Get new value and set at new frame index
+			frameValue = sourceEntry.GetFrameValue(arrayIndex, i)
+			newFrameIndex = (i + frameDifference) % frameCount
+			destKf = destEntry.SetKeyframe(arrayIndex, newFrameIndex, frameValue)
+			
+			destKf._tangent = currentTangent
+	
+	destEntry.Parent.FrameCount = frameCount
+	cleanCHR(destEntry, 0.0015)
+
 # animSharpTangents()
 # Create keyframes in a chr0 entry with straight tangents, by adding keyframes at indices (startFrame+1) and (endFrame-1)
 def animSharpTangents(chr0Entry, arrayIndex, startFrame, endFrame, startVal, endVal=None):
@@ -258,7 +284,7 @@ def animSharpTangents(chr0Entry, arrayIndex, startFrame, endFrame, startVal, end
 	# Create keyframe at endFrame-1
 	val = endVal - tangent
 	kf2 = chr0Entry.SetKeyframe(arrayIndex, endFrame-1, val, True)
-	kf2._tangent = tangent
+	#kf2._tangent = tangent
 	
 	for kf in [kfStart, kfEnd, kf1, kf2]:
 		kf._tangent = tangent
@@ -390,6 +416,15 @@ def getCHR(parentNode, brresID, chrID=0):
 		dmsg("Lib getCHR() index error")
 		return 0
 
+# Return the Children[0] entry of the given getCHR()
+def getCHREntry(parentNode, brresID, childID=0, chrID=0):
+	chr = getCHR(parentNode, brresID)
+	if chr and chr.HasChildren:
+		return chr.Children[childID]
+	else:
+		dmsg("Lib getCHREntry() index error")
+		return 0
+	
 # Return the CLR at index 0 of the given brres ID
 def getCLR(parentNode, brresID, clrID=0):
 	brres = getBRRES(parentNode, brresID)
@@ -478,9 +513,16 @@ def removeChildNodes(nodeList):
 def removeNode(node):
 	node.Parent.RemoveChild(node)
 
-def clearBoneFlags(bone):
-	bone._boneFlags = bone._boneFlags and BoneFlags.Visible
-
+def clearBoneFlags(node):
+	# If bone, clear bone flags
+	if isinstance(node, MDL0BoneNode):
+		node._boneFlags = node._boneFlags and BoneFlags.Visible
+		node.IsDirty = True
+	# If MDL0, clear all child bone flags
+	elif isinstance(node, MDL0Node):
+		boneGroup = node.FindChild("Bones")
+		for bone in boneGroup.GetChildrenRecursive():
+			clearBoneFlags(bone)
 # getParentArc()
 # Return the parent ARCNode of the given node, or the RootNode if reached
 def getParentArc(node):
@@ -559,6 +601,14 @@ def addLeadingZeros(value, count):
 		value = "0" + str(value)
 	
 	return str(value)
+
+# listToARGBPixel()
+# Given a list[] of numbers as HSV, return an ARGBPixel object
+def listToARGBPixel(hsvList, alpha=255):
+	hue = hsvList[0]
+	sat = hsvList[1]
+	val = hsvList[2]
+	return HSVtoARGBPixel(hue, sat, val, alpha)
 
 # HSVtoARGBPixel()
 # Given a list of 3 numbers as HSV, return an ARGBPixel object
