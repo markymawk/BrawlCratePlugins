@@ -407,7 +407,7 @@ def getBRRES(parentNode, id):
 		dmsg("Lib getBRRES() index error")
 		return 0
 
-# Return the CHR at index 0 of the given brres ID
+# Return the CHR at index chrID of the given brres ID
 def getCHR(parentNode, brresID, chrID=0):
 	brres = getBRRES(parentNode, brresID)
 	if brres and brres.FindChild(CHR_GROUP):
@@ -416,7 +416,7 @@ def getCHR(parentNode, brresID, chrID=0):
 		dmsg("Lib getCHR() index error")
 		return 0
 
-# Return the Children[0] entry of the given getCHR()
+# Return the Children[chrID] entry of the given getCHR()
 def getCHREntry(parentNode, brresID, childID=0, chrID=0):
 	chr = getCHR(parentNode, brresID)
 	if chr and chr.HasChildren:
@@ -425,7 +425,7 @@ def getCHREntry(parentNode, brresID, childID=0, chrID=0):
 		dmsg("Lib getCHREntry() index error")
 		return 0
 	
-# Return the CLR at index 0 of the given brres ID
+# Return the CLR at index clrID of the given brres ID
 def getCLR(parentNode, brresID, clrID=0):
 	brres = getBRRES(parentNode, brresID)
 	if brres and brres.FindChild(CLR_GROUP):
