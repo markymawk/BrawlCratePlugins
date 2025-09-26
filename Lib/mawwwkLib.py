@@ -402,7 +402,7 @@ def setMips(mdl0):
 # Return the first brres with a FileIndex matching the given id
 def getBRRES(parentNode, id):
 	for child in parentNode.Children:
-		if child.FileIndex == id:
+		if child.FileIndex == id and isinstance(child, BRRESNode):
 			return child
 	else:
 		dmsg("Lib getBRRES() index error")
