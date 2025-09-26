@@ -606,6 +606,22 @@ def addLeadingZeros(value, count):
 	
 	return str(value)
 
+# formatHex()
+# Given dec value, returns formatted hex value (17 -> 0x0011)
+# Uses lowercase 0x prefix with uppercase hex digits
+def formatHex(value, MIN_DIGIT_COUNT=4):
+
+	# Convert to hex, and remove Python formatted "0X"
+	hexString = str(hex(value)).upper()[2:]
+	hexString.replace("L","") # Only needed for certain python versions
+	while len(hexString) < MIN_DIGIT_COUNT:
+		hexString = '0' + hexString
+	
+	return "0x" + hexString
+
+## End math/conversion functions
+## Start color functions
+
 # listToARGBPixel()
 # Given a list[] of numbers as HSV, return an ARGBPixel object
 def listToARGBPixel(hsvList, alpha=255):
@@ -754,19 +770,6 @@ def setMirrorGradient(node, startColor, endColor):
 	# Get new start color from frames[1]
 	newStartColor = node.GetColor(1, 0)
 	setColorGradient(node, midPoint, -1, endColor, newStartColor)
-
-# formatHex()
-# Given dec value, returns formatted hex value (17 -> 0x0011)
-# Uses lowercase 0x prefix with uppercase hex digits
-def formatHex(value, MIN_DIGIT_COUNT=4):
-
-	# Convert to hex, and remove Python formatted "0X"
-	hexString = str(hex(value)).upper()[2:]
-	hexString.replace("L","") # Only needed for certain python versions
-	while len(hexString) < MIN_DIGIT_COUNT:
-		hexString = '0' + hexString
-	
-	return "0x" + hexString
 
 ## End conversion functions
 ## Start misc. / debug functions
