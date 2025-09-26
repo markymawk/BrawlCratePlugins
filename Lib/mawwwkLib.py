@@ -746,10 +746,18 @@ def setColorGradient(node, startFrame, endFrame, startColor, endColor=-1):
 		newB = round(startColor.B + i * stepB)
 		
 		p = ARGBPixel(newA, newR, newG, newB)
-		node.SetColor(frame, frame, p)
+		
+		# For SCN0, set lightColor
+		if isinstance(node, SCN0LightNode):
+			node.SetColor(frame, 0, p)
+		else:
+			node.SetColor(frame, frame, p)
 	
 	# Force last frame to ignore calculations and match endColor exactly
-	node.SetColor(endFrame, endFrame, endColor)
+	if isinstance(node, SCN0LightNode):
+		node.SetColor(endFrame, 0, endColor)
+	else:
+		node.SetColor(endFrame, endFrame, endColor)
 
 # setMirrorGradient()
 # Set a gradient color blend that goes startColor > midColor > startColor
