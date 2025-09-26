@@ -198,8 +198,8 @@ def listToStringNoDuplicates(list, max=0):
 	newList = listNoDuplicates(list)	
 	return listToString(newList, max)
 
-def getParentFolderPath(filepath):
-	path = filepath.rsplit("\\",1)[0] + "\\"
+def getParentFolderPath(filepath, parentAmount=1):
+	path = filepath.rsplit("\\",parentAmount)[0] + "\\"
 	return path
 
 # Shortcut for System.IO Directory.GetFiles()
