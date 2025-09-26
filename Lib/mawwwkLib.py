@@ -270,6 +270,7 @@ def animSharpTangents(chr0Entry, arrayIndex, startFrame, endFrame, startVal, end
 		for entry in chr0Entry.Children:
 			animSharpTangents(entry, arrayIndex, startFrame, endFrame, startVal, endVal)
 		return
+	
 	# Value change per frame
 	tangent = (endVal - startVal) / (endFrame - startFrame)
 	
@@ -284,21 +285,21 @@ def animSharpTangents(chr0Entry, arrayIndex, startFrame, endFrame, startVal, end
 	# Create keyframe at endFrame-1
 	val = endVal - tangent
 	kf2 = chr0Entry.SetKeyframe(arrayIndex, endFrame-1, val, True)
-	#kf2._tangent = tangent
 	
 	for kf in [kfStart, kfEnd, kf1, kf2]:
 		kf._tangent = tangent
 	
 # setSingleTangent()
 # Applies given value to all frames, only for a given index (translation X, rot Y, etc.)
-def setSingleTangent(chr0Entry, tangentIndex, newTangent=0):
+def setSingleTangent(chr0Entry, arrayIndex, newTangent=0):
 	
 	# If a CHR0 animation, run on all children
 	if isinstance(chr0Entry, CHR0Node) and chr0Entry.HasChildren:
 		for entry in chr0Entry.Children:
-			setSingleTangent(entry, tangentIndex, newTangent)
+			setSingleTangent(entry, arrayIndex, newTangent)
 		return
 	
+	# Add 1 frame if loop = true
 	chr0 = chr0Entry.Parent
 	frameCount = chr0.FrameCount
 	if chr0.Loop:
@@ -308,7 +309,7 @@ def setSingleTangent(chr0Entry, tangentIndex, newTangent=0):
 	isMultipleFrames = False
 	for k in range(frameCount):
 		
-		frame = chr0Entry.GetKeyframe(tangentIndex, k)
+		frame = chr0Entry.GetKeyframe(arrayIndex, k)
 		
 		if "None" in str(type(frame)):
 			continue
@@ -320,7 +321,7 @@ def setSingleTangent(chr0Entry, tangentIndex, newTangent=0):
 		frame._tangent = newTangent
 		
 	# If only 1 frame in the animation, restore its original tangent
-	firstFrame = chr0Entry.GetKeyframe(tangentIndex, 0)
+	firstFrame = chr0Entry.GetKeyframe(arrayIndex, 0)
 	
 	if isMultipleFrames:
 		chr0Entry.IsDirty = True
@@ -513,6 +514,8 @@ def removeChildNodes(nodeList):
 def removeNode(node):
 	node.Parent.RemoveChild(node)
 
+# clearBoneFlags()
+# Remove all flags from selected bone
 def clearBoneFlags(node):
 	# If bone, clear bone flags
 	if isinstance(node, MDL0BoneNode):
@@ -523,6 +526,7 @@ def clearBoneFlags(node):
 		boneGroup = node.FindChild("Bones")
 		for bone in boneGroup.GetChildrenRecursive():
 			clearBoneFlags(bone)
+
 # getParentArc()
 # Return the parent ARCNode of the given node, or the RootNode if reached
 def getParentArc(node):
@@ -691,6 +695,7 @@ def RGB2HSV(colorNode):
 # setColorGradient()
 # Set a gradient color blend in a given color node, using frame start/end indices, and start/end ARGBPixel colors
 def setColorGradient(node, startFrame, endFrame, startColor, endColor=-1):
+	
 	# If given a CLR0Node, run on all children
 	if isinstance(node, CLR0Node):
 		for clr0Material in node.Children:
@@ -717,7 +722,7 @@ def setColorGradient(node, startFrame, endFrame, startColor, endColor=-1):
 		stepB = (endColor.B - startColor.B) / ((float) (count))
 	
 	# Set frames in range
-	for i in range(0, count+1):
+	for i in range(count+1):
 		frame = i + startFrame
 		newA = round(startColor.A + i * stepA)
 		newR = round(startColor.R + i * stepR)
