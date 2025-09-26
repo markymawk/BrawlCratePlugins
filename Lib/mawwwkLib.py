@@ -779,6 +779,151 @@ def setMirrorGradient(node, startColor, midColor):
 	endColor = node.GetColor(1, 0)
 	setColorGradient(node, midPoint, -1, midColor, endColor)
 
+# Main function to loop through frames and add (rotate) hue values
+def rotateHueForAllFrames(node, hueToAdd):
+	colorsUsed = []
+	useModifiedAlpha = -1
+	for i in range(node.ColorCount(1)):
+		
+		# If in a vertex color node or non-Constant CLR0 node, use frame color
+		if isinstance(node, MDL0ColorNode) or not node.Constant:
+			frame = node.Colors[i]
+		# If in a Constant color node
+		else:
+			frame = node.SolidColor
+		
+		hsvList = RGB2HSV(frame)	# Get color as HSV value
+		hsvList[0] += hueToAdd		# Set hue to new
+		newRGB = HSV2RGB(hsvList)
+		newColor = ARGBPixel(frame.A, newRGB[0], newRGB[1], newRGB[2])
+		
+		# Check for duplicate vertex color values to possibly subvert corruption
+		if isinstance(node, MDL0ColorNode):
+			# If user already said No, add regardless
+			if useModifiedAlpha == 0:
+				colorsUsed.append(newColor)
+			elif newColor in colorsUsed:
+				
+				# If duplicate color, and prompt not yet shown
+				if useModifiedAlpha == -1:
+					useModifiedAlpha = BrawlAPI.ShowYesNoWarning(ALPHA_DUPLICATE_MSG, "Duplicate Colors")
+				
+				# If user said Yes & color is used
+				if useModifiedAlpha == 1:
+					newColor = getNewAlphaColor(newColor, colorsUsed)
+					colorsUsed.append(newColor)
+		
+		node.SetColor(i, i, newColor)
+		colorsUsed.append(newColor)
+
+# Main function to loop through frames and set hue values
+def setHueForAllFrames(node, newHue):
+	colorsUsed = []
+	useModifiedAlpha = -1
+	for i in range(node.ColorCount(1)):
+	
+		# If in a vertex color node or non-Constant CLR0 node, use frame color
+		if isinstance(node, MDL0ColorNode) or not node.Constant:
+			frame = node.Colors[i]
+		# If in a Constant color node
+		else:
+			frame = node.SolidColor
+		
+		hsvList = RGB2HSV(frame)	# Get color as HSV value
+		hsvList[0] = newHue			# Set hue to new
+		newRGB = HSV2RGB(hsvList)
+		newColor = ARGBPixel(frame.A, newRGB[0], newRGB[1], newRGB[2])
+		
+		# Check for duplicate vertex color values to possibly subvert corruption
+		if isinstance(node, MDL0ColorNode):
+			# If user already said No, add regardless
+			if useModifiedAlpha == 0:
+				colorsUsed.append(newColor)
+			elif newColor in colorsUsed:
+				
+				# If duplicate color, and prompt not yet shown
+				if useModifiedAlpha == -1:
+					useModifiedAlpha = BrawlAPI.ShowYesNoWarning(ALPHA_DUPLICATE_MSG, "Duplicate Colors")
+				
+				# If user said Yes & color is used
+				if useModifiedAlpha == 1:
+					newColor = getNewAlphaColor(newColor, colorsUsed)
+					colorsUsed.append(newColor)
+		
+		node.SetColor(i, i, newColor)
+		colorsUsed.append(newColor)
+
+# Main function to loop through frames and set saturation values
+def adjustSatForAllFrames(node, valToAdd):
+	colorsUsed = []
+	useModifiedAlpha = -1
+	for i in range(node.ColorCount(1)):
+			
+		if isinstance(node, MDL0ColorNode) or not node.Constant:
+			frame = node.Colors[i]
+		else:
+			frame = node.SolidColor
+		
+		hsvList = RGB2HSV(frame)	# Get color as HSV value
+		hsvList[1] += valToAdd		# Set value to new
+		newRGB = HSV2RGB(hsvList)
+		newColor = ARGBPixel(frame.A, newRGB[0], newRGB[1], newRGB[2])
+		
+		# Check for duplicate vertex color values to possibly subvert corruption
+		if isinstance(node, MDL0ColorNode):
+			# If user already said No, add regardless
+			if useModifiedAlpha == 0:
+				colorsUsed.append(newColor)
+			elif newColor in colorsUsed:
+				
+				# If duplicate color, and prompt not yet shown
+				if useModifiedAlpha == -1:
+					useModifiedAlpha = BrawlAPI.ShowYesNoWarning(ALPHA_DUPLICATE_MSG, "Duplicate Colors")
+				
+				# If user said Yes & color is used
+				if useModifiedAlpha == 1:
+					newColor = getNewAlphaColor(newColor, colorsUsed)
+					colorsUsed.append(newColor)
+					
+		node.SetColor(i, i, newColor)
+		colorsUsed.append(newColor)
+
+# Main function to loop through frames and set brightness (val) values
+def adjustValForAllFrames(node, valToAdd):
+	colorsUsed = []
+	useModifiedAlpha = -1
+	for i in range(node.ColorCount(1)):
+		
+		if isinstance(node, MDL0ColorNode) or not node.Constant:
+			frame = node.Colors[i]
+		else:
+			frame = node.SolidColor
+		
+		hsvList = RGB2HSV(frame)	# Get color as HSV value
+		hsvList[2] += valToAdd		# Set value to new
+		newRGB = HSV2RGB(hsvList)
+		newColor = ARGBPixel(frame.A, newRGB[0], newRGB[1], newRGB[2])
+		
+		# Check for duplicate vertex color values to possibly subvert corruption
+		if isinstance(node, MDL0ColorNode):
+			# If user already said No, add regardless
+			if useModifiedAlpha == 0:
+				colorsUsed.append(newColor)
+			elif newColor in colorsUsed:
+				
+				# If duplicate color, and prompt not yet shown
+				if useModifiedAlpha == -1:
+					useModifiedAlpha = BrawlAPI.ShowYesNoWarning(ALPHA_DUPLICATE_MSG, "Duplicate Colors")
+				
+				# If user said Yes & color is used
+				if useModifiedAlpha == 1:
+					newColor = getNewAlphaColor(newColor, colorsUsed)
+					colorsUsed.append(newColor)
+		
+		node.SetColor(i, i, newColor)
+		colorsUsed.append(newColor)
+## End color functions
+
 ## End conversion functions
 ## Start misc. / debug functions
 
