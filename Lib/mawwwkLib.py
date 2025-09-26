@@ -752,24 +752,24 @@ def setColorGradient(node, startFrame, endFrame, startColor, endColor=-1):
 	node.SetColor(endFrame, endFrame, endColor)
 
 # setMirrorGradient()
-# Set a gradient color blend that goes Color A > Color B > Color A
-def setMirrorGradient(node, startColor, endColor):
+# Set a gradient color blend that goes startColor > midColor > startColor
+def setMirrorGradient(node, startColor, midColor):
+	
 	# If given a CLR0Node, run on all children
 	if isinstance(node, CLR0Node):
 		for clr0Material in node.Children:
 			for clr0MatEntry in clr0Material.Children:
-				setMirrorGradient(clr0MatEntry, startColor, endColor)
+				setMirrorGradient(clr0MatEntry, startColor, midColor)
 		return
-	
 	
 	# Determine middle and ending points
 	midPoint = round((node.Parent.Parent.FrameCount - 1)/2)
 	
-	setColorGradient(node, 0, midPoint, startColor, endColor)
+	setColorGradient(node, 0, midPoint, startColor, midColor)
 	
 	# Get new start color from frames[1]
-	newStartColor = node.GetColor(1, 0)
-	setColorGradient(node, midPoint, -1, endColor, newStartColor)
+	endColor = node.GetColor(1, 0)
+	setColorGradient(node, midPoint, -1, midColor, endColor)
 
 ## End conversion functions
 ## Start misc. / debug functions
