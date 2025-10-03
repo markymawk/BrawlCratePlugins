@@ -1,9 +1,4 @@
 ﻿version = "1.8"
-# mawwwkLib
-# Common functions for use with BrawlAPI scripts
-
-# i don't like naming things after myself but eh
-
 from BrawlCrate.API import *	# BrawlAPI
 from BrawlCrate.API.BrawlAPI import AppPath
 from BrawlLib.SSBB.ResourceNodes import *
@@ -119,8 +114,6 @@ LINEAR_MIPMAP = MatTextureMinFilter.Linear_Mipmap_Linear
 
 # reverseResourceList()
 # Basic implementation of list.reverse() to accommodate ResourceNode lists
-# params:
-#	nodeList: any list of ResourceNodes
 def reverseResourceList(nodeList):
 	nodeListReverse = []
 	for i in nodeList:
@@ -131,7 +124,6 @@ def reverseResourceList(nodeList):
 
 # findChildByName()
 # Given any node, search for a child node whose name contains the given nameStr
- 
 def findChildByName(node, nameStr, EXACT_NEEDED=False):
 	if node.Children:
 		for child in node.Children:
@@ -307,17 +299,18 @@ def setSingleTangent(chr0Entry, arrayIndex, newTangent=0):
 	
 	# Don't change tangents for 1-frame animations
 	isMultipleFrames = False
-	for k in range(frameCount):
+	for i in range(frameCount):
 		
-		frame = chr0Entry.GetKeyframe(arrayIndex, k)
+		frame = chr0Entry.GetKeyframe(arrayIndex, i)
 		
+		# Skip empty frames
 		if "None" in str(type(frame)):
 			continue
 		
 		# Store tangent of first frame
-		if k == 0:
+		if i == 0:
 			frame0Tangent = frame._tangent
-		isMultipleFrames = (k > 0)
+		isMultipleFrames = (i > 0)
 		frame._tangent = newTangent
 		
 	# If only 1 frame in the animation, restore its original tangent
@@ -408,7 +401,7 @@ def getBRRES(parentNode, id):
 		if child.FileIndex == id and isinstance(child, BRRESNode):
 			return child
 	else:
-		dmsg("Lib getBRRES() index error")
+		dmsg("Lib getBRRES() index error: brres " + str(id))
 		return 0
 
 # Return the CHR at index chrID of the given brres ID
@@ -417,7 +410,7 @@ def getCHR(parentNode, brresID, chrID=0):
 	if brres and brres.FindChild(CHR_GROUP):
 		return brres.FindChild(CHR_GROUP).Children[chrID]
 	else:
-		dmsg("Lib getCHR() index error")
+		dmsg("Lib getCHR() index error: brres " + str(brresID))
 		return 0
 
 # Return the Children[chrID] entry of the given getCHR()
