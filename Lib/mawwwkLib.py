@@ -330,7 +330,7 @@ def setSingleTangent(chr0Entry, arrayIndex, newTangent=0):
 
 # clearCHR()
 # Remove all keyframes from a CHR0 or CHR0Entry node
-def clearCHR(chr0Entry):
+def clearCHR(chr0Entry, arrayIndex=-1):
 	# If a CHR0 animation, run on all children
 	if isinstance(chr0Entry, CHR0Node) and chr0Entry.HasChildren:
 		for entry in chr0Entry.Children:
@@ -338,12 +338,15 @@ def clearCHR(chr0Entry):
 		return
 	
 	# Clear keyframes from entry nodes
-	
 	frameCount = chr0Entry.Parent.FrameCount
 	if chr0Entry.Parent.Loop:
 		frameCount += 1
 	for i in range(frameCount):
-		chr0Entry.RemoveKeyframe(i)
+	# If no CHR0 arrayIndex (translation X, etc.) given, clear all
+		if arrayIndex == -1:
+			chr0Entry.RemoveKeyframe(i)
+		else:
+			chr0Entry.RemoveKeyframe(arrayIndex, i)
 
 # cleanCHR()
 # Remove redundant keyframes within a given interval
