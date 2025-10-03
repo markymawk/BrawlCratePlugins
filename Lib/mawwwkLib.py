@@ -226,6 +226,9 @@ def setAllTangents(chr0Entry, newTangent=0):
 # Still experimental
 def shiftAnimation(sourceEntry, destEntry, frameDifference):
 	frameCount = sourceEntry.Parent.FrameCount
+	if sourceEntry.Parent.Loop:
+		frameCount += 1
+	
 	clearCHR(destEntry)
 	# Set every value on every frame, then clean unused frames later
 	for arrayIndex in range(9):
@@ -251,6 +254,13 @@ def shiftAnimation(sourceEntry, destEntry, frameDifference):
 # animSharpTangents()
 # Create keyframes in a chr0 entry with straight tangents, by adding keyframes at indices (startFrame+1) and (endFrame-1)
 def animSharpTangents(chr0Entry, arrayIndex, startFrame, endFrame, startVal, endVal=None):
+	# If endFrame is -1, set to final frame
+	if endFrame == -1:
+		endFrame = chr0Entry.Parent.FrameCount
+		#if chr0Entry.Parent.Loop:
+		#	endFrame += 1
+	
+	# Check if any frame difference and show error if not
 	if (endFrame - startFrame <= 1):
 		dmsg("Lib animSharpTangents: No frame difference")
 		return
