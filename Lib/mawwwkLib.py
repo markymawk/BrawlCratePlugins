@@ -353,7 +353,7 @@ def clearCHR(chr0Entry, arrayIndex=-1):
 
 # cleanCHR()
 # Remove redundant keyframes within a given interval
-def cleanCHR(entry, interval=0.001):
+def cleanCHR(entry, interval=0.001, arrayIndex=-1):
 	
 	keyframesRemovedCount = 0
 	
@@ -367,8 +367,13 @@ def cleanCHR(entry, interval=0.001):
 	entry._generateTangents = False
 	entry.IsDirty = True
 	
+	# Determine which array indices (scale, rot, trans) to loop through
+	if arrayIndex == -1:
+		arrayIndices = range(9)
+	else:
+		arrayIndices = [arrayIndex]
 	# Loop through CHR array indices (scale, rot, trans)
-	for i in range(9):
+	for i in arrayIndices:
 		
 		# Loop through frames
 		for frameIndex in range(1, frameCount+1):
