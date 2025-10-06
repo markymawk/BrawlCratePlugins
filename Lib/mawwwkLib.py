@@ -533,6 +533,18 @@ def clearBoneFlags(node):
 		for bone in boneGroup.GetChildrenRecursive():
 			clearBoneFlags(bone)
 
+# getUnusedBones()
+# Given a mdl0, return a list[] of all bones with no children and no object bindings
+def getUnusedBones(mdl0):
+	boneGroup = mdl0.FindChild("Bones")
+	list = []
+	
+	for bone in boneGroup.GetChildrenRecursive():
+		isBoneUsed = bone.HasChildren or len(bone.VisibilityDrawCalls) or len(bone.SingleBindObjects)
+		if not isBoneUsed:
+			list.append(bone)
+	
+	return list
 # getParentArc()
 # Return the parent ARCNode of the given node, or the RootNode if reached
 def getParentArc(node):
