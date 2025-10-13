@@ -226,14 +226,12 @@ def setAllTangents(chr0Entry, newTangent=0):
 # Still experimental
 def shiftAnimation(sourceEntry, destEntry, frameDifference):
 	frameCount = sourceEntry.Parent.FrameCount
-	if sourceEntry.Parent.Loop:
-		frameCount += 1
+	destEntry.Parent.FrameCount = frameCount
 	
 	clearCHR(destEntry)
 	# Set every value on every frame, then clean unused frames later
 	for arrayIndex in range(9):
 		currentTangent = 0
-		
 		for i in range(frameCount):
 			# Get source keyframe
 			sourceKf = sourceEntry.GetKeyframe(arrayIndex, i)
@@ -248,7 +246,6 @@ def shiftAnimation(sourceEntry, destEntry, frameDifference):
 			
 			destKf._tangent = currentTangent
 	
-	destEntry.Parent.FrameCount = frameCount
 	cleanCHR(destEntry, 0.0015)
 
 # animSharpTangents()
