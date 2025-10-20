@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "2.0"
+__version__ = "2.1"
 
 from BrawlCrate.NodeWrappers import *
 from System.Windows.Forms import ToolStripMenuItem
@@ -11,7 +11,7 @@ SCRIPT_NAME = "Locate TEX0 Usage"
 # Wrapper: TEX0Wrapper
 def EnableCheckTEX0(sender, event_args):
 	node = BrawlAPI.SelectedNode
-	sender.Enabled = (node and node.Parent)
+	sender.Enabled = node and node.Parent
 
 ## End enable check function
 ## Start helper functions
@@ -58,44 +58,6 @@ def getPAT0Uses(brres, tex0Name):
 	
 	return usesList
 
-# Return formatted string of TEX0 use in MDL0 nodes
-def getMDL0String(allModelUses, tex0Name, getSingleUse=False):
-	outputStr = ""
-	for mdl0 in allModelUses:
-		brres = mdl0.Parent.Parent
-		
-		# Append MDL0 name to string
-		outputStr += "\nMDL0: " + brres.Name + "/" + mdl0.Name + "\n"
-		
-		# Get used materials
-		for texRef in mdl0.FindChild("Textures").FindChild(tex0Name)._references:
-			mat = texRef.Material
-			
-			# If getting single-use material to select, return this material
-			if getSingleUse:
-				return mat
-			outputStr += "- Material: " + mat.Name + "\n"
-			
-			# Get objects used by this mat
-			if len(mat._objects):
-				for obj in mat._objects:
-					outputStr += "  - Object: " + obj.Name + "\n"
-	
-	return outputStr
-
-# Return formatted string of TEX0 use in PAT0 nodes
-def getPAT0String(allPat0Uses, tex0Name, getSingleUse=False):
-	outputStr = ""
-	for pat0TexNode in allPat0Uses:
-		pat0 = pat0TexNode.Parent.Parent
-		# If getting single-use PAT0 to select, return this
-		if getSingleUse:
-			return pat0TexNode
-		brres = pat0.Parent.Parent
-		outputStr += "\nPAT0: " + brres.Name + "/" + pat0.Name + "/" + pat0TexNode.Parent.Name + "/" + pat0TexNode.Name + "\n"
-	
-	return outputStr
-
 ## End helper functions
 ## Start loader functions
 
@@ -104,7 +66,7 @@ def locate_tex0_usage(sender, event_args):
 	parentBRRES = BrawlAPI.SelectedNode.Parent.Parent
 	
 	allModelUses = [] # List of MDL0 nodes used
-	allPAT0Uses = []  # List of PAT0 nodes used
+	allPat0Uses = []  # List of PAT0 nodes used
 	
 	# If parent brres contains models or PAT0s, only check within that brres
 	checkSingleBrres = MDL_GROUP in getChildNames(parentBRRES) or PAT_GROUP in getChildNames(parentBRRES)
@@ -114,9 +76,9 @@ def locate_tex0_usage(sender, event_args):
 		for i in getMDL0Uses(brres, tex0Name):
 			allModelUses.append(i)
 		
-		# Get individual PAT0 usage, then append to allPAT0Uses[]
+		# Get individual PAT0 usage, then append to allPat0Uses[]
 		for i in getPAT0Uses(brres, tex0Name):
-			allPAT0Uses.append(i)
+			allPat0Uses.append(i)
 	
 	# If parent node is a brres with no MDL0/PAT0s, check all brres nodes in the file
 	elif isinstance(parentBRRES, BRRESNode):
@@ -125,49 +87,75 @@ def locate_tex0_usage(sender, event_args):
 			for i in getMDL0Uses(brres, tex0Name):
 				allModelUses.append(i)
 				
-			# Get individual PAT0 usage, then append to allPAT0Uses[]
+			# Get individual PAT0 usage, then append to allPat0Uses[]
 			for i in getPAT0Uses(brres, tex0Name):
-				allPAT0Uses.append(i)
+				allPat0Uses.append(i)
 	
 	# If trouble recognizing node layout, show error
 	else:
 		BrawlAPI.ShowError("Error: can't detect usable textures in parent node", SCRIPT_NAME)
 		return
 	
-	useCount = len(allModelUses + allPAT0Uses)
-	
-	# If not found, show message and return
-	if useCount == 0:
+	# If TEX0 not used, show message and return
+	if len(allModelUses + allPat0Uses) == 0:
 		BrawlAPI.ShowError("No TEX0 usage found", SCRIPT_NAME)
 		return
 	
-	# Get formatted strings
+	# Start results message
 	resultsMsg = tex0Name + " found in:\n"
-	resultsMsg += getMDL0String(allModelUses, tex0Name)
-	resultsMsg += getPAT0String(allPAT0Uses, tex0Name)
+	modelUseCount = 0
+	pat0UseCount = 0
 	
-	# If single use MDL0, prompt to select material (even if PAT0 is used)
-	if len(allModelUses) == 1:
+	# Get formatted MDL0 strings
+	for mdl0 in allModelUses:
+		brres = mdl0.Parent.Parent
+		
+		# Append MDL0 name to string
+		resultsMsg += "\nMDL0: " + brres.Name + "/" + mdl0.Name + "\n"
+		
+		# Loop through used materials
+		for texRef in mdl0.FindChild("Textures").FindChild(tex0Name)._references:
+			
+			# If final use count is 1, this material will be fetched
+			modelUseCount += 1
+			mat = texRef.Material
+			resultsMsg += "- Material: " + mat.Name + "\n"
+			
+			# Get objects used by this mat
+			if len(mat._objects):
+				for obj in mat._objects:
+					resultsMsg += "  - Object: " + obj.Name + "\n"
+	
+	# Get formatted PAT0 strings
+	for pat0TexNode in allPat0Uses:
+		
+		# If final use count is 1, this pat0 will be fetched
+		pat0UseCount += 1
+		pat0 = pat0TexNode.Parent.Parent
+		brres = pat0.Parent.Parent
+		resultsMsg += "\nPAT0: " + brres.Name + "/" + pat0.Name + "/" + pat0TexNode.Parent.Name + "/" + pat0TexNode.Name + "\n"
+	
+	## Show results
+	# If single use MDL0, prompt to select material
+	if len(allModelUses) == 1 and modelUseCount == 1:
 		resultsMsg += "\n\nSelect this material?"
 		if not BrawlAPI.ShowYesNoPrompt(resultsMsg, SCRIPT_NAME):
 			return
 		
-		# Select material node
-		material = getMDL0String(allModelUses, tex0Name, True)
-		selectNode(material)
+		selectNode(mat)
 	
 	# If single use PAT0, prompt to select it
-	elif len(allPAT0Uses) == 1:
+	elif len(allPat0Uses) == 1 and pat0UseCount == 1:
 		resultsMsg += "\n\nSelect this PAT0?"
 		if not BrawlAPI.ShowYesNoPrompt(resultsMsg, SCRIPT_NAME):
 			return
 		
-		# Select pat0 node
-		pat0 = getPAT0String(allPAT0Uses, tex0Name, True)
-		selectNode(pat0)
+		selectNode(allPat0Uses[0])
+	
 	# If multiple uses, list them
 	else:
 		BrawlAPI.ShowMessage(resultsMsg, SCRIPT_NAME)
+
 ## End loader functions
 ## Start context menu add
 
