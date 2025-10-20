@@ -369,11 +369,12 @@ def cleanCHR(entry, interval=0.001, arrayIndex=-1):
 		arrayIndices = range(9)
 	else:
 		arrayIndices = [arrayIndex]
+	
 	# Loop through CHR array indices (scale, rot, trans)
 	for i in arrayIndices:
 		
-		# Loop through frames
-		for frameIndex in range(1, frameCount+1):
+		# Loop through frames backwards
+		for frameIndex in range(frameCount+1, 0, -1):
 			keyframe = entry.GetKeyframe(i, frameIndex)
 			
 			# Ignore blank keyframes
