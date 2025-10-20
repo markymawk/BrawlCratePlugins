@@ -587,7 +587,7 @@ def getMDL0FromBone(bone):
 
 # getWrapperFromNode()
 # Given a node, return its corresponding wrapper by navigating index values from the RootNode
-def getWrapperFromNode(node):
+def getWrapperFromNode(node, doExpand=True):
 	indexList = []
 
 	# Append node index to list
@@ -602,6 +602,9 @@ def getWrapperFromNode(node):
 	for i in range(len(indexList)):
 		childIndex = indexList[i]
 		wrapper = wrapper.Nodes[childIndex]
+		
+		if doExpand:
+			wrapper.Expand()
 	return wrapper
 
 ## End node functions
