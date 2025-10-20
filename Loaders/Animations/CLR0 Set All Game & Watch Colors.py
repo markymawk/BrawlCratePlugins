@@ -6,14 +6,14 @@ from System.Windows.Forms import ToolStripMenuItem
 from mawwwkLib import *
 
 FILL_COLOR_NAMES = [
- "AGameWatch"
+	"AGameWatch"
 ]
 
 BORDER_COLOR_NAMES = [
- "BrdDSGameWatch",
- "BrdGameWatch",
- "BrdZOffDSGameWatch",
- "BrdZOffGameWatch"
+	"BrdDSGameWatch",
+	"BrdGameWatch",
+	"BrdZOffDSGameWatch",
+	"BrdZOffGameWatch"
 ]
 
 ## Start enable check functions
@@ -39,47 +39,27 @@ def EnableCheckGNWFillEntry(sender, event_args):
 	sender.Enabled = (node is not None and node.Parent and node.Parent.Name in FILL_COLOR_NAMES and "GameWatch" in BrawlAPI.RootNode.Name)
 
 ## End enable check functions
-## Start helper functions
-
-# Copy frames from the given baseNode frames list to the output materials
-def exportGNWColors(sourceFrames, outputMatsList):
-	frameCount = len(sourceFrames)
-	
-	# CLR0 mat, i.e. BrdDSGameWatch
-	for mat in outputMatsList:
-		
-		# Set frame count
-		mat.Parent.FrameCount = frameCount
-		
-		# ColorRegister0
-		matEntry = mat.Children[0]
-		
-		# Set color of frames[i] to source frames[i]
-		for i in range(len(sourceFrames)):
-			matEntry.SetColor(i, i, sourceFrames[i])
-
-## End helper functions
 ## Start loader functions
 
 # Base loader function (border colors, CLR0Material)
 def copy_gnw_colors_border(sender, event_args):
-	framesList = BrawlAPI.SelectedNode.Children[0].Colors
-	main(BORDER_COLOR_NAMES, framesList)
+	sourceFrames = BrawlAPI.SelectedNode.Children[0].Colors
+	main(BORDER_COLOR_NAMES, sourceFrames)
 
 # Base loader function (fill colors, CLR0Material)
 def copy_gnw_colors_fill(sender, event_args):
-	framesList = BrawlAPI.SelectedNode.Children[0].Colors
-	main(FILL_COLOR_NAMES, framesList)
+	sourceFrames = BrawlAPI.SelectedNode.Children[0].Colors
+	main(FILL_COLOR_NAMES, sourceFrames)
 
 # Base loder function (border colors, MaterialEntry)
 def copy_gnw_colors_border_entry(sender, event_args):
-	framesList = BrawlAPI.SelectedNode.Colors
-	main(BORDER_COLOR_NAMES, framesList)
+	sourceFrames = BrawlAPI.SelectedNode.Colors
+	main(BORDER_COLOR_NAMES, sourceFrames)
 
 # Base loader function (fill colors, MaterialEntry)
 def copy_gnw_colors_fill_entry(sender, event_args):
-	framesList = BrawlAPI.SelectedNode.Colors
-	main(FILL_COLOR_NAMES, framesList)
+	sourceFrames = BrawlAPI.SelectedNode.Colors
+	main(FILL_COLOR_NAMES, sourceFrames)
 
 def main(outputAnimNamesList, sourceFrames):
 	# Determine which nodes in the file to modify based on names list
@@ -90,8 +70,15 @@ def main(outputAnimNamesList, sourceFrames):
 			if clr0Mat.Name in outputAnimNamesList:
 				entriesToModify.append(clr0Mat)
 	
-	# Export from selected node to other applicable nodes
-	exportGNWColors(sourceFrames, entriesToModify)
+	frameCount = len(sourceFrames)
+	
+	for mat in entriesToModify:
+		mat.Parent.FrameCount = frameCount
+		matEntry = mat.Children[0]
+		
+		# Set color of target frames[i] to source frames[i]
+		for i in range(len(sourceFrames)):
+			matEntry.SetColor(i, i, sourceFrames[i])
 	
 	# Success dialog message, if fill colors
 	if outputAnimNamesList == FILL_COLOR_NAMES:
