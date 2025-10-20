@@ -1,4 +1,5 @@
-﻿version = "1.8"
+﻿version = "1.8.1"
+
 from BrawlCrate.API import *	# BrawlAPI
 from BrawlCrate.API.BrawlAPI import AppPath
 from BrawlLib.SSBB.ResourceNodes import *
@@ -606,6 +607,11 @@ def getWrapperFromNode(node, doExpand=True):
 		if doExpand:
 			wrapper.Expand()
 	return wrapper
+
+def selectNode(node):
+	index = node.Index
+	wrapper = getWrapperFromNode(node, True)
+	node.Parent.SelectChildAtIndex(index)
 
 ## End node functions
 ## Start file operation functions
