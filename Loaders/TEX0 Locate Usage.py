@@ -1,5 +1,5 @@
 __author__ = "mawwwk and soopercool101"
-__version__ = "1.5"
+__version__ = "1.6"
 
 from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
@@ -26,7 +26,7 @@ def getModelUsage(modelsGroup, tex0Name):
 	
 		# If texture exists in the mdl0 Textures group, append an entry to modelUses[]
 		if mdl0TexturesGroup and tex0Name in getChildNames(mdl0TexturesGroup):
-		
+			
 			# Model name, for entry[0]
 			brres = mdl0.Parent.Parent
 			modelName = "MDL0: " + brres.Name + "/" + mdl0.Name
@@ -52,12 +52,6 @@ def getUsedMaterials(mdl0TexturesGroup, tex0Name):
 		matList.append(texRef.Material)
 	
 	return matList
-	#materialsNamesList = []
-	#for texRef in mdl0TextureNode.References:
-	#	
-	#	materialsNamesList.append(str(texRef))
-	#
-	#return materialsNamesList
 
 # Given a mdl0 node and list of material names, return a list of objects used by those mats
 def getUsedObjectsList(mdl0, materialsList):
@@ -79,25 +73,17 @@ def getPAT0Usage(pat0Group, tex0Name):
 	for pat0 in pat0Group.Children:
 		for pat0Entry in pat0.Children:
 			for pat0TextureNode in pat0Entry.Children:
-			
-				# Loop through texture entry nodes to find frames used
+				
 				framesUsed = []
 				
+				# Loop through texture entry nodes to find frames used
 				for pat0TextureEntryNode in pat0TextureNode.Children:
 					if pat0TextureEntryNode.Name == tex0Name:
 						framesUsed.append(int(pat0TextureEntryNode.FrameIndex))
 				
 				# If texture used, append to pat0Uses[]
 				if len(framesUsed):
-					usageStr = "PAT0: " + pat0.Parent.Parent.Name + "/" + pat0.Name
-					usageStr += "\n  Frame "
-					
-					# List frames used
-					for i in framesUsed:
-						usageStr += str(i) + ", "
-					
-					usageStr = usageStr[:-2]
-					pat0Uses.append(usageStr)
+					pat0Uses.append([pat0, framesUsed])
 					
 	return pat0Uses
 
@@ -130,7 +116,7 @@ def locate_tex0_usage(sender, event_args):
 			for i in thisPAT0Uses:
 				allPAT0Uses.append(i)
 	
-	# If selected tex0 is in a TextureData, check all brres nodes in the file
+	# Assume selected tex0 is in a TextureData; check all brres nodes in the file
 	elif isinstance(parentBRRES, BRRESNode):
 		for brres in BrawlAPI.NodeListOfType[BRRESNode]():
 			modelsGroup = brres.FindChild(MDL_GROUP)
@@ -150,7 +136,7 @@ def locate_tex0_usage(sender, event_args):
 				for i in thisPAT0Uses:
 					allPAT0Uses.append(i)
 	
-	# Else, error
+	# If trouble recognizing node layout, show error
 	else:
 		BrawlAPI.ShowError("Error: can't detect usable textures in parent node", SCRIPT_NAME)
 		return
@@ -160,11 +146,11 @@ def locate_tex0_usage(sender, event_args):
 	if len(allModelUses + allPAT0Uses):
 		resultsMsg = tex0Name + " found in:\n\n"
 		
-		# List MDL0 uses
+		# Get list of MDL0 uses
 		if len(allModelUses):
-			# For each model use, show mdl0, material, and object names
+			# For each model use, show MDL0, material, and object names
 			for entry in allModelUses:
-			
+				
 				resultsMsg += entry[0] + "\n"
 				
 				for material in entry[1]:
@@ -175,13 +161,44 @@ def locate_tex0_usage(sender, event_args):
 				
 				resultsMsg += "\n"
 			
-		# List PAT0 uses
+		# Get list of PAT0 uses
 		if len(allPAT0Uses):
-			resultsMsg += listToString(allPAT0Uses)
+			dmsg(len(allPAT0Uses))
+			for pat0Use in allPAT0Uses:
+				pat0 = pat0Use[0]
+				framesUsed = pat0Use[1]
+				usageStr = "PAT0: " + pat0Use[0].Parent.Parent.Name + "/" + pat0.Name
+				usageStr += "\n  Frame "
+				
+				# List frames used
+				for i in pat0Use[1]:
+					usageStr += str(i) + ", "
+				
+				usageStr = usageStr[:-2]
+			
+			resultsMsg += usageStr
 		else:
 			resultsMsg = resultsMsg[:-1] # Remove last \n
 		
-		BrawlAPI.ShowMessage(resultsMsg, SCRIPT_NAME)
+		# If TEX0 is only used in one location, add prompt message to select it
+		if len(allModelUses + allPAT0Uses) == 1:
+			resultsMsg += "\n\nSelect this material?"
+			if not BrawlAPI.ShowYesNoPrompt(resultsMsg, SCRIPT_NAME):
+				return
+			
+			# This "[0][1][0]" organization is a mess tbh
+			if len(allModelUses) == 1:
+				node = allModelUses[0][1][0]
+			else:
+				node = allPAT0Uses[0][0]
+			index = node.Index
+			wrapper = getWrapperFromNode(node)
+			wrapper.Expand()
+			node.Parent.SelectChildAtIndex(index)
+			
+		# If TEX0 is used in more than one place, show list of uses
+		else:
+			BrawlAPI.ShowMessage(resultsMsg, SCRIPT_NAME)
 	
 	# If tex0 not used
 	else:
