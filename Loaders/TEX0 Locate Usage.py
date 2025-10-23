@@ -128,8 +128,6 @@ def locate_tex0_usage(sender, event_args):
 	
 	# Get formatted PAT0 strings
 	for pat0TexNode in allPat0Uses:
-		
-		# If final use count is 1, this pat0 will be fetched
 		pat0UseCount += 1
 		pat0 = pat0TexNode.Parent.Parent
 		brres = pat0.Parent.Parent
