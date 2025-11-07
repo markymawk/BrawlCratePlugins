@@ -435,7 +435,7 @@ def getCHREntry(parentNode, brresID, childID=0, chrID=0):
 	else:
 		dmsg("Lib getCHREntry() index error")
 		return 0
-	
+
 # Return the CLR at index clrID of the given brres ID
 def getCLR(parentNode, brresID, clrID=0):
 	brres = getBRRES(parentNode, brresID)
@@ -537,13 +537,22 @@ def clearBoneFlags(node):
 		for bone in boneGroup.GetChildrenRecursive():
 			clearBoneFlags(bone)
 
+# Get a list of all bones using GetChildrenRecursive()
+def getBones(mdl0):
+	boneList = []
+	boneGroup = mdl0.FindChild("Bones")
+	if boneGroup:
+		for i in boneGroup.GetChildrenRecursive():
+			boneList.append(i)
+	
+	return boneList
+
 # getUnusedBones()
 # Given a mdl0, return a list[] of all bones with no children and no object bindings
 def getUnusedBones(mdl0):
-	boneGroup = mdl0.FindChild("Bones")
 	list = []
 	
-	for bone in boneGroup.GetChildrenRecursive():
+	for bone in getBones(mdl0):
 		isBoneUsed = bone.HasChildren or len(bone.VisibilityDrawCalls) or len(bone.SingleBindObjects)
 		if not isBoneUsed:
 			list.append(bone)
