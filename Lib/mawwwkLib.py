@@ -570,9 +570,9 @@ def getParentArc(node):
 
 # getChildNames()
 # Return list containing group.Children node names
-def getChildNames(group):
+def getChildNames(node):
 	list = []
-	for i in group.Children:
+	for i in node.Children:
 		list.append(i.Name)
 	return list
 
