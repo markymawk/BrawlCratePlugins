@@ -228,8 +228,8 @@ def setAllTangents(chr0Entry, newTangent=0):
 def shiftAnimation(sourceEntry, destEntry, frameDifference):
 	frameCount = sourceEntry.Parent.FrameCount
 	destEntry.Parent.FrameCount = frameCount
-	
 	clearCHR(destEntry)
+	
 	# Set every value on every frame, then clean unused frames later
 	for arrayIndex in range(9):
 		currentTangent = 0
@@ -574,6 +574,42 @@ def getChildNames(node):
 	list = []
 	for i in node.Children:
 		list.append(i.Name)
+	return list
+
+# getCHRs()
+# Return dictionary of int : CHR0Node, at int's BRRES FileIndex
+def getCHRs(arc):
+	list = {}
+	if not arc.HasChildren:
+		return list
+	
+	# Loop through child nodes
+	for i in arc.Children:
+		if not (isinstance(i, BRRESNode) and i.HasChildren and CHR_GROUP in getChildNames(i)):
+			continue
+		fileIndex = i.FileIndex
+		chr = i.FindChild(CHR_GROUP).Children[0]
+		list[fileIndex] = chr
+	
+	return list
+
+# getCHREntries()
+# Return dictionary of int : CHR0EntryNode, at int's BRRES FileIndex
+def getCHREntries(arc):
+	list = {}
+	if not arc.HasChildren:
+		return list
+	
+	# Loop through child nodes
+	for i in arc.Children:
+		if not (isinstance(i, BRRESNode) and i.HasChildren and CHR_GROUP in getChildNames(i)):
+			continue
+		fileIndex = i.FileIndex
+		chr = i.FindChild(CHR_GROUP).Children[0]
+		if not chr.HasChildren:
+			continue
+		list[fileIndex] = chr.Children[0]
+	
 	return list
 
 # getChildNodes()
