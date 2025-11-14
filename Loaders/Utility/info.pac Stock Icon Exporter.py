@@ -1,12 +1,8 @@
 __author__ = "mawwwk"
-__version__ = "1.2"
+__version__ = "1.2.1"
 
 from System.Windows.Forms import ToolStripMenuItem
-from BrawlCrate.API import *
-from BrawlCrate.API.BrawlAPI import AppPath
 from BrawlCrate.NodeWrappers import *
-from BrawlLib.SSBB.ResourceNodes import *
-from System.IO import File
 from mawwwkLib import *
 
 STOCKS_PAT0_PATH = AppPath + "\STOCKFACE_PAT0_temp.pat0"
@@ -35,11 +31,9 @@ def purgeAllExceptStocks(parentBRRES):
 	groupsToDelete = []
 	
 	# Delete any groups other than Textures and Palettes
-	for bresGroup in parentBRRES.Children:
+	for bresGroup in getChildNodes(parentBRRES):
 		if bresGroup.Name not in ["Textures(NW4R)", "Palettes(NW4R)"]:
-			groupsToDelete.append(bresGroup)
-	
-	removeChildNodes(groupsToDelete)
+			bresGroup.Remove()
 	
 	# Only textures and palette groups should remain
 	if len(parentBRRES.Children) != 2:
@@ -52,17 +46,13 @@ def purgeAllExceptStocks(parentBRRES):
 	tex0Group = parentBRRES.FindChild(TEX_GROUP)
 	plt0Group = parentBRRES.FindChild(PLT_GROUP)
 	
-	for tex0 in tex0Group.Children:
+	for tex0 in getChildNodes(tex0Group):
 		if not tex0.Name.startswith("InfStc."):
-			unusedTEX0List.append(tex0)
+			tex0.Remove(True)
 	
-	for plt0 in plt0Group.Children:
+	for plt0 in getChildNodes(plt0Group):
 		if not plt0.Name.startswith("InfStc."):
-			unusedPLT0List.append(plt0)
-	
-	# Delete remaining non-stock nodes
-	removeChildNodes(unusedTEX0List)
-	removeChildNodes(unusedPLT0List)
+			plt0.Remove()
 
 ## End helper functions
 ## Start loader functions

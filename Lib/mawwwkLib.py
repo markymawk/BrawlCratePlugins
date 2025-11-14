@@ -1,4 +1,4 @@
-﻿version = "1.8.1"
+﻿version = "1.8.2"
 
 from BrawlCrate.API import *	# BrawlAPI
 from BrawlCrate.API.BrawlAPI import AppPath
@@ -513,18 +513,6 @@ def resizeCHR(chr0Node, newFrameCount=-1):
 	
 	chr0Node.Replace(newCHR0)
 	removeNode(newCHR0)
-
-# removeChildNodes()
-# Given a list of nodes with the same parent, delete those nodes using RemoveChild()
-# use reverse() to avoid top-down errors
-# params:
-#	nodeList: any list of ResourceNodes which share a Parent
-def removeChildNodes(nodeList):
-	nodeList.reverse()
-	parentNode = nodeList[0].Parent
-	
-	for node in nodeList:
-		parentNode.RemoveChild(node)
 
 # removeNode()
 # Use Parent.RemoveChild() to remove the given node
