@@ -2,7 +2,6 @@ __author__ = "mawwwk"
 __version__ = "2.0.1"
 
 from System.Windows.Forms import ToolStripMenuItem # Needed for all loaders
-from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
 from mawwwkLib import *
 

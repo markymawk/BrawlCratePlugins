@@ -403,12 +403,15 @@ def cleanCHR(entry, interval=0.001, arrayIndex=-1):
 	
 	return keyframesRemovedCount
 
+# setMips()
+# Set all materials in a given MDL0 to linear mipmaps
 def setMips(mdl0):
 	if mdl0.FindChild("Materials"):
 		for mat in mdl0.FindChild("Materials").Children:
 			for matEntry in mat.Children:
 				matEntry.MinFilter = LINEAR_MIPMAP
 
+# getBRRES()
 # Return the first brres with a FileIndex matching the given id
 def getBRRES(parentNode, id):
 	for child in parentNode.Children:
@@ -418,6 +421,7 @@ def getBRRES(parentNode, id):
 		dmsg("Lib getBRRES() index error: brres " + str(id))
 		return 0
 
+# getCHR()
 # Return the CHR at index chrID of the given brres ID
 def getCHR(parentNode, brresID, chrID=0):
 	brres = getBRRES(parentNode, brresID)
@@ -427,6 +431,7 @@ def getCHR(parentNode, brresID, chrID=0):
 		dmsg("Lib getCHR() index error: brres " + str(brresID))
 		return 0
 
+# getCHREntry()
 # Return the Children[chrID] entry of the given getCHR()
 def getCHREntry(parentNode, brresID, childID=0, chrID=0):
 	chr = getCHR(parentNode, brresID)
@@ -436,6 +441,7 @@ def getCHREntry(parentNode, brresID, childID=0, chrID=0):
 		dmsg("Lib getCHREntry() index error")
 		return 0
 
+# getCLR()
 # Return the CLR at index clrID of the given brres ID
 def getCLR(parentNode, brresID, clrID=0):
 	brres = getBRRES(parentNode, brresID)
@@ -445,6 +451,7 @@ def getCLR(parentNode, brresID, clrID=0):
 		dmsg("Lib getCLR() index error")
 		return 0
 
+# resizeCHR()
 # Create a new CHR with the new frame count, then replace the source CHR with that new one
 def resizeCHR(chr0Node, newFrameCount=-1):
 	
@@ -558,6 +565,7 @@ def getUnusedBones(mdl0):
 			list.append(bone)
 	
 	return list
+
 # getParentArc()
 # Return the parent ARCNode of the given node, or the RootNode if reached
 def getParentArc(node):
@@ -654,9 +662,9 @@ def getWrapperFromNode(node, doExpand=True):
 	return wrapper
 
 def selectNode(node):
-	index = node.Index
+	# First expand out parent nodes via wrappers
 	wrapper = getWrapperFromNode(node, True)
-	node.Parent.SelectChildAtIndex(index)
+	node.Parent.SelectChildAtIndex(node.Index)
 
 ## End node functions
 ## Start file operation functions

@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.0.4"
+__version__ = "1.0.5"
 
 from BrawlCrate.NodeWrappers import *
 from System.Windows.Forms import ToolStripMenuItem
@@ -26,7 +26,7 @@ def clear_unused_bones(sender, event_args):
 	modelsGroup = brresNode.FindChild(MDL_GROUP)
 	
 	if not modelsGroup:
-		BrawlAPI.ShowMessage("No models found in this BRRES. No entries removed.")
+		BrawlAPI.ShowWarning("No entries removed. No models are in this BRRES.", SCRIPT_NAME)
 		return
 	
 	# Populate allBoneNames[]
@@ -57,7 +57,7 @@ def clear_unused_bones(sender, event_args):
 	else:
 		BrawlAPI.ShowMessage("No unused entries found.", SCRIPT_NAME)
 
-LONG_TEXT = "Clear any entries not used in this brres node"
+LONG_TEXT = "Clear any entries not found in this BRRES node"
 
 BrawlAPI.AddContextMenuItem(CHR0Wrapper, "", LONG_TEXT, EnableCheckANIM, ToolStripMenuItem("Clear unused entries", None, clear_unused_bones))
 BrawlAPI.AddContextMenuItem(VIS0Wrapper, "", LONG_TEXT, EnableCheckANIM, ToolStripMenuItem("Clear unused entries", None, clear_unused_bones))

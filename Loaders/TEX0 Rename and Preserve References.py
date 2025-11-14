@@ -1,21 +1,18 @@
 __author__ = "mawwwk"
-__version__ = "1.2.1"
+__version__ = "1.2.2"
 
-from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
-from BrawlLib.SSBB.ResourceNodes import *
 from System.Windows.Forms import ToolStripMenuItem
 from mawwwkLib import *
 
-SCRIPT_NAME = "Rename TEX0 (preserve references)"
+SCRIPT_NAME = "Rename TEX0 (Preserve References)"
 
 ## Start enable check function
 # Check that tex0 is under a BRRES
 # Wrapper: TEX0Wrapper
 def EnableCheckTEX0(sender, event_args):
-	sender.Enabled = (BrawlAPI.SelectedNode is not None \
-	and BrawlAPI.SelectedNode.Parent is not None \
-	and BrawlAPI.SelectedNode.Parent.Parent is not None)
+	node = BrawlAPI.SelectedNode
+	sender.Enabled = node and node.Parent and node.Parent.Parent
 
 ## End enable check function
 ## Start helper functions
@@ -37,7 +34,7 @@ def renameMatRefs(mdl0, oldName, newName):
 	matsGroup = mdl0.FindChild("Materials")
 	if matsGroup:
 		for mat in matsGroup.Children:
-			if mat.Children:
+			if mat.HasChildren:
 				for matRef in mat.Children:
 					if matRef.Name == oldName:
 						matRef.Name = newName
@@ -59,7 +56,8 @@ def rename_tex0_and_references(sender, event_args):
 	
 	# If name already exists in the current brres textures, throw an error
 	if newTEX0Name in getChildNames(textureNode.Parent):
-		deleteAndMerge = BrawlAPI.ShowOKCancelWarning("TEX0 with name \"" + newTEX0Name + "\" already exists.\nDelete the currently-selected TEX0 and merge references?", "Duplicate texture name found")
+		msg = "TEX0 with name \"" + newTEX0Name + "\" already exists.\nDelete the currently-selected TEX0 and merge references?"
+		deleteAndMerge = BrawlAPI.ShowOKCancelWarning(msg, "Duplicate texture name found")
 		if not deleteAndMerge:
 			return
 	
@@ -85,8 +83,8 @@ def rename_tex0_and_references(sender, event_args):
 	
 	# If TEX0 is inside a ModelData or MiscData brres, rename only within that BRRES
 	else:
-		PAT0Group = parentBRRES.FindChild("AnmTexPat(NW4R)")
-		modelsGroup = parentBRRES.FindChild("3DModels(NW4R)")
+		PAT0Group = parentBRRES.FindChild(PAT_GROUP)
+		modelsGroup = parentBRRES.FindChild(MDL_GROUP)
 		
 		# Rename PAT0 references
 		if PAT0Group:

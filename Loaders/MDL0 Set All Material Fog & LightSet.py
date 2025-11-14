@@ -1,11 +1,10 @@
 __author__ = "mawwwk"
-__version__ = "1.1"
+__version__ = "1.2"
 
-from BrawlCrate.API import *
 from BrawlCrate.NodeWrappers import *
-from BrawlLib.SSBB.ResourceNodes import *
 from System.Windows.Forms import ToolStripMenuItem
 from mawwwkLib import *
+
 MINIMUM_INDEX_VALUE = -1
 MAXIMUM_INDEX_VALUE = 20
 
@@ -20,12 +19,7 @@ def EnableCheckMDL0(sender, event_args):
 ## End enable check function
 ## Begin helper methods
 
-def promptNewValues(isLightSet):
-	if isLightSet:
-		fieldName = "LightSetIndex"
-	else:
-		fieldName = "FogIndex"
-	
+def promptNewValues(fieldName):
 	newValue = BrawlAPI.UserStringInput("Enter " + fieldName + " value (-1 to 20)")
 	
 	if str(newValue) == "" or str(newValue) == "None":
@@ -48,7 +42,7 @@ def set_all_mats_fog(sender, event_args):
 	if not matsGroup:
 		return
 	
-	fogValue = promptNewValues(False)
+	fogValue = promptNewValues("FogIndex")
 	
 	if fogValue >= MINIMUM_INDEX_VALUE:
 		for mat in matsGroup.Children:
@@ -60,7 +54,7 @@ def set_all_mats_lightset(sender, event_args):
 	if not matsGroup:
 		return
 	
-	lightSetValue = promptNewValues(True)
+	lightSetValue = promptNewValues("LightSetIndex")
 	
 	if lightSetValue >= MINIMUM_INDEX_VALUE:
 		for mat in matsGroup.Children:
@@ -71,4 +65,4 @@ def set_all_mats_lightset(sender, event_args):
 
 BrawlAPI.AddContextMenuItem(MDL0Wrapper, "", "Set all material LightSet values to the same index", EnableCheckMDL0, ToolStripMenuItem("Set all materials' LightSet index", None, set_all_mats_lightset))
 
-BrawlAPI.AddContextMenuItem(MDL0Wrapper, "", "Set all material FodIndex values to the same fog", EnableCheckMDL0, ToolStripMenuItem("Set all materials' Fog index", None, set_all_mats_fog))
+BrawlAPI.AddContextMenuItem(MDL0Wrapper, "", "Set all material FogIndex values to the same fog", EnableCheckMDL0, ToolStripMenuItem("Set all materials' Fog index", None, set_all_mats_fog))
