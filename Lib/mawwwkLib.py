@@ -598,7 +598,7 @@ def getCHRs(arc):
 
 # getCHREntries()
 # Return dictionary of int : CHR0EntryNode, at int's BRRES FileIndex
-def getCHREntries(arc):
+def getCHREntries(arc, childID=0):
 	list = {}
 	if not arc.HasChildren:
 		return list
@@ -608,10 +608,10 @@ def getCHREntries(arc):
 		if not (isinstance(i, BRRESNode) and i.HasChildren and CHR_GROUP in getChildNames(i)):
 			continue
 		fileIndex = i.FileIndex
-		chr = i.FindChild(CHR_GROUP).Children[0]
+		chr = i.FindChild(CHR_GROUP).Children[childID]
 		if not chr.HasChildren:
 			continue
-		list[fileIndex] = chr.Children[0]
+		list[fileIndex] = chr.Children[childID]
 	
 	return list
 
