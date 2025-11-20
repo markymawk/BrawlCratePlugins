@@ -226,6 +226,12 @@ def setAllTangents(chr0Entry, newTangent=0):
 # Given source entry, offset all keyframes in destEntry ahead by the amount frameDifference
 # Still experimental
 def shiftAnimation(sourceEntry, destEntry, frameDifference):
+	# If given CHR0Node, run on all children
+	if isinstance(sourceEntry, CHR0Node) and isinstance(destEntry, CHR0Node):
+		for i in range(len(sourceEntry.Children)):
+			shiftAnimation(sourceEntry.Children[i], destEntry.Children[i], frameDifference)
+		return
+	
 	frameCount = sourceEntry.Parent.FrameCount
 	destEntry.Parent.FrameCount = frameCount
 	clearCHR(destEntry)
