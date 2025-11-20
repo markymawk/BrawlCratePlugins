@@ -72,7 +72,7 @@ def import_model_settings(sender, event_args):
 	for destMat in destination_MatGroup.Children:
 		sourceMat = source_MatGroup.FindChild(destMat.Name)
 		
-		# If material exists in source model, assign it to dest model
+		# If material exists in source MDL0, replace it in dest MDL0 and update Shader
 		if sourceMat:
 			destMat.Replace(sourceMat)
 			sourceMatsList.remove(sourceMat)
@@ -83,6 +83,7 @@ def import_model_settings(sender, event_args):
 		newMat = selNodeWrapper.NewMaterial()
 		newMat.Replace(sourceMat)
 		newMat.Name = sourceMat.Name
+		newMat.Shader = sourceMat.Shader
 	
 	# End material import
 	# Begin object DrawPass setings (transparency, etc.)
