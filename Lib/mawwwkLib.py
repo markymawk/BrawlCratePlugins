@@ -258,11 +258,17 @@ def shiftAnimation(sourceEntry, destEntry, frameDifference):
 # animSharpTangents()
 # Create keyframes in a chr0 entry with straight tangents, by adding keyframes at indices (startFrame+1) and (endFrame-1)
 def animSharpTangents(chr0Entry, arrayIndex, startFrame, endFrame, startVal, endVal=None):
+	# If given a CHR0Node, run on all children nodes
+	if isinstance(chr0Entry, CHR0Node):
+		for i in chr0Entry.Children:
+			animSharpTangents(i, arrayIndex, startFrame, endFrame, startVal, endVal)
+			return
+	
 	# If endFrame is -1, set to final frame
 	if endFrame == -1:
 		endFrame = chr0Entry.Parent.FrameCount
-		#if chr0Entry.Parent.Loop:
-		#	endFrame += 1
+		if not chr0Entry.Parent.Loop:
+			endFrame -= 1
 	
 	# Check if any frame difference and show error if not
 	if (endFrame - startFrame <= 1):
@@ -271,11 +277,6 @@ def animSharpTangents(chr0Entry, arrayIndex, startFrame, endFrame, startVal, end
 	
 	if endVal == None:
 		endVal = startVal
-	# If CHR0 node, run on all children
-	if isinstance(chr0Entry, CHR0Node):
-		for entry in chr0Entry.Children:
-			animSharpTangents(entry, arrayIndex, startFrame, endFrame, startVal, endVal)
-		return
 	
 	# Value change per frame
 	tangent = (endVal - startVal) / (endFrame - startFrame)
@@ -380,8 +381,8 @@ def cleanCHR(entry, interval=0.001, arrayIndex=-1):
 	# Loop through CHR array indices (scale, rot, trans)
 	for i in arrayIndices:
 		
-		# Loop through frames backwards
-		for frameIndex in range(frameCount+1, 0, -1):
+		# Loop through frames
+		for frameIndex in range(frameCount):
 			keyframe = entry.GetKeyframe(i, frameIndex)
 			
 			# Ignore blank keyframes
