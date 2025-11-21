@@ -211,9 +211,13 @@ def getFiles(dirPath, fileStr=0):
 ## End list functions
 ## Start node functions
 
+# clearTangents()
+# An alias for setAllTangents()
 def clearTangents(chr0Entry):
 	setAllTangents(chr0Entry, 0)
 
+# setAllTangents()
+# Set all frames of a CHR0Entry node to use newTangent
 def setAllTangents(chr0Entry, newTangent=0):
 	# If a CHR0 animation, run on all children
 	if isinstance(chr0Entry, CHR0Node) and chr0Entry.HasChildren:
@@ -222,10 +226,52 @@ def setAllTangents(chr0Entry, newTangent=0):
 		return
 	for i in range(9):
 		setSingleTangent(chr0Entry, i, newTangent)
+	
+# setSingleTangent()
+# Applies given value to all frames, only for a given index (translation X, rot Y, etc.)
+def setSingleTangent(chr0Entry, arrayIndex, newTangent=0):
+	
+	# If a CHR0 animation, run on all children
+	if isinstance(chr0Entry, CHR0Node) and chr0Entry.HasChildren:
+		for entry in chr0Entry.Children:
+			setSingleTangent(entry, arrayIndex, newTangent)
+		return
+	
+	# Add 1 frame if loop = true
+	chr0 = chr0Entry.Parent
+	frameCount = chr0.FrameCount
+	if chr0.Loop:
+		frameCount = frameCount + 1
+	
+	# Don't change tangents for 1-frame animations
+	isMultipleFrames = False
+	for i in range(frameCount):
+		
+		frame = chr0Entry.GetKeyframe(arrayIndex, i)
+		
+		# Skip empty frames
+		if "None" in str(type(frame)):
+			continue
+		
+		# Store tangent of first frame
+		if i == 0:
+			frame0Tangent = frame._tangent
+		isMultipleFrames = (i > 0)
+		frame._tangent = newTangent
+		
+	# If only 1 frame in the animation, restore its original tangent
+	firstFrame = chr0Entry.GetKeyframe(arrayIndex, 0)
+	
+	if isMultipleFrames:
+		chr0Entry.IsDirty = True
+	elif firstFrame:
+		firstFrame._tangent = frame0Tangent
 
+# shiftAnimation()
 # Given source entry, offset all keyframes in destEntry ahead by the amount frameDifference
 # Still experimental
 def shiftAnimation(sourceEntry, destEntry, frameDifference):
+	
 	# If given CHR0Node, run on all children
 	if isinstance(sourceEntry, CHR0Node) and isinstance(destEntry, CHR0Node):
 		for i in range(len(sourceEntry.Children)):
@@ -295,46 +341,6 @@ def animSharpTangents(chr0Entry, arrayIndex, startFrame, endFrame, startVal, end
 	
 	for kf in [kfStart, kfEnd, kf1, kf2]:
 		kf._tangent = tangent
-	
-# setSingleTangent()
-# Applies given value to all frames, only for a given index (translation X, rot Y, etc.)
-def setSingleTangent(chr0Entry, arrayIndex, newTangent=0):
-	
-	# If a CHR0 animation, run on all children
-	if isinstance(chr0Entry, CHR0Node) and chr0Entry.HasChildren:
-		for entry in chr0Entry.Children:
-			setSingleTangent(entry, arrayIndex, newTangent)
-		return
-	
-	# Add 1 frame if loop = true
-	chr0 = chr0Entry.Parent
-	frameCount = chr0.FrameCount
-	if chr0.Loop:
-		frameCount = frameCount + 1
-	
-	# Don't change tangents for 1-frame animations
-	isMultipleFrames = False
-	for i in range(frameCount):
-		
-		frame = chr0Entry.GetKeyframe(arrayIndex, i)
-		
-		# Skip empty frames
-		if "None" in str(type(frame)):
-			continue
-		
-		# Store tangent of first frame
-		if i == 0:
-			frame0Tangent = frame._tangent
-		isMultipleFrames = (i > 0)
-		frame._tangent = newTangent
-		
-	# If only 1 frame in the animation, restore its original tangent
-	firstFrame = chr0Entry.GetKeyframe(arrayIndex, 0)
-	
-	if isMultipleFrames:
-		chr0Entry.IsDirty = True
-	elif firstFrame:
-		firstFrame._tangent = frame0Tangent
 
 # clearCHR()
 # Remove all keyframes from a CHR0 or CHR0Entry node
