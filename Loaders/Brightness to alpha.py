@@ -22,7 +22,7 @@ def brightness_to_alpha(sender, event_args):
 	for i in range(selNode.ColorCount(0)):
 		# Get color value (brightness)
 		color = selNode.GetColor(i, 0)
-		brightness = RGB2HSV(color)[2]
+		brightness = RGBtoHSV(color)[2]
 		
 		# Convert from [0, 100] to [0, 255]
 		alpha = round(brightness * 255 / 100)

@@ -717,13 +717,13 @@ def listToARGBPixel(hsvList, alpha=255):
 # HSVtoARGBPixel()
 # Given a list of 3 numbers as HSV, return an ARGBPixel object
 def HSVtoARGBPixel(h, s, v, alpha=255):
-	RGBColors = HSV2RGB([h, s, v])
+	RGBColors = HSVtoRGB([h, s, v])
 	return ARGBPixel(alpha, RGBColors[0], RGBColors[1], RGBColors[2])
 
-# HSV2RGB()
+# HSVtoRGB()
 # Given a list of 3 numbers as HSV, return a list of 3 ints corresponding to the RGB values
 # Hue in [0, 359], sat in [0, 100], val in [0, 100]
-def HSV2RGB(colorList):
+def HSVtoRGB(colorList):
 	[hue, sat, val] = colorList
 	
 	# Keep brightness and sat values in [0, 100 range]
@@ -759,9 +759,9 @@ def HSV2RGB(colorList):
 	
 	return [red, green, blue]
 
-# RGB2HSV()
+# RGBtoHSV()
 # Given a color node (frame), return a list of 3 floats corresponding to the HSV values
-def RGB2HSV(colorNode):
+def RGBtoHSV(colorNode):
 	red = colorNode.R / 255.0
 	blue = colorNode.B / 255.0
 	green = colorNode.G / 255.0
@@ -876,9 +876,9 @@ def rotateHueForAllFrames(node, hueToAdd):
 		else:
 			frame = node.SolidColor
 		
-		hsvList = RGB2HSV(frame)	# Get color as HSV value
+		hsvList = RGBtoHSV(frame)	# Get color as HSV value
 		hsvList[0] += hueToAdd		# Set hue to new
-		newRGB = HSV2RGB(hsvList)
+		newRGB = HSVtoRGB(hsvList)
 		newColor = ARGBPixel(frame.A, newRGB[0], newRGB[1], newRGB[2])
 		
 		# Check for duplicate vertex color values to possibly subvert corruption
@@ -913,9 +913,9 @@ def setHueForAllFrames(node, newHue):
 		else:
 			frame = node.SolidColor
 		
-		hsvList = RGB2HSV(frame)	# Get color as HSV value
+		hsvList = RGBtoHSV(frame)	# Get color as HSV value
 		hsvList[0] = newHue			# Set hue to new
-		newRGB = HSV2RGB(hsvList)
+		newRGB = HSVtoRGB(hsvList)
 		newColor = ARGBPixel(frame.A, newRGB[0], newRGB[1], newRGB[2])
 		
 		# Check for duplicate vertex color values to possibly subvert corruption
@@ -948,9 +948,9 @@ def adjustSatForAllFrames(node, valToAdd):
 		else:
 			frame = node.SolidColor
 		
-		hsvList = RGB2HSV(frame)	# Get color as HSV value
+		hsvList = RGBtoHSV(frame)	# Get color as HSV value
 		hsvList[1] += valToAdd		# Set value to new
-		newRGB = HSV2RGB(hsvList)
+		newRGB = HSVtoRGB(hsvList)
 		newColor = ARGBPixel(frame.A, newRGB[0], newRGB[1], newRGB[2])
 		
 		# Check for duplicate vertex color values to possibly subvert corruption
@@ -983,9 +983,9 @@ def adjustValForAllFrames(node, valToAdd):
 		else:
 			frame = node.SolidColor
 		
-		hsvList = RGB2HSV(frame)	# Get color as HSV value
+		hsvList = RGBtoHSV(frame)	# Get color as HSV value
 		hsvList[2] += valToAdd		# Set value to new
-		newRGB = HSV2RGB(hsvList)
+		newRGB = HSVtoRGB(hsvList)
 		newColor = ARGBPixel(frame.A, newRGB[0], newRGB[1], newRGB[2])
 		
 		# Check for duplicate vertex color values to possibly subvert corruption
