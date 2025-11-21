@@ -279,8 +279,16 @@ def shiftAnimation(sourceEntry, destEntry, frameDifference):
 		return
 	
 	frameCount = sourceEntry.Parent.FrameCount
-	destEntry.Parent.FrameCount = frameCount
-	clearCHR(destEntry)
+	
+	isSameEntry = (destEntry is None or destEntry == 0 or destEntry == -1)
+	
+	# Create dummy entry if adjusting the source entry by itself
+	# This gets deleted at end of function
+	if isSameEntry:
+		destEntry = sourceEntry.Parent.CreateEntry()
+	else:
+		destEntry.Parent.FrameCount = frameCount
+		clearCHR(destEntry)
 	
 	# Set every value on every frame, then clean unused frames later
 	for arrayIndex in range(9):
@@ -300,7 +308,11 @@ def shiftAnimation(sourceEntry, destEntry, frameDifference):
 			destKf._tangent = currentTangent
 	
 	cleanCHR(destEntry, 0.0015)
-
+	
+	if isSameEntry:
+		sourceEntry.Replace(destEntry)
+		destEntry.Remove()
+		
 # animSharpTangents()
 # Create keyframes in a chr0 entry with straight tangents, by adding keyframes at indices (startFrame+1) and (endFrame-1)
 def animSharpTangents(chr0Entry, arrayIndex, startFrame, endFrame, startVal, endVal=None):
@@ -406,7 +418,7 @@ def cleanCHR(entry, interval=0.001, arrayIndex=-1):
 			
 			inRemovableRange = value >= minVal and value <= maxVal
 			
-			if inRemovableRange:
+			if frameIndex > 0 and inRemovableRange:
 				keyframesRemovedCount += 1
 			# If value differs too greatly, restore the keyframe value
 			else:
