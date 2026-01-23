@@ -39,6 +39,7 @@ def getMDL0Uses(brres, tex0Name):
 	return usesList
 
 def getPAT0Uses(brres, tex0Name):
+	
 	# If no PAT0 in brres, return
 	pat0Group = brres.FindChild(PAT_GROUP)
 	if not pat0Group:
@@ -50,7 +51,7 @@ def getPAT0Uses(brres, tex0Name):
 	for pat0 in pat0Group.Children:
 		for pat0Entry in pat0.Children:
 			for pat0TextureNode in pat0Entry.Children:
-				# Check frames, aka PAT0TextureEntryNode
+				# Check frames (PAT0TextureEntryNode)
 				for frame in pat0TextureNode.Children:
 					if frame.Name == tex0Name:
 						usesList.append(pat0TextureNode)
