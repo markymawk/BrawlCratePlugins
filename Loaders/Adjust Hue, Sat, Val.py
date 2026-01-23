@@ -64,20 +64,7 @@ def updateParentMDL0(vertNode):
 	parentMDL0.Replace(TEMP_MDL0_FILE_PATH)
 	File.Delete(TEMP_MDL0_FILE_PATH)
 
-# Avoid duplicates for vertex colors by utilizing vertex alpha
-def getNewAlphaColor(newColor, colorsUsed):
-	alpha = newColor.A
-	# If under 128 alpha, add 1. Otherwise subtract 1
-	doAlphaAdd = (alpha < 128)
-	
-	while newColor in colorsUsed:
-		if doAlphaAdd:
-			alpha = alpha + 1
-		else:
-			alpha = alpha - 1
-		
-		newColor = ARGBPixel(alpha, newColor.R, newColor.B, newColor.G)
-	return newColor
+
 ## End helper functions
 ## Start loader functions
 
