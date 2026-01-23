@@ -280,7 +280,7 @@ def shiftAnimation(sourceEntry, destEntry, frameDifference):
 	
 	frameCount = sourceEntry.Parent.FrameCount
 	
-	isSameEntry = (destEntry is None or destEntry == 0 or destEntry == -1)
+	isSameEntry = (destEntry is None or destEntry == 0 or destEntry == -1 or sourceEntry == destEntry)
 	
 	# Create dummy entry if adjusting the source entry by itself
 	# This gets deleted at end of function
