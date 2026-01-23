@@ -435,7 +435,7 @@ def cleanCHR(entry, interval=0.001, arrayIndex=-1):
 				restoredKeyframe._tangent = tangent
 	
 	return keyframesRemovedCount
-
+			
 # setMips()
 # Set all materials in a given MDL0 to linear mipmaps
 def setMips(mdl0):
@@ -882,6 +882,25 @@ def setMirrorGradient(node, startColor, midColor):
 	# Get new start color from frames[1]
 	endColor = node.GetColor(1, 0)
 	setColorGradient(node, midPoint, -1, midColor, endColor)
+
+## Needed for adjust HSV lib functions
+ALPHA_DUPLICATE_MSG = "Duplicate resulting colors detected. This can result in color corruption upon saving.\n\nUse modified alpha values to possibly prevent this?\n(Choose No if your model uses vertex alpha.)"
+
+# Avoid duplicates for vertex colors by utilizing vertex alpha
+def getNewAlphaColor(newColor, colorsUsed):
+	alpha = newColor.A
+	# If under 128 alpha, add 1. Otherwise subtract 1
+	doAlphaAdd = (alpha < 128)
+	
+	while newColor in colorsUsed:
+		if doAlphaAdd:
+			alpha = alpha + 1
+		else:
+			alpha = alpha - 1
+		
+		newColor = ARGBPixel(alpha, newColor.R, newColor.B, newColor.G)
+	return newColor
+##
 
 # Main function to loop through frames and add (rotate) hue values
 def rotateHueForAllFrames(node, hueToAdd):
