@@ -363,10 +363,18 @@ def clearCHR(chr0Entry, arrayIndex=-1):
 			clearCHR(entry)
 		return
 	
-	# Clear keyframes from entry nodes
-	frameCount = chr0Entry.Parent.FrameCount
-	if chr0Entry.Parent.Loop:
-		frameCount += 1
+	# Lazy way to use for SRT
+	if isinstance(chr0Entry, SRT0TextureNode):
+		frameCount = chr0Entry.Parent.Parent.FrameCount
+		if chr0Entry.Parent.Parent.Loop:
+			frameCount += 1
+	# CHR
+	else:
+		frameCount = chr0Entry.Parent.FrameCount
+		# Clear keyframes from entry nodes
+		if chr0Entry.Parent.Loop:
+			frameCount += 1
+	
 	for i in range(frameCount):
 	# If no CHR0 arrayIndex (translation X, etc.) given, clear all
 		if arrayIndex == -1:
