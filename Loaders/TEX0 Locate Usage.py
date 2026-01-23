@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "2.1"
+__version__ = "2.1.1"
 
 from BrawlCrate.NodeWrappers import *
 from System.Windows.Forms import ToolStripMenuItem
@@ -39,7 +39,6 @@ def getMDL0Uses(brres, tex0Name):
 	return usesList
 
 def getPAT0Uses(brres, tex0Name):
-	
 	# If no PAT0 in brres, return
 	pat0Group = brres.FindChild(PAT_GROUP)
 	if not pat0Group:
@@ -51,7 +50,7 @@ def getPAT0Uses(brres, tex0Name):
 	for pat0 in pat0Group.Children:
 		for pat0Entry in pat0.Children:
 			for pat0TextureNode in pat0Entry.Children:
-				# Check frames (PAT0TextureEntryNode)
+				# Check frames, aka PAT0TextureEntryNode
 				for frame in pat0TextureNode.Children:
 					if frame.Name == tex0Name:
 						usesList.append(pat0TextureNode)
@@ -74,11 +73,11 @@ def locate_tex0_usage(sender, event_args):
 	
 	if checkSingleBrres:
 		# Get individual MDL0 usage, then append to allModelUses[]
-		for i in getMDL0Uses(brres, tex0Name):
+		for i in getMDL0Uses(parentBRRES, tex0Name):
 			allModelUses.append(i)
 		
 		# Get individual PAT0 usage, then append to allPat0Uses[]
-		for i in getPAT0Uses(brres, tex0Name):
+		for i in getPAT0Uses(parentBRRES, tex0Name):
 			allPat0Uses.append(i)
 	
 	# If parent node is a brres with no MDL0/PAT0s, check all brres nodes in the file
