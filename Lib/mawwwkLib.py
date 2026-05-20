@@ -282,7 +282,7 @@ def shiftAnimation(sourceEntry, destEntry, frameDifference):
 	
 	isSameEntry = (destEntry is None or destEntry == 0 or destEntry == -1 or sourceEntry == destEntry)
 	
-	# Create dummy entry if adjusting the source entry by itself
+	# If adjusting the source entry by itself, create dummy entry
 	# This gets deleted at end of function
 	if isSameEntry:
 		destEntry = sourceEntry.Parent.CreateEntry()
@@ -822,6 +822,11 @@ def setColorGradient(node, startFrame, endFrame, startColor, endColor=-1):
 			for clr0MatEntry in clr0Material.Children:
 				setColorGradient(clr0MatEntry, startFrame, endFrame, startColor, endColor)
 		return
+	# If given a CLR0MaterialNode, run on all children
+	elif isinstance(node, CLR0MaterialNode):
+		for clr0MatEntry in node.Children:
+			setColorGradient(clr0MatEntry, startFrame, endFrame, startColor, endColor)
+		return
 	
 	# If endColor not set, match startColor
 	if endColor == -1:
@@ -872,6 +877,11 @@ def setMirrorGradient(node, startColor, midColor):
 		for clr0Material in node.Children:
 			for clr0MatEntry in clr0Material.Children:
 				setMirrorGradient(clr0MatEntry, startColor, midColor)
+		return
+	# If given a CLR0MaterialNode, run on all children
+	elif isinstance(node, CLR0MaterialNode):
+		for clr0MatEntry in node.Children:
+			setMirrorGradient(clr0MatEntry, startColor, midColor)
 		return
 	
 	# Determine middle and ending points
