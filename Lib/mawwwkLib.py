@@ -191,7 +191,10 @@ def listToStringNoDuplicates(list, max=0):
 	newList = listNoDuplicates(list)	
 	return listToString(newList, max)
 
-def getParentFolderPath(filepath, parentAmount=1):
+def getParentFolderPath(filepath=-1, parentAmount=1):
+	# If no path given, assume we want that of currently opened file
+	if filepath == -1:
+		filepath = BrawlAPI.RootNode.FilePath
 	path = filepath.rsplit("\\",parentAmount)[0] + "\\"
 	return path
 
