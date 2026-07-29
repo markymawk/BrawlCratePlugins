@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "1.5"
+__version__ = "1.6"
 
 from System.Windows.Forms import ToolStripMenuItem # Needed for all loaders
 from BrawlCrate.NodeWrappers import *
@@ -75,8 +75,8 @@ def import_model_settings(sender, event_args):
 		# If material exists in source MDL0, replace it in dest MDL0 and update Shader
 		if sourceMat:
 			destMat.Replace(sourceMat)
-			sourceMatsList.remove(sourceMat)
 			destMat.Shader = sourceMat.Shader
+			sourceMatsList.remove(sourceMat)
 	
 	# Copy any remaining materials (those that don't share names)
 	for sourceMat in sourceMatsList:
@@ -86,25 +86,41 @@ def import_model_settings(sender, event_args):
 		newMat.Shader = sourceMat.Shader
 	
 	# End material import
-	# Begin object DrawPass setings (transparency, etc.)
+	# Begin object DrawCall setings (transparency, etc.)
 	for destObj in destination_Objects.Children:
 		sourceObj = source_Objects.FindChild(destObj.Name)
 		
 		if not sourceObj:
 			continue
+		callCount = len(sourceObj._drawCalls)
 		
-		# Copy draw pass settings (XLU/OBJ) to each object
+		# Add drawCalls to destObj until matching
+		while len(destObj._drawCalls) < callCount:
+			destObj._drawCalls.Add(DrawCall(destObj))
+		
+		# Copy draw pass settings
 		if sourceObj._drawCalls and destObj._drawCalls:
-			destObj._drawCalls[0].DrawPass = sourceObj._drawCalls[0].DrawPass
-			destObj._drawCalls[0].Material = sourceObj._drawCalls[0].Material
-			destObj._drawCalls[0].VisibilityBone = sourceObj._drawCalls[0].VisibilityBone
-			destObj._drawCalls[0].DrawPriority = sourceObj._drawCalls[0].DrawPriority
+			for i in range(callCount):
+				destDrawCall = destObj._drawCalls[i]
+				sourceDrawCall = sourceObj._drawCalls[i]
+				# DrawPass (XLU/OPA)
+				destDrawCall.DrawPass = sourceDrawCall.DrawPass
+				# Material name
+				destDrawCall.Material = sourceDrawCall.Material
+				# Vis bone
+				destDrawCall.VisibilityBone = sourceDrawCall.VisibilityBone
+				# If vis bone is blank, use root bone
+				if destDrawCall.VisibilityBone in ["", None]:
+					rootBone = selNode.FindChild("Bones").Children[0]
+					destDrawCall.VisibilityBone = rootBone.Name
+				# Draw priority (int)
+				destDrawCall.DrawPriority = sourceDrawCall.DrawPriority
 		
 		# Check TexCoord0 and make empty if source obj is empty
 		if sourceObj.TexCoord0 is None:
 			destObj.TexCoord0 = None
 	
-	# Find unused materials
+	# Find materials not assigned to objects
 	unassignedMaterials = []
 	for destMat in destination_MatGroup.Children:
 		sourceMat = source_MatGroup.FindChild(destMat.Name)
