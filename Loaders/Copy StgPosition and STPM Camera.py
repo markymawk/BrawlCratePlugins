@@ -1,5 +1,5 @@
 __author__ = "mawwwk"
-__version__ = "2.1"
+__version__ = "2.1.1"
 
 from BrawlCrate.UI import * # MainForm CompabibilityMode
 from BrawlCrate.NodeWrappers import *
@@ -206,7 +206,7 @@ def main(brresNode, stpmEntryNode):
 			parentARC = BrawlAPI.RootNode.FindChild("2")
 			if not parentARC:
 				continue
-			newBRRES = getBRRES(parentARC, brresID)
+			newBRRES = getBRRES(parentARC, brresID, False)
 			
 			# If brres not found, add to list and continue
 			if not newBRRES:
@@ -270,6 +270,7 @@ def main(brresNode, stpmEntryNode):
 		
 		# List any files missing the appropriate BRRES
 		if len(filesBRRESNotFound):
+			msg = ""
 			if not len(filesModified):
 				msg += str(matchingFilesCount) + " stage .pac file(s) found with substring \"" + stageString + "\"\n"
 			msg += "Files missing BRRES " + str(brresID) + ":\n\n"
