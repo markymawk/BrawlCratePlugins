@@ -449,12 +449,16 @@ def setMips(mdl0):
 
 # getBRRES()
 # Return the first brres with a FileIndex matching the given id
-def getBRRES(parentNode, id):
+def getBRRES(parentNode, id, showError=True):
+	# Take -1 as a shortcut for RootNode
+	if parentNode == -1:
+		parentNode = BrawlAPI.RootNode
 	for child in parentNode.Children:
 		if child.FileIndex == id and isinstance(child, BRRESNode):
 			return child
 	else:
-		dmsg("Lib getBRRES() index error: brres " + str(id))
+		if showError:
+			dmsg("Lib getBRRES() index error: brres " + str(id))
 		return 0
 
 # getCHR()
