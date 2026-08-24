@@ -877,7 +877,7 @@ def setColorGradient(node, startFrame, endFrame, startColor, endColor=-1):
 
 # setMirrorGradient()
 # Set a gradient color blend that goes startColor > midColor > startColor
-def setMirrorGradient(node, startColor, midColor):
+def setMirrorGradient(node, startColor, midColor=-1):
 	
 	# If given a CLR0Node, run on all children
 	if isinstance(node, CLR0Node):
@@ -890,6 +890,9 @@ def setMirrorGradient(node, startColor, midColor):
 		for clr0MatEntry in node.Children:
 			setMirrorGradient(clr0MatEntry, startColor, midColor)
 		return
+	
+	if midColor == -1:
+		midColor = startColor
 	
 	# Determine middle and ending points
 	midPoint = round((node.Parent.Parent.FrameCount - 1)/2)
